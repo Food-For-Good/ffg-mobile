@@ -1,3 +1,4 @@
+import 'package:FoodForGood/constants.dart';
 import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {
@@ -5,42 +6,44 @@ class RoundedButton extends StatelessWidget {
   final Color colour;
   final String title;
   final Function pressed;
+  final height;
+  final width;
 
-  RoundedButton(
-      {this.colour,
-      this.title,
-      this.pressed,
-      this.splashColour = Colors.deepOrange});
+  RoundedButton({
+    this.colour,
+    this.title,
+    this.pressed,
+    this.splashColour = Colors.deepOrange,
+    this.height = 150.0,
+    this.width = 150.0
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Padding(
-        padding: const EdgeInsets.only(left: 45.0, right: 45.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: FlatButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                color: colour,
-                splashColor: splashColour,
-                onPressed: pressed,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17.0,
-                    ),
-                  ),
+    return ClipOval(
+      child: Material(
+        color: kPrimaryColor, // button color
+        child: InkWell(
+          splashColor: splashColour,
+          onTap: pressed,
+          child: Container(
+            alignment: Alignment.center,
+            height: height,
+            width: width,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                title,
+                softWrap: true,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 28.0,
                 ),
               ),
-            )
-          ],
+            ),
+          ),
         ),
       ),
     );

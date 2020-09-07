@@ -51,172 +51,84 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         appBar: AppBar(
           leading: Container(),
-          centerTitle: true,
-          title: Text(
-            'Home Screen',
-            style: kTitleStyle,
-          ),
         ),
         body: ModalProgressHUD(
           inAsyncCall: showSpinner,
           color: kPrimaryColor,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                child: Center(
-                  child: Stack(
-                    children: <Widget>[
-                      Text(
-                        'Hello,',
-                        style: kHeadingStyle.copyWith(fontSize: 40.0),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 25.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.baseline,
-                          textBaseline: TextBaseline.alphabetic,
-                          children: <Widget>[
-                            Text(
-                              this.username,
-                              style: TextStyle(
-                                fontSize: 60.0,
-                                fontWeight: FontWeight.bold,
-                                color: kSecondaryColor,
-                              ),
+                padding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
+                child: Stack(
+                  children: <Widget>[
+                    Text(
+                      'Hello,',
+                      style: kHeadingStyle.copyWith(fontSize: 40.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 25.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: <Widget>[
+                          Text(
+                            this.username,
+                            style: TextStyle(
+                              fontSize: 60.0,
+                              fontWeight: FontWeight.bold,
+                              color: kSecondaryColor,
                             ),
-                            SizedBox(width: 5.0),
-                            Text(
-                              '!',
-                              style: TextStyle(
-                                fontSize: 65.0,
-                                fontWeight: FontWeight.bold,
-                                color: kPrimaryColor,
-                              ),
+                          ),
+                          SizedBox(width: 5.0),
+                          Text(
+                            '!',
+                            style: TextStyle(
+                              fontSize: 65.0,
+                              fontWeight: FontWeight.bold,
+                              color: kPrimaryColor,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
               SizedBox(height: 30.0),
-              RoundedButton(
-                colour: kPrimaryColor,
-                title: 'GIVE AWAY',
-                pressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => GiveAwayScreen(
-                        username: username,
-                      ),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 15.0),
-              RoundedButton(
-                colour: kPrimaryColor,
-                title: 'REQUEST',
-                pressed: () {
-                  Navigator.pushNamed(context, '/request');
-                },
-              ),
-              SizedBox(height: 40.0),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
+              Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      'Shared With ',
-                      style: kHeadingStyle.copyWith(
-                        fontSize: 25.0,
-                        color: kSecondaryColor.withAlpha(150),
-                      ),
-                    ),
-                    Container(
-                      width: 60.0,
-                      height: 60.0,
-                      child: Container(
-                        child: Center(
-                          child: Text(
-                            this.sharedWith.toString(),
-                            style: kHeadingStyle.copyWith(
-                                fontSize: 40.0, color: kSecondaryColor),
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                  RoundedButton(
+                    colour: kPrimaryColor,
+                    title: 'GIVE AWAY',
+                    pressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GiveAwayScreen(
+                            username: username,
                           ),
                         ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: kSecondaryColor.withAlpha(150),
-                            width: 5.0,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                      );
+                    },
+                  ),
+                  RoundedButton(
+                    colour: kPrimaryColor,
+                    title: 'REQUEST',
+                    height: 150.0,
+                    pressed: () {
+                      Navigator.pushNamed(context, '/request');
+                    },
+                  ),
+                ]),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: <Widget>[
-                    Text(
-                      'Requested From ',
-                      style: kHeadingStyle.copyWith(
-                        fontSize: 25.0,
-                        color: kSecondaryColor.withAlpha(150),
-                      ),
-                    ),
-                    Container(
-                      width: 60.0,
-                      height: 60.0,
-                      child: Container(
-                        child: Center(
-                          child: Text(
-                            this.requestedFrom.toString(),
-                            style: kHeadingStyle.copyWith(
-                                fontSize: 40.0, color: kSecondaryColor),
-                          ),
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: kSecondaryColor.withAlpha(150),
-                            width: 5.0,
-                          ),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                  ],
+              Container(
+                height: 50,
+                child: Text('20 donations made till now :)',
+                  style: kTextStyle,
                 ),
-              ),
-              SizedBox(height: 40.0),
-              RoundedButton(
-                title: 'LOGOUT',
-                colour: kSecondaryColor,
-                splashColour: kBackgroundColor.withAlpha(150),
-                pressed: () async {
-                  setState(() {
-                    showSpinner = true;
-                  });
-                  try {
-                    AuthService auth = Provider.of(context).auth;
-                    auth.signOut();
-                    Navigator.pop(context);
-                    Navigator.pushReplacementNamed(context, '/');
-                    setState(() {
-                      showSpinner = false;
-                    });
-                  } catch (e) {
-                    print('Error: ' + e.toString());
-                  }
-                },
               ),
             ],
           ),
