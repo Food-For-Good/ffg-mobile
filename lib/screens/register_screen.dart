@@ -111,7 +111,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     SizedBox(height: 50.0),
-                    RoundedButton(
+                    CircularButton(
                       title: 'SIGNUP',
                       colour: kPrimaryColor,
                       pressed: () async {

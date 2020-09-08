@@ -246,7 +246,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
             ],
           ),
           SizedBox(height: 20.0),
-          RoundedButton(
+          CircularButton(
             title: 'SHARE',
             colour: kPrimaryColor,
             pressed: () async {

@@ -22,7 +22,7 @@ class LandingScreen extends StatelessWidget {
             children: <Widget>[
               SizedBox(height: 350.0),
               Center(
-                child: RoundedButton(
+                child: CircularButton(
                   colour: kPrimaryColor,
                   title: 'LOGIN',
                   pressed: () {

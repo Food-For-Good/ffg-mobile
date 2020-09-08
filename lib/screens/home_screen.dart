@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:FoodForGood/components/provider.dart';
-import 'package:FoodForGood/components/rounded_button.dart';
+import 'package:FoodForGood/components/circular_button.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/screens/give_away_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                  RoundedButton(
+                  CircularButton(
                     colour: kPrimaryColor,
                     title: 'GIVE AWAY',
                     pressed: () {
@@ -114,10 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       );
                     },
                   ),
-                  RoundedButton(
+                  CircularButton(
                     colour: kPrimaryColor,
                     title: 'REQUEST',
-                    height: 150.0,
                     pressed: () {
                       Navigator.pushNamed(context, '/request');
                     },
