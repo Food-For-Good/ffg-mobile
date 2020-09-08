@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     SizedBox(height: 50.0),
-                    CircularButton(
+                    RoundedButton(
                       title: 'LOGIN',
                       colour: kPrimaryColor,
                       pressed: () async {

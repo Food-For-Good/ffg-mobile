@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class CircularButton extends StatelessWidget {
+class RoundedButton extends StatelessWidget {
   final Color splashColour;
   final Color colour;
   final String title;
   final Function pressed;
 
-  CircularButton(
+  RoundedButton(
       {this.colour,
       this.title,
       this.pressed,
