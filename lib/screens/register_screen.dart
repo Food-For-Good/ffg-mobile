@@ -15,7 +15,7 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterScreenState extends State<RegisterScreen> {
   bool showSpinner = false;
-  String _name, _email, _password, _address;
+  String _name, _email, _password, _confirmPassword, _address;
   Firestore _firestore = Firestore.instance;
 
   @override
@@ -77,7 +77,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                       textCap: TextCapitalization.words,
                       changed: (value) {
                         this._name = value;
-                        print(value);
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -87,7 +86,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                       kbType: TextInputType.emailAddress,
                       changed: (value) {
                         this._email = value;
-                        print(value);
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -97,7 +95,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                       textCap: TextCapitalization.sentences,
                       changed: (value) {
                         this._address = value;
-                        print(value);
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -107,7 +104,15 @@ class RegisterScreenState extends State<RegisterScreen> {
                       isPass: true,
                       changed: (value) {
                         this._password = value;
-                        print(value);
+                      },
+                    ),
+                    SizedBox(height: 10.0),
+                    CustomTextFeild(
+                      label: 'CONFIRM PASSWORD',
+                      prefixIcon: Icon(Icons.lock),
+                      isPass: true,
+                      changed: (value) {
+                        this._confirmPassword = value;
                       },
                     ),
                     SizedBox(height: 50.0),
@@ -120,10 +125,18 @@ class RegisterScreenState extends State<RegisterScreen> {
                         });
                         try {
                           // checking empty fields
-                          if (_name == null) {
+                          if (this._name == null) {
                             throw 'ERROR_NAME_FIELD_EMPTY';
-                          } else if (_address == null) {
+                          } else if (this._address == null) {
                             throw 'ERROR_ADDRESS_FIELD_EMPTY';
+                          } else if (this._email == null) {
+                            throw 'ERROR_EMAIL_FIELD_EMPTY';
+                          } else if (this._password == null) {
+                            throw 'ERROR_PASSWORD_FIELD_EMPTY';
+                          } else if (this._confirmPassword == null) {
+                            throw 'ERROR_CONFIRM_PASSWORD_FIELD_EMPTY';
+                          } else if (this._password != _confirmPassword) {
+                            throw 'ERROR_PASSWORD_MISSMATCH';
                           }
 
                           // creating the user
