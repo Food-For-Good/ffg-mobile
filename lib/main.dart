@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: kBackgroundColor,
           fontFamily: 'Proxima Nova',
         ),
-        initialRoute: '/',
+        initialRoute: '/home',
         routes: {
           '/': (context) => HomeController(),
           '/login': (context) => LoginScreen(),

@@ -50,6 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       onWillPop: () async => false,
       child: Scaffold(
         appBar: AppBar(
+          title: Title(color:Colors.white, child: Text('FFG')),
           leading: Container(),
         ),
         body: ModalProgressHUD(
@@ -59,74 +60,90 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget>[
               Padding(
                 padding:
-                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
-                child: Stack(
-                  children: <Widget>[
-                    Text(
-                      'Hello,',
-                      style: kHeadingStyle.copyWith(fontSize: 40.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 25.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: <Widget>[
-                          Text(
-                            this.username,
-                            style: TextStyle(
-                              fontSize: 60.0,
-                              fontWeight: FontWeight.bold,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            '!',
-                            style: TextStyle(
-                              fontSize: 65.0,
-                              fontWeight: FontWeight.bold,
-                              color: kPrimaryColor,
-                            ),
-                          ),
-                        ],
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
+                child: Container(
+                  width: 500,
+                  // color: Colors.teal,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      Text(
+                        'Hello,',
+                        style: kHeadingStyle.copyWith(fontSize: 40.0),
                       ),
-                    ),
-                  ],
+                      Padding(
+                        padding: const EdgeInsets.only(top: 32),
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          height: 60,
+                          // color: Colors.redAccent,
+                          child: FittedBox(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: <Widget>[
+                                Text(
+                                  // this.username,
+                                  'Abcdefghijk',
+                                  style: TextStyle(
+                                    fontSize: 60.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: kSecondaryColor,
+                                  ),
+                                ),
+                                SizedBox(width: 5.0),
+                                Text(
+                                  '!',
+                                  style: TextStyle(
+                                    fontSize: 65.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               SizedBox(height: 30.0),
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                  CircularButton(
-                    colour: kPrimaryColor,
-                    title: 'GIVE AWAY',
-                    pressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => GiveAwayScreen(
-                            username: username,
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                  CircularButton(
-                    colour: kPrimaryColor,
-                    title: 'REQUEST',
-                    pressed: () {
-                      Navigator.pushNamed(context, '/request');
-                    },
-                  ),
-                ]),
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CircularButton(
+                        colour: kPrimaryColor,
+                        title: 'GIVE AWAY',
+                        pressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GiveAwayScreen(
+                                username: username,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      CircularButton(
+                        colour: kPrimaryColor,
+                        title: 'REQUEST',
+                        pressed: () {
+                          Navigator.pushNamed(context, '/request');
+                        },
+                      ),
+                    ]),
               ),
               Container(
-                height: 50,
-                child: Text('20 donations made till now :)',
-                  style: kTextStyle,
+                height: 60,
+                child: Text(
+                  '20 donations made till now :)',
+                  style: kTextStyle.copyWith(
+                    fontSize: 22
+                  ),
                 ),
               ),
             ],
