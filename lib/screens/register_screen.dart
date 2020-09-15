@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:FoodForGood/components/provider.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:FoodForGood/services/validator_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -14,7 +16,7 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class RegisterScreenState extends State<RegisterScreen> {
-  bool showSpinner = false;
+  bool _showSpinner = false;
   String _name, _email, _password, _confirmPassword, _address;
   Firestore _firestore = Firestore.instance;
 
@@ -24,7 +26,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       resizeToAvoidBottomInset: true,
       body: ModalProgressHUD(
         color: kPrimaryColor,
-        inAsyncCall: showSpinner,
+        inAsyncCall: this._showSpinner,
         child: Material(
           child: Container(
             color: kBackgroundColor,
@@ -76,7 +78,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.person),
                       textCap: TextCapitalization.words,
                       changed: (value) {
-                        this._name = value;
+                        this._name = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -85,7 +87,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.email),
                       kbType: TextInputType.emailAddress,
                       changed: (value) {
-                        this._email = value;
+                        this._email = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -94,7 +96,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.location_on),
                       textCap: TextCapitalization.sentences,
                       changed: (value) {
-                        this._address = value;
+                        this._address = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -103,7 +105,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock),
                       isPass: true,
                       changed: (value) {
-                        this._password = value;
+                        this._password = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -112,7 +114,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock),
                       isPass: true,
                       changed: (value) {
-                        this._confirmPassword = value;
+                        this._confirmPassword = value.trim();
                       },
                     ),
                     SizedBox(height: 50.0),
@@ -121,49 +123,45 @@ class RegisterScreenState extends State<RegisterScreen> {
                       colour: kPrimaryColor,
                       pressed: () async {
                         setState(() {
-                          showSpinner = true;
+                          this._showSpinner = true;
                         });
                         try {
-                          // checking empty fields
-                          if (this._name == null) {
-                            throw 'ERROR_NAME_FIELD_EMPTY';
-                          } else if (this._address == null) {
-                            throw 'ERROR_ADDRESS_FIELD_EMPTY';
-                          } else if (this._email == null) {
-                            throw 'ERROR_EMAIL_FIELD_EMPTY';
-                          } else if (this._password == null) {
-                            throw 'ERROR_PASSWORD_FIELD_EMPTY';
-                          } else if (this._confirmPassword == null) {
-                            throw 'ERROR_CONFIRM_PASSWORD_FIELD_EMPTY';
-                          } else if (this._password != _confirmPassword) {
-                            throw 'ERROR_PASSWORD_MISSMATCH';
-                          }
+                          ValidatorService.validateData(
+                              this._name,
+                              this._email,
+                              this._address,
+                              this._password,
+                              this._confirmPassword);
 
-                          // creating the user
-                          AuthService auth = Provider.of(context).auth;
-                          await auth.createUserWithEmailAndPassword(
-                              _email, _password, _name);
+                          // Creating new user.
+                          await AuthService().createUserWithEmailAndPassword(
+                              this._email, this._password, this._name);
 
-                          // saving info to firestore
-                          await _firestore
+                          // Saving user info to firestore.
+                          await this
+                              ._firestore
                               .collection('users')
-                              .document(_email)
+                              .document(this._email)
                               .setData({
-                            'username': _name,
-                            'address': _address,
+                            'username': this._name,
+                            'address': this._address,
                             'sharedWith': 0,
                             'requestedFrom': 0
                           });
 
-                          Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/');
-                        } catch (e) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(username: this._name),
+                            ),
+                          );
+                        } catch (error) {
                           kShowFlushBar(
-                              content: e.toString(), context: context);
-                          print('ERROR: ' + e.toString());
+                              content: error.toString(), context: context);
                         }
                         setState(() {
-                          showSpinner = false;
+                          this._showSpinner = false;
                         });
                       },
                     ),
