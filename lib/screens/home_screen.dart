@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'package:FoodForGood/components/circular_button.dart';
-import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/constants.dart';
-import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
               child: Container(
                 width: 500,
-                // color: Colors.teal,
                 child: Stack(
                   overflow: Overflow.visible,
                   children: <Widget>[
@@ -56,7 +53,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Container(
                         alignment: Alignment.centerLeft,
                         height: 60,
-                        // color: Colors.redAccent,
                         child: FittedBox(
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.baseline,
