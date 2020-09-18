@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:FoodForGood/components/provider.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:FoodForGood/services/helper_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -14,8 +16,8 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class RegisterScreenState extends State<RegisterScreen> {
-  bool showSpinner = false;
-  String _name, _email, _password, _address;
+  bool _showSpinner = false;
+  String _name, _email, _password, _confirmPassword, _address;
   Firestore _firestore = Firestore.instance;
 
   @override
@@ -24,7 +26,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       resizeToAvoidBottomInset: true,
       body: ModalProgressHUD(
         color: kPrimaryColor,
-        inAsyncCall: showSpinner,
+        inAsyncCall: this._showSpinner,
         child: Material(
           child: Container(
             color: kBackgroundColor,
@@ -76,8 +78,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.person),
                       textCap: TextCapitalization.words,
                       changed: (value) {
-                        this._name = value;
-                        print(value);
+                        this._name = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -86,8 +87,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.email),
                       kbType: TextInputType.emailAddress,
                       changed: (value) {
-                        this._email = value;
-                        print(value);
+                        this._email = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -96,8 +96,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.location_on),
                       textCap: TextCapitalization.sentences,
                       changed: (value) {
-                        this._address = value;
-                        print(value);
+                        this._address = value.trim();
                       },
                     ),
                     SizedBox(height: 10.0),
@@ -106,8 +105,16 @@ class RegisterScreenState extends State<RegisterScreen> {
                       prefixIcon: Icon(Icons.lock),
                       isPass: true,
                       changed: (value) {
-                        this._password = value;
-                        print(value);
+                        this._password = value.trim();
+                      },
+                    ),
+                    SizedBox(height: 10.0),
+                    CustomTextFeild(
+                      label: 'CONFIRM PASSWORD',
+                      prefixIcon: Icon(Icons.lock),
+                      isPass: true,
+                      changed: (value) {
+                        this._confirmPassword = value.trim();
                       },
                     ),
                     SizedBox(height: 50.0),
@@ -116,43 +123,75 @@ class RegisterScreenState extends State<RegisterScreen> {
                       colour: kPrimaryColor,
                       pressed: () async {
                         setState(() {
-                          showSpinner = true;
+                          this._showSpinner = true;
                         });
                         try {
-                          // checking empty fields
-                          if (_name == null) {
-                            throw 'ERROR_NAME_FIELD_EMPTY';
-                          } else if (_address == null) {
-                            throw 'ERROR_ADDRESS_FIELD_EMPTY';
-                          }
+                          HelperService.validateData(
+                              this._name,
+                              this._email,
+                              this._address,
+                              this._password,
+                              this._confirmPassword);
 
-                          // creating the user
-                          AuthService auth = Provider.of(context).auth;
-                          await auth.createUserWithEmailAndPassword(
-                              _email, _password, _name);
+                          // Creating new user.
+                          await AuthService().createUserWithEmailAndPassword(
+                              this._email, this._password, this._name);
 
-                          // saving info to firestore
-                          await _firestore
+                          // Saving user info to firestore.
+                          await this
+                              ._firestore
                               .collection('users')
-                              .document(_email)
+                              .document(this._email)
                               .setData({
-                            'username': _name,
-                            'address': _address,
+                            'username': this._name,
+                            'address': this._address,
                             'sharedWith': 0,
                             'requestedFrom': 0
                           });
 
-                          Navigator.pop(context);
-                          Navigator.pushReplacementNamed(context, '/');
-                        } catch (e) {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(username: this._name),
+                            ),
+                          );
+                        } catch (error) {
                           kShowFlushBar(
-                              content: e.toString(), context: context);
-                          print('ERROR: ' + e.toString());
+                              content: error.toString(), context: context);
                         }
                         setState(() {
-                          showSpinner = false;
+                          this._showSpinner = false;
                         });
                       },
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Already a member?',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(width: 5.0),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(context, '/login');
+                          },
+                          child: Text(
+                            'Log In!',
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

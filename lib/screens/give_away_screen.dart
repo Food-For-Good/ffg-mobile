@@ -2,26 +2,32 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:geocoder/geocoder.dart';
+import 'package:geolocator/geolocator.dart';
+
+import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
-import 'package:FoodForGood/constants.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:geocoder/geocoder.dart';
+import 'package:FoodForGood/services/auth_service.dart';
 
 class GiveAwayScreen extends StatefulWidget {
-  final String username;
-  GiveAwayScreen({this.username});
-
   @override
-  _GiveAwayScreenState createState() =>
-      _GiveAwayScreenState(username: username);
+  _GiveAwayScreenState createState() => _GiveAwayScreenState();
 }
 
 class _GiveAwayScreenState extends State<GiveAwayScreen> {
-  final String username;
-  _GiveAwayScreenState({this.username});
+  @override
+  void initState() {
+    super.initState();
+    this.setUsername();
+  }
 
-  String title = '',
+  setUsername() async {
+    this.username = await AuthService().getUsername();
+  }
+
+  String username = '',
+      title = '',
       description = '',
       phoneNo = '',
       address = 'NONE',
@@ -43,7 +49,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     bool created = false;
     try {
       await _firestore.collection('Listings').document(title).setData({
-        'username': username,
+        'username': this.username,
         'description': description,
         'expiryTimeInHrs': expiryTime,
         'location':
@@ -53,8 +59,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         'address': address,
       });
       created = true;
-    } catch (e) {
-      print('ERROR: ' + e.toString());
+    } catch (error) {
+      print('ERROR: ' + error.toString());
     }
     return created;
   }
@@ -70,8 +76,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
       var addresses = await Geocoder.local
           .findAddressesFromCoordinates(Coordinates(lat, long));
       return addresses.first.addressLine;
-    } catch (e) {
-      print('ERROR: ' + e.toString());
+    } catch (error) {
+      print('ERROR: ' + error.toString());
     }
     return defaultReturn;
   }

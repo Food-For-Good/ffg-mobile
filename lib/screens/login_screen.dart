@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:FoodForGood/components/provider.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -14,7 +15,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool showSpinner = false;
+  bool _showSpinner = false;
   String _email, _password;
 
   @override
@@ -22,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: ModalProgressHUD(
-        inAsyncCall: showSpinner,
+        inAsyncCall: this._showSpinner,
         color: kPrimaryColor,
         child: Material(
           child: Container(
@@ -75,8 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       kbType: TextInputType.emailAddress,
                       prefixIcon: Icon(Icons.email),
                       changed: (value) {
-                        this._email = value;
-                        print(value);
+                        this._email = value.trim();
                       },
                     ),
                     SizedBox(height: 20.0),
@@ -86,8 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       isPass: true,
                       prefixIcon: Icon(Icons.lock),
                       changed: (value) {
-                        this._password = value;
-                        print(value);
+                        this._password = value.trim();
                       },
                     ),
                     SizedBox(height: 50.0),
@@ -96,22 +95,62 @@ class _LoginScreenState extends State<LoginScreen> {
                       colour: kPrimaryColor,
                       pressed: () async {
                         setState(() {
-                          showSpinner = true;
+                          this._showSpinner = true;
                         });
                         try {
-                          AuthService auth = Provider.of(context).auth;
+                          if (this._email == null) {
+                            throw 'ERROR_EMAIL_FIELD_EMPTY';
+                          } else if (this._password == null) {
+                            throw 'ERROR_PASSWORD_FIELD_EMPTY';
+                          }
+                          AuthService auth = AuthService();
                           await auth.signInWithEmailAndPassword(
-                              _email, _password);
-                          Navigator.pushReplacementNamed(context, '/');
-                        } catch (e) {
+                              this._email, this._password);
+                          String username = await auth.getUsername();
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HomeScreen(username: username),
+                            ),
+                          );
+                        } catch (error) {
                           kShowFlushBar(
-                              content: e.toString(), context: context);
-                          print('ERROR: ' + e.toString());
+                              content: error.toString(), context: context);
                         }
                         setState(() {
-                          showSpinner = false;
+                          this._showSpinner = false;
                         });
                       },
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'New here?',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(width: 5.0),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, '/register');
+                          },
+                          child: Text(
+                            'Join us!',
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
