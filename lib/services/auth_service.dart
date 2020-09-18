@@ -1,26 +1,38 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final Firestore _firestore = Firestore.instance;
 
-  // Check if user is already logged in
-  Stream<String> get onAuthStateChanged => _firebaseAuth.onAuthStateChanged.map(
-        (FirebaseUser user) => user?.uid,
-      );
+  // Future and stream that will be used to check the login status of the user.
+  Future<FirebaseUser> get getUser => _firebaseAuth.currentUser();
+  Stream<FirebaseUser> get user => _firebaseAuth.onAuthStateChanged;
 
-  // Get email
+  // Get email.
   Future<String> getEmail() async {
     try {
       FirebaseUser currentUser = await _firebaseAuth.currentUser();
       currentUser.reload();
       currentUser = await _firebaseAuth.currentUser();
       return currentUser.email;
-    } catch (e) {
-      return e.toString();
+    } catch (error) {
+      return error.toString();
     }
   }
 
-  // SignUp
+  // Get current username.
+  Future<String> getUsername() async {
+    String email = await this.getEmail();
+    try {
+      var document = await _firestore.document('users/$email').get();
+      return document.data['username'];
+    } catch (error) {
+      return error.toString();
+    }
+  }
+
+  // SignUp.
   Future<String> createUserWithEmailAndPassword(
       String email, String password, String name) async {
     await _firebaseAuth.createUserWithEmailAndPassword(
@@ -36,7 +48,7 @@ class AuthService {
     return currentUser.uid;
   }
 
-  // SignIn
+  // SignIn.
   Future<String> signInWithEmailAndPassword(
       String email, String password) async {
     await _firebaseAuth.signInWithEmailAndPassword(
@@ -47,7 +59,7 @@ class AuthService {
     return currentUser.uid;
   }
 
-  // SignOut
+  // SignOut.
   signOut() {
     return _firebaseAuth.signOut();
   }

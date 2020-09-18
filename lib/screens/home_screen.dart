@@ -1,47 +1,26 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:FoodForGood/components/provider.dart';
-import 'package:FoodForGood/components/circular_button.dart';
-import 'package:FoodForGood/constants.dart';
-import 'package:FoodForGood/screens/give_away_screen.dart';
-import 'package:FoodForGood/services/auth_service.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+import 'package:FoodForGood/components/circular_button.dart';
+import 'package:FoodForGood/components/rounded_button.dart';
+import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/services/auth_service.dart';
+import 'package:FoodForGood/services/helper_service.dart';
+
 class HomeScreen extends StatefulWidget {
+  // Fetching the name after loading this page was causing a delay before the
+  // name appeared which is why we fetch it first, then pass it in this widget
+  // when we call it.
+  final String username;
+
+  HomeScreen({this.username});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool showSpinner = false;
-  String username = '';
-  String address = '';
-  int sharedWith = 0, requestedFrom = 0;
-  Firestore _firestore = Firestore.instance;
-
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(Duration.zero, () async {
-      try {
-        AuthService auth = Provider.of(context).auth;
-        String email = await auth.getEmail();
-        var document = _firestore.document('users/$email');
-        document.get().then((document) {
-          setState(() {
-            this.username = document.data['username'];
-            this.address = document.data['address'];
-            this.sharedWith = document.data['sharedWith'];
-            this.requestedFrom = document.data['requestedFrom'];
-          });
-        });
-      } catch (e) {
-        print('Error: ' + e.toString());
-        Future(() => Navigator.pop(context));
-        Future(() => Navigator.pushReplacementNamed(context, '/landing'));
-      }
-    });
-  }
+  bool _showSpinner = false;
 
   @override
   Widget build(BuildContext context) {

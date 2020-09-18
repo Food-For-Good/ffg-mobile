@@ -42,26 +42,30 @@ void kShowFlushBar(
   String message = 'UNKOWN ERROR';
   if (customError) {
     message = content;
-  } else if (content.contains('email != null')) {
-    message = 'Email field empty.';
-  } else if (content.contains('password != null')) {
-    message = 'Password feild empty.';
+  } else if (content.contains('ERROR_EMAIL_FIELD_EMPTY')) {
+    message = 'Please enter your email.';
+  } else if (content.contains('ERROR_PASSWORD_FIELD_EMPTY')) {
+    message = 'Please enter your password.';
+  } else if (content.contains('ERROR_CONFIRM_PASSWORD_FIELD_EMPTY')) {
+    message = 'Please confirm your password.';
   } else if (content.contains('ERROR_INVALID_EMAIL')) {
-    message = 'Invalid email.';
+    message = 'Your email seems to be invalid.';
   } else if (content.contains('ERROR_WRONG_PASSWORD')) {
-    message = 'Invalid password.';
+    message = 'Your password seems to be invalid.';
   } else if (content.contains('ERROR_TOO_MANY_REQUESTS')) {
-    message = 'Too many invalid requests. Try again later.';
+    message = 'Too many invalid requests. Please try again later.';
   } else if (content.contains('ERROR_USER_NOT_FOUND')) {
     message = 'No user found with this email. Please SignUp first.';
   } else if (content.contains('ERROR_NAME_FIELD_EMPTY')) {
-    message = 'Name field empty.';
+    message = 'Please enter your name.';
   } else if (content.contains('ERROR_ADDRESS_FIELD_EMPTY')) {
-    message = 'Address field empty.';
+    message = 'Please enter your address.';
   } else if (content.contains('ERROR_WEAK_PASSWORD')) {
-    message = 'Weak password. Must contain atleast 6 characters.';
+    message = 'Your password is weak. Please enter atleast 6 characters.';
   } else if (content.contains('ERROR_EMAIL_ALREADY_IN_USE')) {
-    message = 'Email already registered. Please SignIn.';
+    message = 'There is already an account with this email. Please SignIn instead.';
+  } else if (content.contains('ERROR_PASSWORD_MISSMATCH')) {
+    message = 'The passwords do not match.';
   }
   Flushbar(
     borderRadius: 8,
