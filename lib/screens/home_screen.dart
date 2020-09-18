@@ -24,109 +24,99 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      // this overrides the 'back' button to do nothing
-      onWillPop: () async => false,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Title(color:Colors.white, child: Text('FFG')),
-          leading: Container(),
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Title(
+          color: Colors.white,
+          child: Text('FFG'),
         ),
-        body: ModalProgressHUD(
-          inAsyncCall: showSpinner,
-          color: kPrimaryColor,
-          child: Column(
-            children: <Widget>[
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
-                child: Container(
-                  width: 500,
-                  // color: Colors.teal,
-                  child: Stack(
-                    overflow: Overflow.visible,
-                    children: <Widget>[
-                      Text(
-                        'Hello,',
-                        style: kHeadingStyle.copyWith(fontSize: 40.0),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 32),
-                        child: Container(
-                          alignment: Alignment.centerLeft,
-                          height: 60,
-                          // color: Colors.redAccent,
-                          child: FittedBox(
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: <Widget>[
-                                Text(
-                                  // this.username,
-                                  'Abcdefghijk',
-                                  style: TextStyle(
-                                    fontSize: 60.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kSecondaryColor,
-                                  ),
+        leading: Container(),
+      ),
+      body: ModalProgressHUD(
+        inAsyncCall: this._showSpinner,
+        color: kPrimaryColor,
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
+              child: Container(
+                width: 500,
+                // color: Colors.teal,
+                child: Stack(
+                  overflow: Overflow.visible,
+                  children: <Widget>[
+                    Text(
+                      'Hello,',
+                      style: kHeadingStyle.copyWith(fontSize: 40.0),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 32),
+                      child: Container(
+                        alignment: Alignment.centerLeft,
+                        height: 60,
+                        // color: Colors.redAccent,
+                        child: FittedBox(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            children: <Widget>[
+                              Text(
+                                HelperService.getFirstName(widget.username),
+                                style: TextStyle(
+                                  fontSize: 60.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: kSecondaryColor,
                                 ),
-                                SizedBox(width: 5.0),
-                                Text(
-                                  '!',
-                                  style: TextStyle(
-                                    fontSize: 65.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kPrimaryColor,
-                                  ),
+                              ),
+                              SizedBox(width: 5.0),
+                              Text(
+                                '!',
+                                style: TextStyle(
+                                  fontSize: 65.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: kPrimaryColor,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
-              SizedBox(height: 30.0),
-              Expanded(
-                child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      CircularButton(
-                        colour: kPrimaryColor,
-                        title: 'GIVE AWAY',
-                        pressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => GiveAwayScreen(
-                                username: username,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      CircularButton(
-                        colour: kPrimaryColor,
-                        title: 'REQUEST',
-                        pressed: () {
-                          Navigator.pushNamed(context, '/request');
-                        },
-                      ),
-                    ]),
+            ),
+            SizedBox(height: 30.0),
+            Expanded(
+              child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    CircularButton(
+                      colour: kPrimaryColor,
+                      title: 'GIVE AWAY',
+                      pressed: () {
+                        Navigator.pushNamed(context, '/giveAway');
+                      },
+                    ),
+                    CircularButton(
+                      colour: kPrimaryColor,
+                      title: 'REQUEST',
+                      pressed: () {
+                        Navigator.pushNamed(context, '/request');
+                      },
+                    ),
+                  ]),
+            ),
+            Container(
+              height: 60,
+              child: Text(
+                '20 donations made till now :)',
+                style: kTextStyle.copyWith(fontSize: 22),
               ),
-              Container(
-                height: 60,
-                child: Text(
-                  '20 donations made till now :)',
-                  style: kTextStyle.copyWith(
-                    fontSize: 22
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
