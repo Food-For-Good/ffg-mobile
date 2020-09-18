@@ -1,4 +1,4 @@
-class ValidatorService {
+class HelperService {
   static bool validateData(name, email, address, password, confirmPassword) {
     if (name == null) {
       throw 'ERROR_NAME_FIELD_EMPTY';
@@ -22,5 +22,10 @@ class ValidatorService {
     }
 
     return true;
+  }
+
+  static String getFirstName(fullName) {
+    String firstName = fullName.split(' ')[0];
+    return firstName[0].toUpperCase() + firstName.substring(1).toLowerCase();
   }
 }

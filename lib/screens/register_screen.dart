@@ -8,7 +8,7 @@ import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:FoodForGood/services/validator_service.dart';
+import 'package:FoodForGood/services/helper_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -126,7 +126,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                           this._showSpinner = true;
                         });
                         try {
-                          ValidatorService.validateData(
+                          HelperService.validateData(
                               this._name,
                               this._email,
                               this._address,
@@ -164,6 +164,34 @@ class RegisterScreenState extends State<RegisterScreen> {
                           this._showSpinner = false;
                         });
                       },
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Already a member?',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(width: 5.0),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(context, '/login');
+                          },
+                          child: Text(
+                            'Log In!',
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

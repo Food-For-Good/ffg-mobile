@@ -4,6 +4,7 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/services/auth_service.dart';
+import 'package:FoodForGood/services/helper_service.dart';
 
 class HomeScreen extends StatefulWidget {
   // Fetching the name after loading this page was causing a delay before the
@@ -53,9 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         textBaseline: TextBaseline.alphabetic,
                         children: <Widget>[
                           Text(
-                            // Getting the first name.
-                            // (The username could have the last name as well).
-                            widget.username.split(' ')[0],
+                            HelperService.getFirstName(widget.username),
                             style: TextStyle(
                               fontSize: 60.0,
                               fontWeight: FontWeight.bold,

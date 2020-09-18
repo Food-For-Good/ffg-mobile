@@ -123,6 +123,35 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'New here?',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontSize: 18.0,
+                          ),
+                        ),
+                        SizedBox(width: 5.0),
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                                context, '/register');
+                          },
+                          child: Text(
+                            'Join us!',
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ),
