@@ -61,7 +61,7 @@ class _LandingScreenState extends State<LandingScreen> {
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/background_lighter.png'),
+                  image: AssetImage('assets/images/landingPageBG.png'),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -69,7 +69,7 @@ class _LandingScreenState extends State<LandingScreen> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(height: 350.0),
+                SizedBox(height: 450.0),
                 Center(
                   child: RoundedButton(
                     colour: kPrimaryColor,
