@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
+import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
@@ -17,8 +20,35 @@ class RegisterScreen extends StatefulWidget {
 
 class RegisterScreenState extends State<RegisterScreen> {
   bool _showSpinner = false;
-  String _name, _email, _password, _confirmPassword, _address;
+  String _name, _email, _password, _confirmPassword;
+  MapboxMapController mapController;
   Firestore _firestore = Firestore.instance;
+
+  void _onMapCreated(MapboxMapController controller) {
+    this.mapController = controller;
+  }
+
+  void _openAddressModal() {
+    showModalBottomSheet(
+      enableDrag: false,
+      context: context,
+      builder: (context) {
+        return Stack(
+          children: <Widget>[
+            Text('HELLO!'),
+            MapboxMap(
+              accessToken: MAPBOX_ACCESS_TOKEN,
+              onMapCreated: this._onMapCreated,
+              initialCameraPosition: const CameraPosition(
+                target: LatLng(0.0, 0.0),
+              ),
+            ),
+          ],
+        );
+        ;
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,15 +122,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                     ),
                     SizedBox(height: 10.0),
                     CustomTextFeild(
-                      label: 'ADDRESS',
-                      prefixIcon: Icon(Icons.location_on),
-                      textCap: TextCapitalization.sentences,
-                      changed: (value) {
-                        this._address = value.trim();
-                      },
-                    ),
-                    SizedBox(height: 10.0),
-                    CustomTextFeild(
                       label: 'PASSWORD',
                       prefixIcon: Icon(Icons.lock),
                       isPass: true,
@@ -117,7 +138,26 @@ class RegisterScreenState extends State<RegisterScreen> {
                         this._confirmPassword = value.trim();
                       },
                     ),
-                    SizedBox(height: 50.0),
+                    SizedBox(height: 20.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(FontAwesomeIcons.mapPin),
+                          color: kPrimaryColor,
+                          onPressed: this._openAddressModal,
+                        ),
+                        Text(
+                          'ADD LOCATION',
+                          style: kTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: kSecondaryColor,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 25.0),
                     RoundedButton(
                       title: 'SIGNUP',
                       colour: kPrimaryColor,
@@ -126,12 +166,8 @@ class RegisterScreenState extends State<RegisterScreen> {
                           this._showSpinner = true;
                         });
                         try {
-                          HelperService.validateData(
-                              this._name,
-                              this._email,
-                              this._address,
-                              this._password,
-                              this._confirmPassword);
+                          HelperService.validateData(this._name, this._email,
+                              this._password, this._confirmPassword);
 
                           // Creating new user.
                           await AuthService().createUserWithEmailAndPassword(
@@ -142,12 +178,13 @@ class RegisterScreenState extends State<RegisterScreen> {
                               ._firestore
                               .collection('users')
                               .document(this._email)
-                              .setData({
-                            'username': this._name,
-                            'address': this._address,
-                            'sharedWith': 0,
-                            'requestedFrom': 0
-                          });
+                              .setData(
+                            {
+                              'username': this._name,
+                              'sharedWith': 0,
+                              'requestedFrom': 0,
+                            },
+                          );
 
                           Navigator.pushReplacement(
                             context,

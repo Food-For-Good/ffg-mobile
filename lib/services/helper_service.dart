@@ -1,11 +1,9 @@
 class HelperService {
-  static bool validateData(name, email, address, password, confirmPassword) {
+  static bool validateData(name, email, password, confirmPassword) {
     if (name == null) {
       throw 'ERROR_NAME_FIELD_EMPTY';
     } else if (email == null) {
       throw 'ERROR_EMAIL_FIELD_EMPTY';
-    } else if (address == null) {
-      throw 'ERROR_ADDRESS_FIELD_EMPTY';
     } else if (password == null) {
       throw 'ERROR_PASSWORD_FIELD_EMPTY';
     } else if (confirmPassword == null) {

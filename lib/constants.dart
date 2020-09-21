@@ -58,12 +58,11 @@ void kShowFlushBar(
     message = 'No user found with this email. Please SignUp first.';
   } else if (content.contains('ERROR_NAME_FIELD_EMPTY')) {
     message = 'Please enter your name.';
-  } else if (content.contains('ERROR_ADDRESS_FIELD_EMPTY')) {
-    message = 'Please enter your address.';
   } else if (content.contains('ERROR_WEAK_PASSWORD')) {
     message = 'Your password is weak. Please enter atleast 6 characters.';
   } else if (content.contains('ERROR_EMAIL_ALREADY_IN_USE')) {
-    message = 'There is already an account with this email. Please SignIn instead.';
+    message =
+        'There is already an account with this email. Please SignIn instead.';
   } else if (content.contains('ERROR_PASSWORD_MISSMATCH')) {
     message = 'The passwords do not match.';
   }
