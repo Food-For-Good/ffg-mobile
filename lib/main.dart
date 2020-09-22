@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 import 'package:FoodForGood/constants.dart';
-import 'package:FoodForGood/screens/address_screen.dart';
 import 'package:FoodForGood/screens/give_away_screen.dart';
 import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/screens/landing_screen.dart';
@@ -40,7 +39,6 @@ class MyApp extends StatelessWidget {
           '/': (context) => LandingScreen(),
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterScreen(),
-          '/address': (context) => AddressScreen(),
           '/home': (context) => HomeScreen(),
           '/giveAway': (context) => GiveAwayScreen(),
           '/request': (context) => RequestScreen(),

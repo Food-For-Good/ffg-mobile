@@ -5,7 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-import 'package:FoodForGood/access_tokens.dart';
+import 'package:FoodForGood/components/address_selector.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
@@ -21,31 +21,22 @@ class RegisterScreen extends StatefulWidget {
 class RegisterScreenState extends State<RegisterScreen> {
   bool _showSpinner = false;
   String _name, _email, _password, _confirmPassword;
-  MapboxMapController mapController;
   Firestore _firestore = Firestore.instance;
+  LatLng currentLatLng = LatLng(0.0, 0.0);
 
-  void _onMapCreated(MapboxMapController controller) {
-    this.mapController = controller;
-  }
-
-  void _openAddressModal() {
+  void _openAddressModal() async {
     showModalBottomSheet(
+      clipBehavior: Clip.antiAlias,
       enableDrag: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
       context: context,
       builder: (context) {
-        return Stack(
-          children: <Widget>[
-            Text('HELLO!'),
-            MapboxMap(
-              accessToken: MAPBOX_ACCESS_TOKEN,
-              onMapCreated: this._onMapCreated,
-              initialCameraPosition: const CameraPosition(
-                target: LatLng(0.0, 0.0),
-              ),
-            ),
-          ],
-        );
-        ;
+        return AddressSelector();
       },
     );
   }
@@ -143,7 +134,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(FontAwesomeIcons.mapPin),
+                          icon: Icon(FontAwesomeIcons.searchLocation),
                           color: kPrimaryColor,
                           onPressed: this._openAddressModal,
                         ),
