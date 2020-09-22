@@ -1,4 +1,3 @@
-import 'package:FoodForGood/constants.dart';
 import 'package:flutter/material.dart';
 
 class CircularButton extends StatelessWidget {
@@ -6,14 +5,14 @@ class CircularButton extends StatelessWidget {
   final Color colour;
   final String title;
   final Function pressed;
-  final height;
-  final width;
+  final double height;
+  final double width;
 
   CircularButton({
+    this.splashColour = Colors.deepOrange,
     this.colour,
     this.title,
     this.pressed,
-    this.splashColour = Colors.deepOrange,
     this.height = 150.0,
     this.width = 150.0
   });
@@ -22,14 +21,14 @@ class CircularButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipOval(
       child: Material(
-        color: kPrimaryColor, // button color
+        color: this.colour, // button color
         child: InkWell(
-          splashColor: splashColour,
-          onTap: pressed,
+          splashColor: this.splashColour,
+          onTap: this.pressed,
           child: Container(
             alignment: Alignment.center,
-            height: height,
-            width: width,
+            height: this.height,
+            width: this.width,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

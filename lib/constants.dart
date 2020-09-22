@@ -19,6 +19,7 @@ const kTextStyle = TextStyle(
 
 dynamic kAppBar(BuildContext context, String text) {
   return AppBar(
+    backgroundColor: kSecondaryColor,
     leading: IconButton(
       color: kBackgroundColor,
       icon: Icon(Icons.arrow_back_ios),

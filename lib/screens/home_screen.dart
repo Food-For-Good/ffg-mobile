@@ -17,20 +17,29 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool _showSpinner = false;
+
+  AnimationController controller;
+
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+      upperBound: 200, //Number of Donations made
+    );
+    controller.forward();
+    controller.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Title(
-          color: Colors.white,
-          child: Text('FFG'),
-        ),
-        leading: Container(),
-      ),
+      appBar: kAppBar(context, 'FFG'),
       body: ModalProgressHUD(
         inAsyncCall: this._showSpinner,
         color: kPrimaryColor,
@@ -38,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 25),
+                  const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50),
               child: Container(
                 width: 500,
                 child: Stack(
@@ -84,32 +93,62 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 30.0),
             Expanded(
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    CircularButton(
-                      colour: kPrimaryColor,
-                      title: 'GIVE AWAY',
-                      pressed: () {
-                        Navigator.pushNamed(context, '/giveAway');
-                      },
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Container(
+                    height: 100,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'What would you like to do today?',
+                        textAlign: TextAlign.center,
+                        style: kTextStyle.copyWith(fontSize: 25.0),
+                      ),
                     ),
-                    CircularButton(
-                      colour: kPrimaryColor,
-                      title: 'REQUEST',
-                      pressed: () {
-                        Navigator.pushNamed(context, '/request');
-                      },
-                    ),
-                  ]),
-            ),
-            Container(
-              height: 60,
-              child: Text(
-                '20 donations made till now :)',
-                style: kTextStyle.copyWith(fontSize: 22),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        CircularButton(
+                          colour: kPrimaryColor,
+                          title: 'GIVE AWAY',
+                          pressed: () {
+                            Navigator.pushNamed(context, '/giveAway');
+                          },
+                        ),
+                        CircularButton(
+                          colour: kPrimaryColor,
+                          title: 'REQUEST',
+                          pressed: () {
+                            Navigator.pushNamed(context, '/request');
+                          },
+                        ),
+                      ]),
+                  SizedBox(height: 30),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    children: [
+                      Text(
+                        '${controller.value.toInt()} ',
+                        style: kTextStyle.copyWith(
+                            color: kPrimaryColor,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'donations made till now :)',
+                        style: kTextStyle.copyWith(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20)
+                ],
               ),
             ),
           ],
