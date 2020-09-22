@@ -51,65 +51,67 @@ class _LandingScreenState extends State<LandingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ModalProgressHUD(
-        inAsyncCall: this._showSpinner,
-        color: kPrimaryColor,
-        child: Stack(
-          children: <Widget>[
-            // Background image
-            Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/landingPageBG.png'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(height: 450.0),
-                Center(
-                  child: RoundedButton(
-                    colour: kPrimaryColor,
-                    title: 'LOGIN',
-                    pressed: () {
-                      Navigator.pushNamed(context, '/login');
-                    },
+    return SafeArea(
+      child: Scaffold(
+        body: ModalProgressHUD(
+          inAsyncCall: this._showSpinner,
+          color: kPrimaryColor,
+          child: Stack(
+            children: <Widget>[
+              // Background image
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('assets/images/landingPageBG.png'),
+                    fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      'New here?',
-                      style: TextStyle(
-                        color: kSecondaryColor,
-                        fontSize: 22.0,
-                      ),
-                    ),
-                    SizedBox(width: 5.0),
-                    InkWell(
-                      onTap: () {
-                        Navigator.pushNamed(context, '/register');
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(height: 450.0),
+                  Center(
+                    child: RoundedButton(
+                      colour: kPrimaryColor,
+                      title: 'LOGIN',
+                      pressed: () {
+                        Navigator.pushNamed(context, '/login');
                       },
-                      child: Text(
-                        'Join Us!',
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'New here?',
                         style: TextStyle(
                           color: kSecondaryColor,
-                          fontWeight: FontWeight.bold,
                           fontSize: 22.0,
-                          decoration: TextDecoration.underline,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
+                      SizedBox(width: 5.0),
+                      InkWell(
+                        onTap: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child: Text(
+                          'Join Us!',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 22.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
