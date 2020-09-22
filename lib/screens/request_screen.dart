@@ -90,60 +90,62 @@ class _RequestScreenState extends State<RequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: kAppBar(context, 'REQUESTS'),
-      body: Stack(
-        children: <Widget>[
-          FlutterMap(
-            options: MapOptions(
-              center: LatLng(23.022505, 72.571365),
-              zoom: 13.0,
-            ),
-            layers: [
-              TileLayerOptions(
-                urlTemplate: "https://api.tiles.mapbox.com/v4/"
-                    "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
-                additionalOptions: {
-                  'accessToken':
-                      'pk.eyJ1IjoiaWFtcHJheXVzaCIsImEiOiJjazNhZmdvYzUwYmx3M2NuMzE5dTY4bWtlIn0.Qr3fZ_oKWfRkWu6IqSH72Q',
-                  'id': 'mapbox.streets',
-                },
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: kAppBar(context, 'REQUESTS'),
+        body: Stack(
+          children: <Widget>[
+            FlutterMap(
+              options: MapOptions(
+                center: LatLng(23.022505, 72.571365),
+                zoom: 13.0,
               ),
-              MarkerLayerOptions(
-                markers: [
-                  Marker(
-                    point: LatLng(23.050505, 72.571365),
-                    builder: (ctx) => Container(
-                      child: Icon(
-                        FontAwesomeIcons.mapMarkerAlt,
-                        color: kSecondaryColor,
-                        size: 40.0,
+              layers: [
+                TileLayerOptions(
+                  urlTemplate: "https://api.tiles.mapbox.com/v4/"
+                      "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+                  additionalOptions: {
+                    'accessToken':
+                        'pk.eyJ1IjoiaWFtcHJheXVzaCIsImEiOiJjazNhZmdvYzUwYmx3M2NuMzE5dTY4bWtlIn0.Qr3fZ_oKWfRkWu6IqSH72Q',
+                    'id': 'mapbox.streets',
+                  },
+                ),
+                MarkerLayerOptions(
+                  markers: [
+                    Marker(
+                      point: LatLng(23.050505, 72.571365),
+                      builder: (ctx) => Container(
+                        child: Icon(
+                          FontAwesomeIcons.mapMarkerAlt,
+                          color: kSecondaryColor,
+                          size: 40.0,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          Container(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              alignment: Alignment.bottomLeft,
-              margin: EdgeInsets.all(30.0),
-              decoration: BoxDecoration(
-                color: kBackgroundColor,
-                border: Border.all(width: 3),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              height: MediaQuery.of(context).size.height * .35,
-              child: AnimatedSwitcher(
-                duration: Duration(milliseconds: 300),
-                child: _myAnimatedWidget,
+                  ],
+                ),
+              ],
+            ),
+            Container(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                alignment: Alignment.bottomLeft,
+                margin: EdgeInsets.all(30.0),
+                decoration: BoxDecoration(
+                  color: kBackgroundColor,
+                  border: Border.all(width: 3),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                height: MediaQuery.of(context).size.height * .35,
+                child: AnimatedSwitcher(
+                  duration: Duration(milliseconds: 300),
+                  child: _myAnimatedWidget,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
