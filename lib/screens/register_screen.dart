@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
+import 'package:provider/provider.dart';
 
 import 'package:FoodForGood/components/address_selector.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/models/address_model.dart';
 import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
@@ -22,9 +22,10 @@ class RegisterScreenState extends State<RegisterScreen> {
   bool _showSpinner = false;
   String _name, _email, _password, _confirmPassword;
   Firestore _firestore = Firestore.instance;
-  LatLng currentLatLng = LatLng(0.0, 0.0);
 
-  void _openAddressModal() async {
+  bool _isEditing = false;
+
+  void _openAddressModal(AddressModel addressModel) async {
     showModalBottomSheet(
       clipBehavior: Clip.antiAlias,
       enableDrag: false,
@@ -36,192 +37,218 @@ class RegisterScreenState extends State<RegisterScreen> {
       ),
       context: context,
       builder: (context) {
-        return AddressSelector();
+        return AddressSelector(addressModel: addressModel);
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: ModalProgressHUD(
-        color: kPrimaryColor,
-        inAsyncCall: this._showSpinner,
-        child: Material(
-          child: Container(
-            color: kBackgroundColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Center(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: <Widget>[
-                    Center(
-                      child: Stack(
+    return ChangeNotifierProvider<AddressModel>(
+      create: (context) => AddressModel(),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: ModalProgressHUD(
+          color: kPrimaryColor,
+          inAsyncCall: this._showSpinner,
+          child: Material(
+            child: Container(
+              color: kBackgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50.0),
+                child: Center(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: <Widget>[
+                      Center(
+                        child: Stack(
+                          children: <Widget>[
+                            Text(
+                              'Start',
+                              style: kHeadingStyle,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 50.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.baseline,
+                                textBaseline: TextBaseline.alphabetic,
+                                children: <Widget>[
+                                  Text(
+                                    'Sharing',
+                                    style: TextStyle(
+                                      fontSize: 60.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: kSecondaryColor,
+                                    ),
+                                  ),
+                                  SizedBox(width: 5.0),
+                                  Text(
+                                    '!',
+                                    style: TextStyle(
+                                      fontSize: 65.0,
+                                      fontWeight: FontWeight.bold,
+                                      color: kPrimaryColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20.0),
+                      CustomTextFeild(
+                        label: 'NAME',
+                        prefixIcon: Icon(Icons.person),
+                        textCap: TextCapitalization.words,
+                        changed: (value) {
+                          this._name = value.trim();
+                        },
+                      ),
+                      SizedBox(height: 10.0),
+                      CustomTextFeild(
+                        label: 'EMAIL',
+                        prefixIcon: Icon(Icons.email),
+                        kbType: TextInputType.emailAddress,
+                        changed: (value) {
+                          this._email = value.trim();
+                        },
+                      ),
+                      SizedBox(height: 10.0),
+                      CustomTextFeild(
+                        label: 'PASSWORD',
+                        prefixIcon: Icon(Icons.lock),
+                        isPass: true,
+                        changed: (value) {
+                          this._password = value.trim();
+                        },
+                      ),
+                      SizedBox(height: 10.0),
+                      CustomTextFeild(
+                        label: 'CONFIRM PASSWORD',
+                        prefixIcon: Icon(Icons.lock),
+                        isPass: true,
+                        changed: (value) {
+                          this._confirmPassword = value.trim();
+                        },
+                      ),
+                      SizedBox(height: 20.0),
+                      Consumer<AddressModel>(
+                        builder: (context, addressModel, child) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              IconButton(
+                                icon: Icon(Icons.add_location_alt),
+                                color: kPrimaryColor,
+                                onPressed: () {
+                                  this._openAddressModal(addressModel);
+                                },
+                                iconSize: 30.0,
+                              ),
+                              SizedBox(width: 10.0),
+                              Container(
+                                width: 200.0,
+                                child: TextField(
+                                  onSubmitted: (newValue) {
+                                    setState(() {
+                                      addressModel.updateText(newValue);
+                                    });
+                                  },
+                                  controller: TextEditingController(
+                                      text: addressModel.text),
+                                ),
+                              ),
+                              SizedBox(width: 5.0),
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                color: kPrimaryColor,
+                                onPressed: () {
+                                  setState(() {
+                                    this._isEditing = !this._isEditing;
+                                  });
+                                },
+                                iconSize: 30.0,
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                      SizedBox(height: 25.0),
+                      RoundedButton(
+                        title: 'SIGNUP',
+                        colour: kPrimaryColor,
+                        pressed: () async {
+                          setState(() {
+                            this._showSpinner = true;
+                          });
+                          try {
+                            HelperService.validateData(this._name, this._email,
+                                this._password, this._confirmPassword);
+
+                            // Creating new user.
+                            await AuthService().createUserWithEmailAndPassword(
+                                this._email, this._password, this._name);
+
+                            // Saving user info to firestore.
+                            await this
+                                ._firestore
+                                .collection('users')
+                                .document(this._email)
+                                .setData(
+                              {
+                                'username': this._name,
+                                'sharedWith': 0,
+                                'requestedFrom': 0,
+                              },
+                            );
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HomeScreen(username: this._name),
+                              ),
+                            );
+                          } catch (error) {
+                            kShowFlushBar(
+                                content: error.toString(), context: context);
+                          }
+                          setState(() {
+                            this._showSpinner = false;
+                          });
+                        },
+                      ),
+                      SizedBox(height: 16.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Text(
-                            'Start',
-                            style: kHeadingStyle,
+                            'Already a member?',
+                            style: TextStyle(
+                              color: kSecondaryColor,
+                              fontSize: 18.0,
+                            ),
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 50.0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: <Widget>[
-                                Text(
-                                  'Sharing',
-                                  style: TextStyle(
-                                    fontSize: 60.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kSecondaryColor,
-                                  ),
-                                ),
-                                SizedBox(width: 5.0),
-                                Text(
-                                  '!',
-                                  style: TextStyle(
-                                    fontSize: 65.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kPrimaryColor,
-                                  ),
-                                ),
-                              ],
+                          SizedBox(width: 5.0),
+                          InkWell(
+                            onTap: () {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            },
+                            child: Text(
+                              'Log In!',
+                              style: TextStyle(
+                                color: kSecondaryColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18.0,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 20.0),
-                    CustomTextFeild(
-                      label: 'NAME',
-                      prefixIcon: Icon(Icons.person),
-                      textCap: TextCapitalization.words,
-                      changed: (value) {
-                        this._name = value.trim();
-                      },
-                    ),
-                    SizedBox(height: 10.0),
-                    CustomTextFeild(
-                      label: 'EMAIL',
-                      prefixIcon: Icon(Icons.email),
-                      kbType: TextInputType.emailAddress,
-                      changed: (value) {
-                        this._email = value.trim();
-                      },
-                    ),
-                    SizedBox(height: 10.0),
-                    CustomTextFeild(
-                      label: 'PASSWORD',
-                      prefixIcon: Icon(Icons.lock),
-                      isPass: true,
-                      changed: (value) {
-                        this._password = value.trim();
-                      },
-                    ),
-                    SizedBox(height: 10.0),
-                    CustomTextFeild(
-                      label: 'CONFIRM PASSWORD',
-                      prefixIcon: Icon(Icons.lock),
-                      isPass: true,
-                      changed: (value) {
-                        this._confirmPassword = value.trim();
-                      },
-                    ),
-                    SizedBox(height: 20.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          icon: Icon(FontAwesomeIcons.searchLocation),
-                          color: kPrimaryColor,
-                          onPressed: this._openAddressModal,
-                        ),
-                        Text(
-                          'ADD LOCATION',
-                          style: kTextStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: kSecondaryColor,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 25.0),
-                    RoundedButton(
-                      title: 'SIGNUP',
-                      colour: kPrimaryColor,
-                      pressed: () async {
-                        setState(() {
-                          this._showSpinner = true;
-                        });
-                        try {
-                          HelperService.validateData(this._name, this._email,
-                              this._password, this._confirmPassword);
-
-                          // Creating new user.
-                          await AuthService().createUserWithEmailAndPassword(
-                              this._email, this._password, this._name);
-
-                          // Saving user info to firestore.
-                          await this
-                              ._firestore
-                              .collection('users')
-                              .document(this._email)
-                              .setData(
-                            {
-                              'username': this._name,
-                              'sharedWith': 0,
-                              'requestedFrom': 0,
-                            },
-                          );
-
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  HomeScreen(username: this._name),
-                            ),
-                          );
-                        } catch (error) {
-                          kShowFlushBar(
-                              content: error.toString(), context: context);
-                        }
-                        setState(() {
-                          this._showSpinner = false;
-                        });
-                      },
-                    ),
-                    SizedBox(height: 16.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Already a member?',
-                          style: TextStyle(
-                            color: kSecondaryColor,
-                            fontSize: 18.0,
-                          ),
-                        ),
-                        SizedBox(width: 5.0),
-                        InkWell(
-                          onTap: () {
-                            Navigator.pushReplacementNamed(context, '/login');
-                          },
-                          child: Text(
-                            'Log In!',
-                            style: TextStyle(
-                              color: kSecondaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18.0,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -231,3 +258,91 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
+
+// class AddressEditor extends StatefulWidget {
+//   final Function openModalFn;
+//   final BuildContext buildContext;
+
+//   AddressEditor({@required this.openModalFn, @required this.buildContext});
+
+//   @override
+//   _AddressEditorState createState() => _AddressEditorState();
+// }
+
+// class _AddressEditorState extends State<AddressEditor> {
+//   bool _isEditing = false;
+//   TextEditingController _editingController;
+//   AddressModel _addressModel;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _editingController = TextEditingController(text: 'asd');
+//   }
+
+//   @override
+//   void dispose() {
+//     _editingController.dispose();
+//     super.dispose();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     this._addressModel = Provider.of<AddressModel>(context);
+//     print(this._addressModel.text);
+//     Widget addressDisplay = Container(
+//       width: 200.0,
+//       child: Text(
+//         this._addressModel.text,
+//         style: kTextStyle.copyWith(
+//           fontWeight: FontWeight.bold,
+//           color: kSecondaryColor,
+//           fontSize: 15.0,
+//         ),
+//         maxLines: 2,
+//         overflow: TextOverflow.ellipsis,
+//       ),
+//     );
+
+//     Widget addressEdit = Container(
+//       width: 200.0,
+//       child: TextField(
+//         onSubmitted: (newValue) {
+//           setState(() {
+//             this._addressModel.updateText(newValue);
+//             this._isEditing = false;
+//           });
+//         },
+//         autofocus: true,
+//         controller: _editingController,
+//       ),
+//     );
+
+//     return Row(
+//       mainAxisAlignment: MainAxisAlignment.center,
+//       children: <Widget>[
+//         IconButton(
+//           icon: Icon(Icons.add_location_alt),
+//           color: kPrimaryColor,
+//           onPressed: () {
+//             widget.openModalFn(this._addressModel);
+//           },
+//           iconSize: 30.0,
+//         ),
+//         SizedBox(width: 10.0),
+//         this._isEditing ? addressEdit : addressDisplay,
+//         SizedBox(width: 5.0),
+//         IconButton(
+//           icon: Icon(Icons.edit),
+//           color: kPrimaryColor,
+//           onPressed: () {
+//             setState(() {
+//               this._isEditing = !this._isEditing;
+//             });
+//           },
+//           iconSize: 30.0,
+//         ),
+//       ],
+//     );
+//   }
+// }

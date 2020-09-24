@@ -65,6 +65,8 @@ void kShowFlushBar(
         'There is already an account with this email. Please SignIn instead.';
   } else if (content.contains('ERROR_PASSWORD_MISSMATCH')) {
     message = 'The passwords do not match.';
+  } else if (content.contains('ERROR_ADDRESS_NOT_FOUND')) {
+    message = 'Sorry, but we couldn\'t find the address. Please try again.';
   }
   Flushbar(
     borderRadius: 8,

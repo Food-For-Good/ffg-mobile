@@ -10,10 +10,9 @@ class LocationService {
     return LatLng(currentPosition.latitude, currentPosition.longitude);
   }
 
-  static Future<String> getCurrentAddress() async {
-    LatLng currentPosition = await LocationService.getCurrentLatLng();
+  static Future<String> locationToText(LatLng location) async {
     List<Address> addresses = await Geocoder.local.findAddressesFromCoordinates(
-        Coordinates(currentPosition.latitude, currentPosition.longitude));
+        Coordinates(location.latitude, location.longitude));
     return addresses.first.addressLine;
   }
 }

@@ -4,9 +4,14 @@ import 'package:mapbox_gl/mapbox_gl.dart';
 
 import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/models/address_model.dart';
 import 'package:FoodForGood/services/location_service.dart';
 
 class AddressSelector extends StatefulWidget {
+  final AddressModel addressModel;
+
+  const AddressSelector({@required this.addressModel});
+
   @override
   _AddressSelectorState createState() => _AddressSelectorState();
 }
@@ -51,6 +56,7 @@ class _AddressSelectorState extends State<AddressSelector> {
         MapboxMap(
           accessToken: MAPBOX_ACCESS_TOKEN,
           onMapCreated: this._onMapCreated,
+          trackCameraPosition: true,
           initialCameraPosition: CameraPosition(
             target: this.currentLatLng,
             zoom: 15,
@@ -79,15 +85,6 @@ class _AddressSelectorState extends State<AddressSelector> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 8.0,
-              ),
-              Text(
-                'YOUR LOCATION',
-                style: kTextStyle.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
             ],
           ),
         ),
@@ -107,7 +104,7 @@ class _AddressSelectorState extends State<AddressSelector> {
                   onPressed: this._zoomOut,
                 ),
                 MapButton(
-                  icon: Icons.location_searching,
+                  icon: Icons.my_location,
                   onPressed: this._moveCameraToCurrentPosition,
                 ),
               ],
@@ -121,6 +118,9 @@ class _AddressSelectorState extends State<AddressSelector> {
             child: MapButton(
               icon: FontAwesomeIcons.check,
               onPressed: () {
+                widget.addressModel.updateLocation(
+                  this.mapController.cameraPosition.target,
+                );
                 Navigator.pop(context);
               },
             ),
