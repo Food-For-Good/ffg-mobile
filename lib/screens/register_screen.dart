@@ -39,7 +39,6 @@ class RegisterScreenState extends State<RegisterScreen> {
                     return;
                   },
                   child: ListView(
-                    controller: ScrollController(keepScrollOffset: false),
                     padding:
                         EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
                     shrinkWrap: true,

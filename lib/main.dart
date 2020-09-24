@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
           scaffoldBackgroundColor: kBackgroundColor,
           fontFamily: 'Proxima Nova',
         ),
-        initialRoute: '/login',
+        initialRoute: '/',
         routes: {
           '/': (context) => LandingScreen(),
           '/login': (context) => LoginScreen(),

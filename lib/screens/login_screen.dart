@@ -37,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   return;
                 },
                 child: ListView(
-                  controller: ScrollController(keepScrollOffset: false),
                   padding: EdgeInsets.symmetric(horizontal: 50.0),
                   shrinkWrap: true,
                   children: <Widget>[
