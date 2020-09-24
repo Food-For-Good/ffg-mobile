@@ -20,18 +20,23 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      body: ModalProgressHUD(
-        inAsyncCall: this._showSpinner,
-        color: kPrimaryColor,
-        child: Material(
-          child: Container(
-            color: kBackgroundColor,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Center(
+    return SafeArea(
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        body: ModalProgressHUD(
+          inAsyncCall: this._showSpinner,
+          color: kPrimaryColor,
+          child: Material(
+            child: Container(
+              alignment: Alignment.center,
+              color: kBackgroundColor,
+              child: NotificationListener<OverscrollIndicatorNotification>(
+                onNotification: (OverscrollIndicatorNotification overscroll) {
+                  overscroll.disallowGlow();    // This will stop overscroll glow effect.
+                  return;
+                },
                 child: ListView(
+                  padding: EdgeInsets.symmetric(horizontal: 50.0),
                   shrinkWrap: true,
                   children: <Widget>[
                     Center(
@@ -49,21 +54,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: <Widget>[
                                 Text(
                                   'Back',
-                                  style: TextStyle(
-                                    fontSize: 60.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kSecondaryColor,
-                                  ),
+                                  style: kHeadingStyle,
                                 ),
                                 SizedBox(width: 5.0),
-                                Text(
-                                  '!',
-                                  style: TextStyle(
-                                    fontSize: 60.0,
-                                    fontWeight: FontWeight.bold,
-                                    color: kPrimaryColor,
-                                  ),
-                                )
+                                Text('!',
+                                    style: kHeadingStyle.copyWith(
+                                        color: kPrimaryColor))
                               ],
                             ),
                           ),
