@@ -31,10 +31,17 @@ class RegisterScreenState extends State<RegisterScreen> {
           child: Material(
             child: Container(
               color: kBackgroundColor,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50.0),
-                child: Center(
+              child: Center(
+                child: NotificationListener<OverscrollIndicatorNotification>(
+                  onNotification: (OverscrollIndicatorNotification overscroll) {
+                    overscroll
+                        .disallowGlow(); // This will stop overscroll glow effect.
+                    return;
+                  },
                   child: ListView(
+                    controller: ScrollController(keepScrollOffset: false),
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
                     shrinkWrap: true,
                     children: <Widget>[
                       Center(
@@ -52,28 +59,19 @@ class RegisterScreenState extends State<RegisterScreen> {
                                 children: <Widget>[
                                   Text(
                                     'Sharing',
-                                    style: TextStyle(
-                                      fontSize: 60.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: kSecondaryColor,
-                                    ),
+                                    style: kHeadingStyle,
                                   ),
                                   SizedBox(width: 5.0),
-                                  Text(
-                                    '!',
-                                    style: TextStyle(
-                                      fontSize: 65.0,
-                                      fontWeight: FontWeight.bold,
-                                      color: kPrimaryColor,
-                                    ),
-                                  ),
+                                  Text('!',
+                                      style: kHeadingStyle.copyWith(
+                                          color: kPrimaryColor)),
                                 ],
                               ),
                             ),
                           ],
                         ),
                       ),
-                      SizedBox(height: 20.0),
+                      SizedBox(height: 10.0),
                       CustomTextFeild(
                         label: 'NAME',
                         prefixIcon: Icon(Icons.person),
@@ -118,7 +116,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                           this._confirmPassword = value.trim();
                         },
                       ),
-                      SizedBox(height: 50.0),
+                      SizedBox(height: 40.0),
                       RoundedButton(
                         title: 'SIGNUP',
                         colour: kPrimaryColor,
