@@ -144,27 +144,48 @@ class RegisterScreenState extends State<RegisterScreen> {
                           Consumer<AddressModel>(
                             builder: (context, addressModel, child) {
                               return Row(
-                                // mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Container(
-                                    width: 260.0,
-                                    child: CustomTextFeild(
-                                      label: 'LOCATION',
-                                      prefixIcon: Icon(Icons.home),
-                                      lines: 2,
-                                      editingController: TextEditingController(
-                                        text: addressModel.text,
+                                  if (addressModel.text.length > 0)
+                                    Container(
+                                      width: 260.0,
+                                      child: CustomTextFeild(
+                                        label: 'LOCATION',
+                                        prefixIcon: Icon(Icons.home),
+                                        lines: 2,
+                                        editingController:
+                                            TextEditingController(
+                                          text: addressModel.text,
+                                        ),
                                       ),
                                     ),
-                                  ),
                                   IconButton(
                                     icon: Icon(Icons.add_location_alt_rounded),
                                     color: kPrimaryColor,
                                     onPressed: () {
                                       this._openAddressModal(addressModel);
                                     },
-                                    iconSize: 35.0,
+                                    iconSize: addressModel.text.length == 0
+                                        ? 45.0
+                                        : 35.0,
                                   ),
+                                  if (addressModel.text.length == 0)
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'ADD',
+                                          style: kTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Text(
+                                          'LOCATION',
+                                          style: kTextStyle.copyWith(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
                                 ],
                               );
                             },
