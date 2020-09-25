@@ -2,21 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:FoodForGood/constants.dart';
 
 class CustomTextFeild extends StatelessWidget {
-  final label;
-  final kbType;
-  final isPass;
-  final prefixIcon;
-  final textCap;
-  final changed;
-  final lines;
+  final Function changed;
+  final bool isPass;
+  final TextInputType kbType;
+  final String label;
+  final Icon prefixIcon;
+  final TextCapitalization textCap;
+  final TextEditingController editingController;
+
+  final int lines;
   CustomTextFeild({
-    this.label = 'button',
-    this.kbType = TextInputType.text,
+    this.changed,
     this.isPass = false,
-    this.prefixIcon = Null,
+    this.kbType = TextInputType.text,
+    this.label = 'button',
+    this.prefixIcon,
     this.textCap = TextCapitalization.none,
-    this.changed = Null,
     this.lines = 1,
+    this.editingController,
   });
 
   @override
@@ -26,6 +29,7 @@ class CustomTextFeild extends StatelessWidget {
       onChanged: changed,
       cursorColor: kPrimaryColor,
       textCapitalization: textCap,
+      controller: editingController,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20.0,

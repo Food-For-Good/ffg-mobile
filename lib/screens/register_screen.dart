@@ -23,8 +23,6 @@ class RegisterScreenState extends State<RegisterScreen> {
   String _name, _email, _password, _confirmPassword;
   Firestore _firestore = Firestore.instance;
 
-  bool _isEditing = false;
-
   void _openAddressModal(AddressModel addressModel) async {
     showModalBottomSheet(
       clipBehavior: Clip.antiAlias,
@@ -136,45 +134,32 @@ class RegisterScreenState extends State<RegisterScreen> {
                       Consumer<AddressModel>(
                         builder: (context, addressModel, child) {
                           return Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
+                            // mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
+                              Container(
+                                width: 260.0,
+                                child: CustomTextFeild(
+                                  label: 'LOCATION',
+                                  prefixIcon: Icon(Icons.home),
+                                  lines: 2,
+                                  editingController: TextEditingController(
+                                    text: addressModel.text,
+                                  ),
+                                ),
+                              ),
                               IconButton(
-                                icon: Icon(Icons.add_location_alt),
+                                icon: Icon(Icons.add_location_alt_rounded),
                                 color: kPrimaryColor,
                                 onPressed: () {
                                   this._openAddressModal(addressModel);
                                 },
-                                iconSize: 30.0,
-                              ),
-                              SizedBox(width: 10.0),
-                              Container(
-                                width: 200.0,
-                                child: TextField(
-                                  onSubmitted: (newValue) {
-                                    setState(() {
-                                      addressModel.updateText(newValue);
-                                    });
-                                  },
-                                  controller: TextEditingController(
-                                      text: addressModel.text),
-                                ),
-                              ),
-                              SizedBox(width: 5.0),
-                              IconButton(
-                                icon: Icon(Icons.edit),
-                                color: kPrimaryColor,
-                                onPressed: () {
-                                  setState(() {
-                                    this._isEditing = !this._isEditing;
-                                  });
-                                },
-                                iconSize: 30.0,
+                                iconSize: 35.0,
                               ),
                             ],
                           );
                         },
                       ),
-                      SizedBox(height: 25.0),
+                      SizedBox(height: 45.0),
                       RoundedButton(
                         title: 'SIGNUP',
                         colour: kPrimaryColor,
@@ -258,91 +243,3 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
   }
 }
-
-// class AddressEditor extends StatefulWidget {
-//   final Function openModalFn;
-//   final BuildContext buildContext;
-
-//   AddressEditor({@required this.openModalFn, @required this.buildContext});
-
-//   @override
-//   _AddressEditorState createState() => _AddressEditorState();
-// }
-
-// class _AddressEditorState extends State<AddressEditor> {
-//   bool _isEditing = false;
-//   TextEditingController _editingController;
-//   AddressModel _addressModel;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _editingController = TextEditingController(text: 'asd');
-//   }
-
-//   @override
-//   void dispose() {
-//     _editingController.dispose();
-//     super.dispose();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     this._addressModel = Provider.of<AddressModel>(context);
-//     print(this._addressModel.text);
-//     Widget addressDisplay = Container(
-//       width: 200.0,
-//       child: Text(
-//         this._addressModel.text,
-//         style: kTextStyle.copyWith(
-//           fontWeight: FontWeight.bold,
-//           color: kSecondaryColor,
-//           fontSize: 15.0,
-//         ),
-//         maxLines: 2,
-//         overflow: TextOverflow.ellipsis,
-//       ),
-//     );
-
-//     Widget addressEdit = Container(
-//       width: 200.0,
-//       child: TextField(
-//         onSubmitted: (newValue) {
-//           setState(() {
-//             this._addressModel.updateText(newValue);
-//             this._isEditing = false;
-//           });
-//         },
-//         autofocus: true,
-//         controller: _editingController,
-//       ),
-//     );
-
-//     return Row(
-//       mainAxisAlignment: MainAxisAlignment.center,
-//       children: <Widget>[
-//         IconButton(
-//           icon: Icon(Icons.add_location_alt),
-//           color: kPrimaryColor,
-//           onPressed: () {
-//             widget.openModalFn(this._addressModel);
-//           },
-//           iconSize: 30.0,
-//         ),
-//         SizedBox(width: 10.0),
-//         this._isEditing ? addressEdit : addressDisplay,
-//         SizedBox(width: 5.0),
-//         IconButton(
-//           icon: Icon(Icons.edit),
-//           color: kPrimaryColor,
-//           onPressed: () {
-//             setState(() {
-//               this._isEditing = !this._isEditing;
-//             });
-//           },
-//           iconSize: 30.0,
-//         ),
-//       ],
-//     );
-//   }
-// }

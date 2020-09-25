@@ -9,7 +9,7 @@ class AddressModel extends ChangeNotifier {
 
   AddressModel([location, text]) {
     this.location = location ?? LatLng(0.0, 0.0);
-    this.text = text ?? 'ADD LOCATION';
+    this.text = text ?? '';
   }
 
   void _syncTextToLocation() async {
