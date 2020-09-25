@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
-import 'package:FoodForGood/components/rounded_button.dart';
+import 'package:FoodForGood/components/circular_button.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
@@ -18,158 +18,40 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   bool _showSpinner = false;
+
+  AnimationController controller;
+
+  void initState() {
+    super.initState();
+    controller = AnimationController(
+      duration: Duration(seconds: 2),
+      vsync: this,
+      upperBound: 200, //Number of Donations made
+    );
+    controller.forward();
+    controller.addListener(() {
+      setState(() {});
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Container(),
-        centerTitle: true,
-        title: Text(
-          'Home Screen',
-          style: kTitleStyle,
-        ),
-      ),
-      body: ModalProgressHUD(
-        inAsyncCall: this._showSpinner,
-        color: kPrimaryColor,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: Center(
-                child: Stack(
-                  children: <Widget>[
-                    Text(
-                      'Hello,',
-                      style: kHeadingStyle.copyWith(fontSize: 40.0),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 25.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: <Widget>[
-                          Text(
-                            HelperService.getFirstName(widget.username),
-                            style: TextStyle(
-                              fontSize: 60.0,
-                              fontWeight: FontWeight.bold,
-                              color: kSecondaryColor,
-                            ),
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            '!',
-                            style: TextStyle(
-                              fontSize: 65.0,
-                              fontWeight: FontWeight.bold,
-                              color: kPrimaryColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: kSecondaryColor,
+          centerTitle: true,
+          leading: Container(),
+          actions: [
+            IconButton(
+              icon: Icon(
+                Icons.close,
+                color: kBackgroundColor,
               ),
-            ),
-            SizedBox(height: 30.0),
-            RoundedButton(
-              colour: kPrimaryColor,
-              title: 'GIVE AWAY',
-              pressed: () {
-                Navigator.pushNamed(context, '/giveAway');
-              },
-            ),
-            SizedBox(height: 15.0),
-            RoundedButton(
-              colour: kPrimaryColor,
-              title: 'REQUEST',
-              pressed: () {
-                Navigator.pushNamed(context, '/request');
-              },
-            ),
-            SizedBox(height: 40.0),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    'Shared With ',
-                    style: kHeadingStyle.copyWith(
-                      fontSize: 25.0,
-                      color: kSecondaryColor.withAlpha(150),
-                    ),
-                  ),
-                  Container(
-                    width: 60.0,
-                    height: 60.0,
-                    child: Container(
-                      child: Center(
-                        child: Text(
-                          '0',
-                          style: kHeadingStyle.copyWith(
-                              fontSize: 40.0, color: kSecondaryColor),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: kSecondaryColor.withAlpha(150),
-                          width: 5.0,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    'Requested From ',
-                    style: kHeadingStyle.copyWith(
-                      fontSize: 25.0,
-                      color: kSecondaryColor.withAlpha(150),
-                    ),
-                  ),
-                  Container(
-                    width: 60.0,
-                    height: 60.0,
-                    child: Container(
-                      child: Center(
-                        child: Text(
-                          '0',
-                          style: kHeadingStyle.copyWith(
-                              fontSize: 40.0, color: kSecondaryColor),
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: kSecondaryColor.withAlpha(150),
-                          width: 5.0,
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 40.0),
-            RoundedButton(
-              title: 'LOGOUT',
-              colour: kSecondaryColor,
-              splashColour: kBackgroundColor.withAlpha(150),
-              pressed: () async {
+              onPressed: () async {
                 setState(() {
                   this._showSpinner = true;
                 });
@@ -180,8 +62,126 @@ class _HomeScreenState extends State<HomeScreen> {
                   this._showSpinner = false;
                 });
               },
-            ),
+            )
           ],
+          title: Text(
+            'FFG',
+            style: kTextStyle.copyWith(color: kBackgroundColor, fontSize: 20),
+          ),
+        ),
+        body: ModalProgressHUD(
+          inAsyncCall: this._showSpinner,
+          color: kPrimaryColor,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50),
+                child: Container(
+                  width: 500,
+                  child: Stack(
+                    overflow: Overflow.visible,
+                    children: <Widget>[
+                      Text(
+                        'Hello,',
+                        style: kHeadingStyle.copyWith(fontSize: 40.0),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 32),
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          height: 60,
+                          child: FittedBox(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.baseline,
+                              textBaseline: TextBaseline.alphabetic,
+                              children: <Widget>[
+                                Text(
+                                  HelperService.getFirstName(widget.username),
+                                  style: TextStyle(
+                                    fontSize: 60.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: kSecondaryColor,
+                                  ),
+                                ),
+                                SizedBox(width: 5.0),
+                                Text(
+                                  '!',
+                                  style: TextStyle(
+                                    fontSize: 65.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: kPrimaryColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      height: 100,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'What would you like to do today?',
+                          textAlign: TextAlign.center,
+                          style: kTextStyle.copyWith(fontSize: 25.0),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CircularButton(
+                            colour: kPrimaryColor,
+                            title: 'GIVE AWAY',
+                            pressed: () {
+                              Navigator.pushNamed(context, '/giveAway');
+                            },
+                          ),
+                          CircularButton(
+                            colour: kPrimaryColor,
+                            title: 'REQUEST',
+                            pressed: () {
+                              Navigator.pushNamed(context, '/request');
+                            },
+                          ),
+                        ]),
+                    SizedBox(height: 30),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      children: [
+                        Text(
+                          '${controller.value.toInt()} ',
+                          style: kTextStyle.copyWith(
+                              color: kPrimaryColor,
+                              fontSize: 30,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          'donations made till now :)',
+                          style: kTextStyle.copyWith(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 20)
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
