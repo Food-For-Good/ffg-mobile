@@ -30,6 +30,15 @@ class _AddressSelectorState extends State<AddressSelector> {
     );
   }
 
+  void _moveCameraToOriginalLocation() async {
+    try {
+      this.currentLatLng = await LocationService.getCurrentLatLng();
+      this._moveCameraToCurrentPosition();
+    } catch (error) {
+      kShowFlushBar(content: error.toString(), context: context);
+    }
+  }
+
   void _zoomIn() {
     mapController.animateCamera(CameraUpdate.zoomIn());
   }
@@ -41,12 +50,10 @@ class _AddressSelectorState extends State<AddressSelector> {
   @override
   void initState() {
     super.initState();
-    LocationService.getCurrentLatLng().then((currLatLng) {
-      this.currentLatLng = currLatLng;
-      this._moveCameraToCurrentPosition();
-    }).catchError((error) {
-      kShowFlushBar(content: error.toString(), context: context);
-    });
+    this.currentLatLng = widget.addressModel.location;
+    if (this.currentLatLng == LatLng(0.0, 0.0)) {
+      this._moveCameraToOriginalLocation();
+    }
   }
 
   @override
@@ -59,7 +66,7 @@ class _AddressSelectorState extends State<AddressSelector> {
           trackCameraPosition: true,
           initialCameraPosition: CameraPosition(
             target: this.currentLatLng,
-            zoom: 15,
+            zoom: 14,
           ),
         ),
         Align(
@@ -105,7 +112,7 @@ class _AddressSelectorState extends State<AddressSelector> {
                 ),
                 MapButton(
                   icon: Icons.my_location,
-                  onPressed: this._moveCameraToCurrentPosition,
+                  onPressed: this._moveCameraToOriginalLocation,
                 ),
               ],
             ),

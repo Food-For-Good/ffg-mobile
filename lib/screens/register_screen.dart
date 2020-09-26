@@ -190,54 +190,68 @@ class RegisterScreenState extends State<RegisterScreen> {
                               );
                             },
                           ),
-                          SizedBox(height: 45.0),
-                          RoundedButton(
-                            title: 'SIGNUP',
-                            colour: kPrimaryColor,
-                            pressed: () async {
-                              setState(() {
-                                this._showSpinner = true;
-                              });
-                              try {
-                                HelperService.validateData(
-                                    this._name,
-                                    this._email,
-                                    this._password,
-                                    this._confirmPassword);
+                          SizedBox(height: 35.0),
+                          Consumer<AddressModel>(
+                            builder: (context, addressModel, child) {
+                              return RoundedButton(
+                                title: 'SIGNUP',
+                                colour: kPrimaryColor,
+                                pressed: () async {
+                                  setState(() {
+                                    this._showSpinner = true;
+                                  });
+                                  try {
+                                    HelperService.validateData(
+                                        this._name,
+                                        this._email,
+                                        addressModel.text,
+                                        this._password,
+                                        this._confirmPassword);
 
-                                // Creating new user.
-                                await AuthService()
-                                    .createUserWithEmailAndPassword(this._email,
-                                        this._password, this._name);
+                                    // Creating new user.
+                                    await AuthService()
+                                        .createUserWithEmailAndPassword(
+                                            this._email,
+                                            this._password,
+                                            this._name);
 
-                                // Saving user info to firestore.
-                                await this
-                                    ._firestore
-                                    .collection('users')
-                                    .document(this._email)
-                                    .setData(
-                                  {
-                                    'username': this._name,
-                                    'sharedWith': 0,
-                                    'requestedFrom': 0,
-                                  },
-                                );
+                                    // Saving user info to firestore.
+                                    await this
+                                        ._firestore
+                                        .collection('users')
+                                        .document(this._email)
+                                        .setData(
+                                      {
+                                        'username': this._name,
+                                        'address': {
+                                          'location': GeoPoint(
+                                              addressModel.location.latitude,
+                                              addressModel.location.longitude),
+                                          'text': addressModel.text
+                                        },
+                                        'sharedWith': 0,
+                                        'requestedFrom': 0,
+                                      },
+                                    );
 
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        HomeScreen(username: this._name),
-                                  ),
-                                );
-                              } catch (error) {
-                                kShowFlushBar(
-                                    content: error.toString(),
-                                    context: context);
-                              }
-                              setState(() {
-                                this._showSpinner = false;
-                              });
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomeScreen(username: this._name),
+                                      ),
+                                    );
+                                  } catch (error) {
+                                    print(error.toString());
+                                    kShowFlushBar(
+                                        content: error.toString(),
+                                        context: context);
+                                  }
+                                  setState(() {
+                                    this._showSpinner = false;
+                                  });
+                                },
+                              );
                             },
                           ),
                           SizedBox(height: 16.0),
@@ -258,7 +272,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                                       context, '/login');
                                 },
                                 child: Text(
-                                  'Log In!',
+                                  'Login!',
                                   style: TextStyle(
                                     color: kSecondaryColor,
                                     fontWeight: FontWeight.bold,

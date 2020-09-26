@@ -47,6 +47,8 @@ void kShowFlushBar(
     message = 'Please enter your email.';
   } else if (content.contains('ERROR_PASSWORD_FIELD_EMPTY')) {
     message = 'Please enter your password.';
+  } else if (content.contains('ERROR_ADDRESS_FIELD_EMPTY')) {
+    message = 'Please add your location.';
   } else if (content.contains('ERROR_CONFIRM_PASSWORD_FIELD_EMPTY')) {
     message = 'Please confirm your password.';
   } else if (content.contains('ERROR_INVALID_EMAIL')) {

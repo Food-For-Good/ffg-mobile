@@ -16,7 +16,7 @@ class AddressModel extends ChangeNotifier {
     try {
       this.text = await LocationService.locationToText(this.location);
     } catch (error) {
-      this.text = 'ADD LOCATION';
+      this.text = '';
     }
     notifyListeners();
   }
