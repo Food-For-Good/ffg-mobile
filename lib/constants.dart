@@ -17,26 +17,24 @@ const kTextStyle = TextStyle(
   fontFamily: 'Proxima Nova',
 );
 
-dynamic kAppBar(BuildContext context, String text) {
+const kTitleStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  color: kBackgroundColor,
+);
+
+Widget kAppBar(
+    {BuildContext context, Widget title, Icon icon, Function pressed}) {
   return AppBar(
     backgroundColor: kSecondaryColor,
     leading: IconButton(
       color: kBackgroundColor,
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
+      icon: icon,
+      onPressed: pressed,
     ),
-    title: Text(
-      text,
-      style: kTitleStyle,
-    ),
+    title: title,
     centerTitle: true,
   );
 }
-
-const kTitleStyle =
-    TextStyle(fontWeight: FontWeight.bold, color: kBackgroundColor);
 
 void kShowFlushBar(
     {String content, BuildContext context, bool customError = false}) {
@@ -47,6 +45,8 @@ void kShowFlushBar(
     message = 'Please enter your email.';
   } else if (content.contains('ERROR_PASSWORD_FIELD_EMPTY')) {
     message = 'Please enter your password.';
+  } else if (content.contains('ERROR_ADDRESS_FIELD_EMPTY')) {
+    message = 'Please add your location.';
   } else if (content.contains('ERROR_CONFIRM_PASSWORD_FIELD_EMPTY')) {
     message = 'Please confirm your password.';
   } else if (content.contains('ERROR_INVALID_EMAIL')) {
@@ -59,18 +59,19 @@ void kShowFlushBar(
     message = 'No user found with this email. Please SignUp first.';
   } else if (content.contains('ERROR_NAME_FIELD_EMPTY')) {
     message = 'Please enter your name.';
-  } else if (content.contains('ERROR_ADDRESS_FIELD_EMPTY')) {
-    message = 'Please enter your address.';
   } else if (content.contains('ERROR_WEAK_PASSWORD')) {
     message = 'Your password is weak. Please enter atleast 6 characters.';
   } else if (content.contains('ERROR_EMAIL_ALREADY_IN_USE')) {
-    message = 'There is already an account with this email. Please SignIn instead.';
+    message =
+        'There is already an account with this email. Please SignIn instead.';
   } else if (content.contains('ERROR_PASSWORD_MISSMATCH')) {
     message = 'The passwords do not match.';
+  } else if (content.contains('ERROR_ADDRESS_NOT_FOUND')) {
+    message = 'Sorry, but we couldn\'t find the address. Please try again.';
   }
   Flushbar(
-    borderRadius: 8,
-    borderWidth: 2,
+    borderRadius: 8.0,
+    borderWidth: 2.0,
     borderColor: kSecondaryColor,
     margin: EdgeInsets.all(10.0),
     backgroundColor: kBackgroundColor,

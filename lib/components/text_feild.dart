@@ -1,38 +1,69 @@
 import 'package:flutter/material.dart';
 import 'package:FoodForGood/constants.dart';
 
-class CustomTextFeild extends StatelessWidget {
-  final label;
-  final kbType;
-  final isPass;
-  final prefixIcon;
-  final textCap;
-  final changed;
-  final lines;
+class CustomTextFeild extends StatefulWidget {
+  final Function changed;
+  final bool isPass;
+  final TextInputType kbType;
+  final String label;
+  final Icon prefixIcon;
+  final TextCapitalization textCap;
+  final TextEditingController editingController;
+
+  final int lines;
   CustomTextFeild({
-    this.label = 'button',
-    this.kbType = TextInputType.text,
+    this.changed,
     this.isPass = false,
-    this.prefixIcon = Null,
+    this.kbType = TextInputType.text,
+    this.label = 'button',
+    this.prefixIcon,
     this.textCap = TextCapitalization.none,
-    this.changed = Null,
     this.lines = 1,
+    this.editingController,
   });
+
+  @override
+  _CustomTextFeildState createState() => _CustomTextFeildState();
+}
+
+class _CustomTextFeildState extends State<CustomTextFeild> {
+  bool passwordVisible = false;
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      maxLines: lines,
-      onChanged: changed,
+      maxLines: widget.lines,
+      onChanged: widget.changed,
       cursorColor: kPrimaryColor,
-      textCapitalization: textCap,
+      textCapitalization: widget.textCap,
+      controller: widget.editingController,
       style: TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 20.0,
       ),
       decoration: InputDecoration(
-        prefixIcon: prefixIcon,
-        labelText: label,
+        prefixIcon: widget.prefixIcon,
+        suffix: widget.isPass
+            ? Container(
+                width: 45.0,
+                height: 15.0,
+                child: FlatButton(
+                  child: Icon(
+                    this.passwordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: kSecondaryColor.withAlpha(150),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      this.passwordVisible = !this.passwordVisible;
+                    });
+                  },
+                  splashColor: Colors.transparent,
+                ),
+              )
+            : null,
+        labelText: widget.label,
         labelStyle: TextStyle(
           fontSize: 15.0,
           color: kSecondaryColor.withAlpha(150),
@@ -51,8 +82,8 @@ class CustomTextFeild extends StatelessWidget {
           ),
         ),
       ),
-      keyboardType: kbType,
-      obscureText: isPass,
+      keyboardType: widget.kbType,
+      obscureText: widget.isPass && !this.passwordVisible,
     );
   }
 }

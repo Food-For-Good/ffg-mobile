@@ -1,15 +1,15 @@
 class HelperService {
   static bool validateData(name, email, address, password, confirmPassword) {
-    if (name == null) {
+    if (name == null || name.length == 0) {
       throw 'ERROR_NAME_FIELD_EMPTY';
-    } else if (email == null) {
+    } else if (email == null || email.length == 0) {
       throw 'ERROR_EMAIL_FIELD_EMPTY';
-    } else if (address == null) {
-      throw 'ERROR_ADDRESS_FIELD_EMPTY';
-    } else if (password == null) {
+    } else if (password == null || password.length == 0) {
       throw 'ERROR_PASSWORD_FIELD_EMPTY';
-    } else if (confirmPassword == null) {
+    } else if (confirmPassword == null || confirmPassword.length == 0) {
       throw 'ERROR_CONFIRM_PASSWORD_FIELD_EMPTY';
+    } else if (address == null || address.length == 0) {
+      throw 'ERROR_ADDRESS_FIELD_EMPTY';
     } else if (password != confirmPassword) {
       throw 'ERROR_PASSWORD_MISSMATCH';
     }

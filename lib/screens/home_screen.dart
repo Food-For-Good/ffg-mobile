@@ -1,3 +1,4 @@
+import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen>
     controller = AnimationController(
       duration: Duration(seconds: 2),
       vsync: this,
-      upperBound: 200, //Number of Donations made
+      upperBound: 200, // Number of Donations made.
     );
     controller.forward();
     controller.addListener(() {
@@ -37,36 +38,136 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: kSecondaryColor,
-          centerTitle: true,
-          leading: Container(),
-          actions: [
-            IconButton(
-              icon: Icon(
-                Icons.close,
-                color: kBackgroundColor,
-              ),
-              onPressed: () async {
-                setState(() {
-                  this._showSpinner = true;
-                });
-                AuthService().signOut();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/', (route) => false);
-                setState(() {
-                  this._showSpinner = false;
-                });
-              },
-            )
-          ],
-          title: Text(
-            'FFG',
-            style: kTextStyle.copyWith(color: kBackgroundColor, fontSize: 20),
+        key: _scaffoldKey,
+        appBar: kAppBar(
+          context: context,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('FoodFor', style: kTitleStyle),
+              Text(
+                'Good',
+                style: kTitleStyle.copyWith(color: kPrimaryColor),
+              )
+            ],
+          ),
+          icon: Icon(Icons.menu_rounded),
+          pressed: () {
+            _scaffoldKey.currentState
+                .openDrawer(); // Open drawer with the icon.
+          },
+        ),
+        drawer: Drawer(
+          child: Container(
+            color: kBackgroundColor,
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.zero,
+              children: <Widget>[
+                DrawerHeader(
+                  decoration: BoxDecoration(
+                    color: kBackgroundColor,
+                  ),
+                  child: Container(
+                    child: Image.asset('assets/logo/logo_symbol.png'),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'About US',
+                    style: kTextStyle.copyWith(fontSize: 20.0),
+                  ),
+                ),
+                ListTile(
+                  title: Text(
+                    'Sign Out',
+                    style: kTextStyle.copyWith(fontSize: 20.0),
+                  ),
+                  onTap: () {
+                    showDialog(       // Alert dialog for Sign-Out.
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Dialog(
+                          clipBehavior: Clip.hardEdge,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          child: Container(
+                            color: kBackgroundColor,
+                            height: 250.0,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('Sign Out',
+                                        style: kTextStyle.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30.0)),
+                                    Text('!',
+                                        style: kTextStyle.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 30.0,
+                                            color: kPrimaryColor)),
+                                  ],
+                                ),
+                                Text(
+                                  'Are you sure you want to leave?',
+                                  style: kTextStyle,
+                                ),
+                                Container(
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: <Widget>[
+                                      RoundedButton(
+                                        title: 'No',
+                                        colour: kPrimaryColor,
+                                        width: 120.0,
+                                        pressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                      ),
+                                      SizedBox(width: 10.0),
+                                      RoundedButton(
+                                        title: 'Yes',
+                                        colour: kSecondaryColor,
+                                        splashColour: Colors.white10,
+                                        width: 120.0,
+                                        pressed: () async {
+                                          setState(() {
+                                            this._showSpinner = true;
+                                          });
+                                          AuthService().signOut();
+                                          Navigator.pushNamedAndRemoveUntil(
+                                              context, '/', (route) => false);
+                                          setState(() {
+                                            this._showSpinner = false;
+                                          });
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                )
+              ],
+            ),
           ),
         ),
         body: ModalProgressHUD(
@@ -76,9 +177,9 @@ class _HomeScreenState extends State<HomeScreen>
             children: <Widget>[
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50),
+                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50.0),
                 child: Container(
-                  width: 500,
+                  width: 500.0,
                   child: Stack(
                     overflow: Overflow.visible,
                     children: <Widget>[
@@ -87,10 +188,10 @@ class _HomeScreenState extends State<HomeScreen>
                         style: kHeadingStyle.copyWith(fontSize: 40.0),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(top: 32),
+                        padding: const EdgeInsets.only(top: 32.0),
                         child: Container(
                           alignment: Alignment.centerLeft,
-                          height: 60,
+                          height: 60.0,
                           child: FittedBox(
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -127,7 +228,7 @@ class _HomeScreenState extends State<HomeScreen>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Container(
-                      height: 100,
+                      height: 100.0,
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
@@ -137,7 +238,7 @@ class _HomeScreenState extends State<HomeScreen>
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 10.0),
                     Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -156,7 +257,7 @@ class _HomeScreenState extends State<HomeScreen>
                             },
                           ),
                         ]),
-                    SizedBox(height: 30),
+                    SizedBox(height: 30.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -166,17 +267,17 @@ class _HomeScreenState extends State<HomeScreen>
                           '${controller.value.toInt()} ',
                           style: kTextStyle.copyWith(
                               color: kPrimaryColor,
-                              fontSize: 30,
+                              fontSize: 30.0,
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
                           'donations made till now :)',
                           style: kTextStyle.copyWith(
-                              fontSize: 22, fontWeight: FontWeight.bold),
+                              fontSize: 22.0, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
-                    SizedBox(height: 20)
+                    SizedBox(height: 20.0)
                   ],
                 ),
               ),

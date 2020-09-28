@@ -87,7 +87,14 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: kAppBar(context, 'GIVE AWAY'),
+        appBar: kAppBar(
+          context: context,
+          title: Text('GIVE AWAY', style: kTitleStyle),
+          icon: Icon(Icons.arrow_back_ios),
+          pressed: () {
+            Navigator.pop(context);
+          },
+        ),
         body: ListView(
           shrinkWrap: true,
           padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
@@ -257,7 +264,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
               title: 'SHARE',
               colour: kPrimaryColor,
               pressed: () async {
-                // Create new request in firebase
+                // Create new request in firebase.
                 String errorMessage = 'NONE';
                 if (title.length == 0) {
                   errorMessage = 'Title field is blank.';
