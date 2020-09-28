@@ -97,31 +97,28 @@ class _AddressSelectorState extends State<AddressSelector> {
         ),
         Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Align(
-            alignment: Alignment.bottomLeft,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                MapButton(
-                  icon: Icons.zoom_in,
-                  onPressed: this._zoomIn,
-                ),
-                MapButton(
-                  icon: Icons.zoom_out,
-                  onPressed: this._zoomOut,
-                ),
-                MapButton(
-                  icon: Icons.my_location,
-                  onPressed: this._moveCameraToOriginalLocation,
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MapButton(
+                icon: Icons.zoom_in,
+                onPressed: this._zoomIn,
+              ),
+              MapButton(
+                icon: Icons.zoom_out,
+                onPressed: this._zoomOut,
+              ),
+              MapButton(
+                icon: Icons.my_location,
+                onPressed: this._moveCameraToOriginalLocation,
+              ),
+            ],
           ),
         ),
         Padding(
           padding: const EdgeInsets.all(10.0),
           child: Align(
-            alignment: Alignment.bottomRight,
+            alignment: Alignment.topRight,
             child: MapButton(
               icon: FontAwesomeIcons.check,
               onPressed: () {
