@@ -64,9 +64,24 @@ class _HomeScreenState extends State<HomeScreen>
               },
             )
           ],
-          title: Text(
-            'FFG',
-            style: kTextStyle.copyWith(color: kBackgroundColor, fontSize: 20),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'FoodFor',
+                style: kTextStyle.copyWith(
+                  color: kBackgroundColor,
+                  fontSize: 20,
+                ),
+              ),
+              Text(
+                'Good',
+                style: kTextStyle.copyWith(
+                  color: kPrimaryColor,
+                  fontSize: 20,
+                ),
+              ),
+            ],
           ),
         ),
         body: ModalProgressHUD(
