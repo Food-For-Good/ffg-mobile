@@ -86,6 +86,49 @@ class _LoginScreenState extends State<LoginScreen> {
                         this._password = value.trim();
                       },
                     ),
+                    SizedBox(height: 20.0),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: () {
+                          showModalBottomSheet(
+                            clipBehavior: Clip.antiAlias,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20.0),
+                                topRight: Radius.circular(20.0),
+                              ),
+                            ),
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) {
+                              return AnimatedPadding(
+                                padding: MediaQuery.of(context).viewInsets,
+                                duration: const Duration(milliseconds: 100),
+                                curve: Curves.decelerate,
+                                child: ForgotPasswordModal(showSuccess: () {
+                                  kShowFlushBar(
+                                    content:
+                                        'Please check your email for further instructions.',
+                                    context: context,
+                                    customError: true,
+                                  );
+                                }),
+                              );
+                            },
+                          );
+                        },
+                        child: Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: kSecondaryColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
                     SizedBox(height: 50.0),
                     RoundedButton(
                       title: 'LOGIN',
@@ -154,6 +197,91 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordModal extends StatefulWidget {
+  final Function showSuccess;
+
+  const ForgotPasswordModal({@required this.showSuccess});
+
+  @override
+  _ForgotPasswordModalState createState() => _ForgotPasswordModalState();
+}
+
+class _ForgotPasswordModalState extends State<ForgotPasswordModal> {
+  bool _showSpinner = false;
+  String _email;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: kBackgroundColor,
+      height: 300.0,
+      child: ModalProgressHUD(
+        inAsyncCall: this._showSpinner,
+        color: kPrimaryColor,
+        child: Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Forgot Password',
+                    style: kHeadingStyle.copyWith(
+                      fontSize: 30.0,
+                    ),
+                  ),
+                  Text(
+                    '?',
+                    style: kHeadingStyle.copyWith(
+                      fontSize: 30.0,
+                      color: kPrimaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              CustomTextFeild(
+                label: 'EMAIL',
+                changed: (value) {
+                  this._email = value.trim();
+                },
+              ),
+              RoundedButton(
+                title: 'RESET PASSWORD',
+                colour: kPrimaryColor,
+                pressed: () async {
+                  setState(() {
+                    this._showSpinner = true;
+                  });
+
+                  if (this._email == null || this._email.length == 0) {
+                    kShowFlushBar(
+                        content: 'ERROR_EMAIL_FIELD_EMPTY', context: context);
+                  } else {
+                    try {
+                      await AuthService().resetPassword(this._email);
+                      Navigator.pop(context);
+                      widget.showSuccess();
+                    } catch (error) {
+                      kShowFlushBar(
+                          content: error.toString(), context: context);
+                    }
+                  }
+
+                  setState(() {
+                    this._showSpinner = false;
+                  });
+                },
+              ),
+            ],
           ),
         ),
       ),
