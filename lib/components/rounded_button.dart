@@ -20,17 +20,17 @@ class RoundedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlatButton(
-      height: height,
-      minWidth: width,
+      height: this.height,
+      minWidth: this.width,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(30.0),
       ),
-      color: colour,
-      splashColor: splashColour,
-      onPressed: pressed,
+      color: this.colour,
+      splashColor: this.splashColour,
+      onPressed: this.pressed,
       child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-        child: Text(title,
+        child: Text(this.title,
             softWrap: true,
             overflow: TextOverflow.visible,
             style: kTextStyle.copyWith(

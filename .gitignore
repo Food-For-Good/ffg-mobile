@@ -48,6 +48,3 @@ app.*.map.json
 
 # Access tokens.
 lib/access_tokens.dart
-
-# VScode Workspace
-ffg-workspace.code-workspace
