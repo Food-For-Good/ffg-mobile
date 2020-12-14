@@ -90,14 +90,15 @@ class _HomeScreenState extends State<HomeScreen>
                     style: kTextStyle.copyWith(fontSize: 20.0),
                   ),
                   onTap: () {
-                    showDialog(       // Alert dialog for Sign-Out.
+                    showDialog(
+                      // Alert dialog for Sign-Out.
                       context: context,
                       builder: (BuildContext context) {
                         return Dialog(
                           clipBehavior: Clip.hardEdge,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
+                            borderRadius: BorderRadius.circular(20.0),
+                          ),
                           child: Container(
                             color: kBackgroundColor,
                             height: 250.0,
@@ -176,8 +177,8 @@ class _HomeScreenState extends State<HomeScreen>
           child: Column(
             children: <Widget>[
               Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 50.0, vertical: 50.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 50.0, vertical: 50.0),
                 child: Container(
                   width: 500.0,
                   child: Stack(
