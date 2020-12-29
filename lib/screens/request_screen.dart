@@ -93,7 +93,14 @@ class _RequestScreenState extends State<RequestScreen> {
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomInset: true,
-        appBar: kAppBar(context, 'REQUESTS'),
+        appBar: kAppBar(
+          context: context,
+          title: Text('REQUESTS', style: kTitleStyle),
+          icon: Icon(Icons.arrow_back_ios),
+          pressed: () {
+            Navigator.pop(context);
+          },
+        ),
         body: Stack(
           children: <Widget>[
             FlutterMap(

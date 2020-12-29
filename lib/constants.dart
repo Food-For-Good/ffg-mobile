@@ -17,26 +17,24 @@ const kTextStyle = TextStyle(
   fontFamily: 'Proxima Nova',
 );
 
-dynamic kAppBar(BuildContext context, String text) {
+const kTitleStyle = TextStyle(
+  fontWeight: FontWeight.bold,
+  color: kBackgroundColor,
+);
+
+Widget kAppBar(
+    {BuildContext context, Widget title, Icon icon, Function pressed}) {
   return AppBar(
     backgroundColor: kSecondaryColor,
     leading: IconButton(
       color: kBackgroundColor,
-      icon: Icon(Icons.arrow_back_ios),
-      onPressed: () {
-        Navigator.pop(context);
-      },
+      icon: icon,
+      onPressed: pressed,
     ),
-    title: Text(
-      text,
-      style: kTitleStyle,
-    ),
+    title: title,
     centerTitle: true,
   );
 }
-
-const kTitleStyle =
-    TextStyle(fontWeight: FontWeight.bold, color: kBackgroundColor);
 
 void kShowFlushBar(
     {String content, BuildContext context, bool customError = false}) {
@@ -72,8 +70,8 @@ void kShowFlushBar(
     message = 'Sorry, but we couldn\'t find the address. Please try again.';
   }
   Flushbar(
-    borderRadius: 8,
-    borderWidth: 2,
+    borderRadius: 8.0,
+    borderWidth: 2.0,
     borderColor: kSecondaryColor,
     margin: EdgeInsets.all(10.0),
     backgroundColor: kBackgroundColor,

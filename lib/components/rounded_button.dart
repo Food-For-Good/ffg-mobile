@@ -1,47 +1,40 @@
+import 'package:FoodForGood/constants.dart';
 import 'package:flutter/material.dart';
 
 class RoundedButton extends StatelessWidget {
-  final Color splashColour;
-  final Color colour;
   final String title;
   final Function pressed;
+  final Color colour;
+  final Color splashColour;
+  final double height;
+  final double width;
 
   RoundedButton(
-      {this.colour,
-      this.title,
-      this.pressed,
-      this.splashColour = Colors.deepOrange});
+      {@required this.title,
+      @required this.pressed,
+      this.colour,
+      this.splashColour = Colors.deepOrange,
+      this.height = 50.0,
+      this.width = 150.0});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return FlatButton(
+      height: this.height,
+      minWidth: this.width,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30.0),
+      ),
+      color: this.colour,
+      splashColor: this.splashColour,
+      onPressed: this.pressed,
       child: Padding(
-        padding: const EdgeInsets.only(left: 45.0, right: 45.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: FlatButton(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-                color: colour,
-                splashColor: splashColour,
-                onPressed: pressed,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 17.0,
-                    ),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
+        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+        child: Text(this.title,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+            style: kTextStyle.copyWith(
+                fontWeight: FontWeight.bold, color: kBackgroundColor)),
       ),
     );
   }
