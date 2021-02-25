@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen>
                         return Dialog(
                           clipBehavior: Clip.hardEdge,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20.0),
+                            borderRadius: BorderRadius.circular(15.0),
                           ),
                           child: Container(
                             color: kBackgroundColor,
@@ -141,9 +141,11 @@ class _HomeScreenState extends State<HomeScreen>
                                       SizedBox(width: 10.0),
                                       RoundedButton(
                                         title: 'Yes',
-                                        colour: kSecondaryColor,
-                                        splashColour: Colors.white10,
+                                        colour: kBackgroundColor,
+                                        splashColour: Colors.black12,
                                         width: 120.0,
+                                        borderColour: kSecondaryColor,
+                                        textColour: kSecondaryColor,
                                         pressed: () async {
                                           setState(() {
                                             this._showSpinner = true;
