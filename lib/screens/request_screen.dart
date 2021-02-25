@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
 import 'package:FoodForGood/components/listing_card_expanded.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong/latlong.dart' as dartLatLng;
+import 'package:FoodForGood/services/location_service.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 class RequestScreen extends StatefulWidget {
   @override
@@ -15,15 +17,17 @@ class RequestScreen extends StatefulWidget {
 
 class _RequestScreenState extends State<RequestScreen> {
   final Firestore _firestore = Firestore.instance;
-  Position currentPosition;
+  LatLng locationMapBox;
+  MapboxMapController controller;
+  LatLng currentLatLng = LatLng(0.0, 0.0);
   List<Marker> markers = [];
   Widget _myAnimatedWidget;
 
-  void addMarker(double lat, double lon) {
+  List<Marker> addMarker(double lat, double lon) {
     Marker newMarker = Marker(
       width: 80.0,
       height: 80.0,
-      point: LatLng(lat, lon),
+      point: dartLatLng.LatLng(lat, lon),
       builder: (ctx) => Container(
         child: Icon(
           FontAwesomeIcons.mapMarkerAlt,
@@ -32,6 +36,35 @@ class _RequestScreenState extends State<RequestScreen> {
       ),
     );
     markers.add(newMarker);
+    return markers;
+  }
+
+  dartLatLng.LatLng convertLatLng(latlong) {
+    dartLatLng.LatLng dartLatlong;
+    dartLatlong.latitude = latlong.latitude;
+    dartLatlong.longitude = latlong.longitude;
+    return dartLatlong;
+  }
+
+  Future<LatLng> getCurrentPos() async {
+    locationMapBox = await LocationService.getCurrentLatLng();
+    return locationMapBox;
+  }
+
+  List<Marker> currentMarker() {
+    Marker currentMarker = Marker(
+      width: 80.0,
+      height: 80.0,
+      point: convertLatLng(locationMapBox),
+      builder: (ctx) => Container(
+        child: Icon(
+          FontAwesomeIcons.mapMarkerAlt,
+          color: kSecondaryColor,
+        ),
+      ),
+    );
+    markers.add(currentMarker);
+    return markers;
   }
 
   Widget allListings() {
@@ -48,8 +81,9 @@ class _RequestScreenState extends State<RequestScreen> {
                 final username = listing.data['username'];
                 final description = listing.data['description'];
                 final address = listing.data['address'];
-                // GeoPoint location = listing.data['location'];
-                // addMarker(location.latitude, location.longitude);
+                GeoPoint location = listing.data['location'];
+                addMarker(location.latitude, location.longitude);
+
                 final listingWidget = ListingCard(
                   username: username,
                   title: title,
@@ -105,32 +139,20 @@ class _RequestScreenState extends State<RequestScreen> {
           children: <Widget>[
             FlutterMap(
               options: MapOptions(
-                center: LatLng(23.022505, 72.571365),
+                center: dartLatLng.LatLng(23.022505, 72.571365),
                 zoom: 13.0,
               ),
               layers: [
                 TileLayerOptions(
-                  urlTemplate: "https://api.tiles.mapbox.com/v4/"
-                      "{id}/{z}/{x}/{y}@2x.png?access_token={accessToken}",
+                  urlTemplate:
+                      "https://api.mapbox.com/styles/v1/presi-patel/ckl9ahy1h0r3c17n0lffaoki7/tiles/256/{z}/{x}/{y}@2x?access_token=$MAPBOX_ACCESS_TOKEN",
                   additionalOptions: {
-                    'accessToken':
-                        'pk.eyJ1IjoiaWFtcHJheXVzaCIsImEiOiJjazNhZmdvYzUwYmx3M2NuMzE5dTY4bWtlIn0.Qr3fZ_oKWfRkWu6IqSH72Q',
+                    'accessToken': MAPBOX_ACCESS_TOKEN,
                     'id': 'mapbox.streets',
                   },
                 ),
                 MarkerLayerOptions(
-                  markers: [
-                    Marker(
-                      point: LatLng(23.050505, 72.571365),
-                      builder: (ctx) => Container(
-                        child: Icon(
-                          FontAwesomeIcons.mapMarkerAlt,
-                          color: kSecondaryColor,
-                          size: 40.0,
-                        ),
-                      ),
-                    ),
-                  ],
+                  markers: markers,
                 ),
               ],
             ),
