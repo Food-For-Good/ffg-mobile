@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen>
   void initState() {
     super.initState();
     controller = AnimationController(
-      duration: Duration(seconds: 2),
+      duration: Duration(seconds: 1),
       vsync: this,
       upperBound: 200, // Number of Donations made.
     );
@@ -77,6 +77,15 @@ class _HomeScreenState extends State<HomeScreen>
                   child: Container(
                     child: Image.asset('assets/logo/logo_symbol.png'),
                   ),
+                ),
+                ListTile(
+                  title: Text(
+                    'My List',
+                    style:  kTextStyle.copyWith(fontSize: 20.0),
+                  ),
+                  onTap: (){
+                    Navigator.pushNamed(context, '/myList');
+                  },
                 ),
                 ListTile(
                   title: Text(

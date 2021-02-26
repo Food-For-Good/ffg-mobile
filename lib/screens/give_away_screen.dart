@@ -20,10 +20,15 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   void initState() {
     super.initState();
     this.setUsername();
+    this.getUserEmail();
   }
 
   setUsername() async {
     this.username = await AuthService().getUsername();
+  }
+
+  getUserEmail() async {
+    this.email = await AuthService().getEmail();
   }
 
   String username = '',
@@ -31,7 +36,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
       description = '',
       phoneNo = '',
       address = 'NONE',
-      pictureName = 'NONE';
+      pictureName = 'NONE',
+      email = '';
 
   Widget currentAddressWidget = Text(
     'NONE',
@@ -48,8 +54,9 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   Future<bool> createListing() async {
     bool created = false;
     try {
-      await _firestore.collection('Listings').document(title).setData({
+      await _firestore.collection('Listings').add({
         'username': this.username,
+        'title': this.title,
         'description': description,
         'expiryTimeInHrs': expiryTime,
         'location':
@@ -57,6 +64,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         'phoneNo': phoneNo,
         'pictureName': pictureName,
         'address': address,
+        'email': email,
       });
       created = true;
     } catch (error) {

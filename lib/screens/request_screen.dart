@@ -77,7 +77,7 @@ class _RequestScreenState extends State<RequestScreen> {
             if (snapshot.hasData) {
               final listings = snapshot.data.documents;
               for (var listing in listings) {
-                final title = listing.documentID;
+                final title = listing.data['title'];
                 final username = listing.data['username'];
                 final description = listing.data['description'];
                 final address = listing.data['address'];
