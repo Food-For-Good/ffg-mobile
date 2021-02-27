@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:latlong/latlong.dart' as dartLatLng;
+import 'package:mapbox_gl/mapbox_gl.dart';
+
 import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
 import 'package:FoodForGood/components/listing_card_expanded.dart';
 import 'package:FoodForGood/constants.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart' as dartLatLng;
 import 'package:FoodForGood/services/location_service.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
 
 class RequestScreen extends StatefulWidget {
   @override

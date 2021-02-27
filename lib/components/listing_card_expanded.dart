@@ -98,7 +98,7 @@ class ListingCardExpanded extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: 55,
+                  width: 70,
                   child: Text(
                     '11.30AM 15.11.19',
                     style: kTextStyle.copyWith(

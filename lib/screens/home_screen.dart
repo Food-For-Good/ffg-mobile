@@ -1,4 +1,3 @@
-import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 
@@ -6,6 +5,7 @@ import 'package:FoodForGood/components/circular_button.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
+import 'package:FoodForGood/components/dialog_box.dart';
 
 class HomeScreen extends StatefulWidget {
   // Fetching the name after loading this page was causing a delay before the
@@ -22,7 +22,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen>
     with SingleTickerProviderStateMixin {
   bool _showSpinner = false;
-
   AnimationController controller;
 
   void initState() {
@@ -81,9 +80,9 @@ class _HomeScreenState extends State<HomeScreen>
                 ListTile(
                   title: Text(
                     'My List',
-                    style:  kTextStyle.copyWith(fontSize: 20.0),
+                    style: kTextStyle.copyWith(fontSize: 20.0),
                   ),
-                  onTap: (){
+                  onTap: () {
                     Navigator.pushNamed(context, '/myList');
                   },
                 ),
@@ -103,76 +102,20 @@ class _HomeScreenState extends State<HomeScreen>
                       // Alert dialog for Sign-Out.
                       context: context,
                       builder: (BuildContext context) {
-                        return Dialog(
-                          clipBehavior: Clip.hardEdge,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15.0),
-                          ),
-                          child: Container(
-                            color: kBackgroundColor,
-                            height: 250.0,
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text('Sign Out',
-                                        style: kTextStyle.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30.0)),
-                                    Text('!',
-                                        style: kTextStyle.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 30.0,
-                                            color: kPrimaryColor)),
-                                  ],
-                                ),
-                                Text(
-                                  'Are you sure you want to leave?',
-                                  style: kTextStyle,
-                                ),
-                                Container(
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      RoundedButton(
-                                        title: 'No',
-                                        colour: kPrimaryColor,
-                                        width: 120.0,
-                                        pressed: () {
-                                          Navigator.pop(context);
-                                        },
-                                      ),
-                                      SizedBox(width: 10.0),
-                                      RoundedButton(
-                                        title: 'Yes',
-                                        colour: kBackgroundColor,
-                                        splashColour: Colors.black12,
-                                        width: 120.0,
-                                        borderColour: kSecondaryColor,
-                                        textColour: kSecondaryColor,
-                                        pressed: () async {
-                                          setState(() {
-                                            this._showSpinner = true;
-                                          });
-                                          AuthService().signOut();
-                                          Navigator.pushNamedAndRemoveUntil(
-                                              context, '/', (route) => false);
-                                          setState(() {
-                                            this._showSpinner = false;
-                                          });
-                                        },
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        return DialogBox(
+                          title: 'Sign Out',
+                          text: 'Are you sure you want to leave?',
+                          onYes: () async {
+                            setState(() {
+                              this._showSpinner = true;
+                            });
+                            AuthService().signOut();
+                            Navigator.pushNamedAndRemoveUntil(
+                                context, '/', (route) => false);
+                            setState(() {
+                              this._showSpinner = false;
+                            });
+                          },
                         );
                       },
                     );
