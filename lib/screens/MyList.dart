@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:FoodForGood/components/listing_card_expanded.dart';
+import 'package:FoodForGood/components/my_listing_card_expanded.dart';
 import 'package:FoodForGood/components/my_listing_card.dart';
 
 class MyList extends StatefulWidget {
@@ -46,18 +46,26 @@ class _MyListState extends State<MyList> {
               final listings = snapshot.data.documents;
               for (var listing in listings) {
                 final title = listing.data['title'];
-                final username = listing.data['username'];
                 final description = listing.data['description'];
                 final address = listing.data['address'];
                 final email = listing.data['email'];
                 final myListingWidget = MyListingCard(
                   title: Text(title),
                   subtitle: Text(description),
-                  myExpandedListingCard: ListingCardExpanded(
-                    username: username,
+                  myExpandedListingCard: MyListingCardExpanded(
                     title: title,
                     descrtiption: description,
                     address: address,
+                    onDelete: () async {
+                        try {
+                          await _firestore
+                              .collection('Listings')
+                              .document(listing.data['docId'])
+                              .delete();
+                        } catch (error) {
+                          print('ERROR: ' + error.toString());
+                        }
+                    },
                   ),
                 );
                 if (email == userEmail) {

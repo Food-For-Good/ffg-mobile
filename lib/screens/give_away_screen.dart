@@ -54,17 +54,20 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   Future<bool> createListing() async {
     bool created = false;
     try {
-      await _firestore.collection('Listings').add({
+      final docRef = await _firestore.collection('Listings').add({
         'username': this.username,
         'title': this.title,
-        'description': description,
-        'expiryTimeInHrs': expiryTime,
+        'description': this.description,
+        'expiryTimeInHrs': this.expiryTime,
         'location':
             GeoPoint(currentPosition.latitude, currentPosition.longitude),
-        'phoneNo': phoneNo,
-        'pictureName': pictureName,
-        'address': address,
-        'email': email,
+        'phoneNo': this.phoneNo,
+        'pictureName': this.pictureName,
+        'address': this.address,
+        'email': this.email,
+      });
+      await _firestore.collection('Listings').document(docRef.documentID).updateData({
+        'docId': docRef.documentID,   // Adding auto-generated document Id.
       });
       created = true;
     } catch (error) {
