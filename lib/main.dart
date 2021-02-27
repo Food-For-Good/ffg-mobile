@@ -1,3 +1,4 @@
+import 'package:FoodForGood/screens/MyList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -42,6 +43,7 @@ class MyApp extends StatelessWidget {
           '/home': (context) => HomeScreen(),
           '/giveAway': (context) => GiveAwayScreen(),
           '/request': (context) => RequestScreen(),
+          '/myList': (context) => MyList(),
         },
       ),
     );
