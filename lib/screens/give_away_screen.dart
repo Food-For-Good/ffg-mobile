@@ -20,10 +20,15 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   void initState() {
     super.initState();
     this.setUsername();
+    this.getUserEmail();
   }
 
   setUsername() async {
     this.username = await AuthService().getUsername();
+  }
+
+  getUserEmail() async {
+    this.email = await AuthService().getEmail();
   }
 
   String username = '',
@@ -31,7 +36,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
       description = '',
       phoneNo = '',
       address = 'NONE',
-      pictureName = 'NONE';
+      pictureName = 'NONE',
+      email = '';
 
   Widget currentAddressWidget = Text(
     'NONE',
@@ -48,15 +54,20 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   Future<bool> createListing() async {
     bool created = false;
     try {
-      await _firestore.collection('Listings').document(title).setData({
+      final docRef = await _firestore.collection('Listings').add({
         'username': this.username,
-        'description': description,
-        'expiryTimeInHrs': expiryTime,
+        'title': this.title,
+        'description': this.description,
+        'expiryTimeInHrs': this.expiryTime,
         'location':
             GeoPoint(currentPosition.latitude, currentPosition.longitude),
-        'phoneNo': phoneNo,
-        'pictureName': pictureName,
-        'address': address,
+        'phoneNo': this.phoneNo,
+        'pictureName': this.pictureName,
+        'address': this.address,
+        'email': this.email,
+      });
+      await _firestore.collection('Listings').document(docRef.documentID).updateData({
+        'docId': docRef.documentID,   // Adding auto-generated document Id.
       });
       created = true;
     } catch (error) {
