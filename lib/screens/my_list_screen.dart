@@ -1,3 +1,4 @@
+import 'package:FoodForGood/screens/give_away_screen.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -9,6 +10,9 @@ import 'package:FoodForGood/components/my_listing_card_expanded.dart';
 import 'package:FoodForGood/components/my_listing_card.dart';
 
 class MyList extends StatefulWidget {
+  final String title, description, phoneNo, address;
+  MyList({this.title, this.description, this.phoneNo, this.address});
+
   @override
   _MyListState createState() => _MyListState();
 }
@@ -31,7 +35,6 @@ class _MyListState extends State<MyList> {
       this.getUserEmail();
       this._showSpinner = false;
     });
-    
   }
 
   @override
@@ -49,17 +52,20 @@ class _MyListState extends State<MyList> {
         ),
         body: ModalProgressHUD(
           inAsyncCall: this._showSpinner,
-                  child: StreamBuilder(
+          child: StreamBuilder(
             stream: _firestore.collection('Listings').snapshots(),
             builder: (context, snapshot) {
               List<MyListingCard> listingWidgets = [];
               if (snapshot.hasData) {
                 final listings = snapshot.data.documents;
                 for (var listing in listings) {
-                  final title = listing.data['title'];
+                  final title = (listing.data['title'] == null
+                      ? ''
+                      : listing.data['title']);
                   final description = listing.data['description'];
                   final address = listing.data['address'];
                   final email = listing.data['email'];
+                  final listId = listing.data['docId'];
                   final myListingWidget = MyListingCard(
                     title: title,
                     subtitle: description,
@@ -67,29 +73,41 @@ class _MyListState extends State<MyList> {
                       title: title,
                       descrtiption: description,
                       address: address,
+                      onEdit: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => GiveAwayScreen(
+                              editList: true,
+                              editTitle: title,
+                              editDescription: description,
+                              listId: listId,
+                            ),
+                          ),
+                        );
+                      },
                       onDelete: () {
-                        print('On delete pressed');
                         showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return DialogBox(
-                                  title: 'Delete',
-                                  text:
-                                      'Are you sure you want to delete this Listing?',
-                                  onYes: () {
-                                    setState(() async {
-                                      try {
-                                        await _firestore
-                                            .collection('Listings')
-                                            .document(listing.data['docId'])
-                                            .delete();
-                                        Navigator.pop(context);
-                                      } catch (error) {
-                                        print('ERROR: ' + error.toString());
-                                      }
-                                    });
-                                  });
-                            });
+                          context: context,
+                          builder: (BuildContext context) {
+                            return DialogBox(
+                              title: 'Delete',
+                              text:
+                                  'Are you sure you want to delete this Listing?',
+                              onYes: () async {
+                                try {
+                                  await _firestore
+                                      .collection('Listings')
+                                      .document(listing.data['docId'])
+                                      .delete();
+                                  Navigator.pop(context);
+                                } catch (error) {
+                                  print('ERROR: ' + error.toString());
+                                }
+                              },
+                            );
+                          },
+                        );
                       },
                     ),
                   );

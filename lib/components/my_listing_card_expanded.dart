@@ -6,12 +6,14 @@ class MyListingCardExpanded extends StatelessWidget {
   final String descrtiption;
   final String address;
   final Function onDelete;
+  final Function onEdit;
 
   MyListingCardExpanded(
       {this.title,
       this.descrtiption,
       this.address,
-      this.onDelete});
+      this.onDelete,
+      this.onEdit});
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +89,7 @@ class MyListingCardExpanded extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             IconButton(
-              onPressed: () {},
+              onPressed: this.onEdit,
               icon: Icon(
                 Icons.edit,
                 color: kPrimaryColor,
@@ -95,7 +97,7 @@ class MyListingCardExpanded extends StatelessWidget {
               ),
             ),
             IconButton(
-              onPressed: onDelete,
+              onPressed: this.onDelete,
               icon: Icon(
                 Icons.delete,
                 color: kSecondaryColor,

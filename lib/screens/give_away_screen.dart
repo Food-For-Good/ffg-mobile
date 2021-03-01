@@ -11,6 +11,15 @@ import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 
 class GiveAwayScreen extends StatefulWidget {
+  final bool editList;
+  final String editTitle, editDescription, listId;
+
+  GiveAwayScreen(
+      {this.editList = false,
+      this.editTitle,
+      this.editDescription,
+      this.listId});
+
   @override
   _GiveAwayScreenState createState() => _GiveAwayScreenState();
 }
@@ -21,6 +30,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
+    this.title = widget.editTitle;
+    this.description = widget.editDescription;
   }
 
   setUsername() async {
@@ -34,7 +45,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   String username = '',
       title = '',
       description = '',
-      phoneNo = '',
+      phoneNo = '1234567890',
       address = 'NONE',
       pictureName = 'NONE',
       email = '';
@@ -66,9 +77,28 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         'address': this.address,
         'email': this.email,
       });
-      await _firestore.collection('Listings').document(docRef.documentID).updateData({
-        'docId': docRef.documentID,   // Adding auto-generated document Id.
+      await _firestore
+          .collection('Listings')
+          .document(docRef.documentID)
+          .updateData({
+        'docId': docRef.documentID, // Adding auto-generated document Id.
       });
+      created = true;
+    } catch (error) {
+      print('ERROR: ' + error.toString());
+    }
+    return created;
+  }
+
+  Future<bool> editListing(String listId) async {
+    bool created = false;
+    try {
+      await _firestore.collection('Listings').document(listId).updateData(
+        {
+          'title': this.title,
+          'description': this.description,
+        },
+      );
       created = true;
     } catch (error) {
       print('ERROR: ' + error.toString());
@@ -117,9 +147,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                 color: kSecondaryColor,
               ),
               changed: (value) {
-                title = value;
+                this.title = value;
               },
               textCap: TextCapitalization.words,
+              editingController: TextEditingController(text: this.title),
             ),
             SizedBox(height: 15.0),
             CustomTextFeild(
@@ -131,9 +162,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                 color: kSecondaryColor,
               ),
               changed: (value) {
-                description = value;
+                this.description = value;
               },
               textCap: TextCapitalization.sentences,
+              editingController: TextEditingController(text: this.description),
             ),
             SizedBox(height: 15.0),
             CustomTextFeild(
@@ -272,7 +304,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
             ),
             SizedBox(height: 20.0),
             RoundedButton(
-              title: 'SHARE',
+              title: widget.editList ? 'SAVE' : 'SHARE',
               colour: kPrimaryColor,
               pressed: () async {
                 // Create new request in firebase.
@@ -287,10 +319,19 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                   errorMessage = 'Address not detected.';
                 }
                 if (errorMessage == 'NONE') {
-                  bool created = await createListing();
-                  errorMessage = created
-                      ? 'Listing created!'
-                      : 'Listing not created due to some error.';
+                  if (widget.editList) {
+                    bool created = await editListing(widget.listId);
+                    errorMessage = created
+                        ? 'Listing saved!'
+                        : 'Listing not saved due to some error.';
+                    Navigator.pop(context);
+                  } else {
+                    bool created = await createListing();
+                    errorMessage = created
+                        ? 'Listing created!'
+                        : 'Listing not created due to some error.';
+                    Navigator.pushReplacementNamed(context, '/request');
+                  }
                 }
                 kShowFlushBar(
                   content: errorMessage,
