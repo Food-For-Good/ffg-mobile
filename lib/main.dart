@@ -1,4 +1,3 @@
-import 'package:FoodForGood/screens/MyList.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +8,7 @@ import 'package:FoodForGood/screens/give_away_screen.dart';
 import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/screens/landing_screen.dart';
 import 'package:FoodForGood/screens/login_screen.dart';
+import 'package:FoodForGood/screens/my_list_screen.dart';
 import 'package:FoodForGood/screens/register_screen.dart';
 import 'package:FoodForGood/screens/request_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
