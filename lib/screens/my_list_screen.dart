@@ -66,6 +66,7 @@ class _MyListState extends State<MyList> {
                   final address = listing.data['address'];
                   final email = listing.data['email'];
                   final listId = listing.data['docId'];
+                  final expiryTime = listing.data['expiryTime'].toDate();
                   final myListingWidget = MyListingCard(
                     title: title,
                     subtitle: description,
@@ -73,6 +74,7 @@ class _MyListState extends State<MyList> {
                       title: title,
                       descrtiption: description,
                       address: address,
+                      expiryTime: expiryTime,
                       onEdit: () {
                         Navigator.push(
                           context,

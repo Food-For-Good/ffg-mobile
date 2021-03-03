@@ -53,7 +53,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   Position currentPosition;
   DateTime currentTime = DateTime.now();
   DateTime expiryTime;
-  bool first = true;
+  DateTime expiryTimeText;
+  bool expiryTimeSelected = true;
   bool setExpiryTime = false;
 
   Firestore _firestore = Firestore.instance;
@@ -65,7 +66,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         'username': this.username,
         'title': this.title,
         'description': this.description,
-        'expiryTimeInHrs': this.expiryTime,
+        'expiryTime': this.expiryTime,
         'location':
             GeoPoint(currentPosition.latitude, currentPosition.longitude),
         'phoneNo': this.phoneNo,
@@ -236,41 +237,47 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                 ),
                 SizedBox(height: 15.0),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      'EXPIRY TIME: ',
-                      style: kHeadingStyle.copyWith(
-                        fontSize: 15.0,
-                        color: kSecondaryColor,
-                      ),
-                    ),
-                    SizedBox(width: 15.0),
                     IconButton(
-                      icon: Icon(
-                        Icons.schedule_rounded,
-                        color: kPrimaryColor,
-                      ),
+                      color: kPrimaryColor,
+                      splashColor: kPrimaryColor.withAlpha(150),
+                      icon: Icon(Icons.schedule_rounded),
                       onPressed: () {
-                        first = false;
                         setState(() {
                           setExpiryTime = true;
                         });
                       },
-                      iconSize: 30.0,
-                    )
+                    ),
+                    SizedBox(width: 7.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'EXPIRY TIME',
+                          style: kTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: kSecondaryColor,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        SizedBox(height: 5.0),
+                        Container(
+                          width: MediaQuery.of(context).size.width * .55,
+                          child: Text(
+                            !expiryTimeSelected
+                                ? kFormatDateTime(expiryTimeText)
+                                : 'NONE',
+                            style: kTextStyle.copyWith(
+                              fontSize: 12.0,
+                              color: kSecondaryColor.withAlpha(150),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
                 SizedBox(height: 15.0),
-                if (!first)
-                  Text(
-                    kFormatDateTime(this.expiryTime),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20.0,
-                    ),
-                  ),
                 if (setExpiryTime)
                   Container(
                     child: Row(
@@ -296,22 +303,40 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                             ),
                           ),
                         ),
-                        CircularButton(
-                          title: 'Done',
-                          fontSize: 10.0,
-                          colour: kPrimaryColor,
-                          height: 40.0,
-                          width: 40.0,
-                          pressed: () {
-                            setState(() {
-                              setExpiryTime = false;
-                            });
-                          },
-                        )
+                        Column(
+                          children: [
+                            CircularButton(
+                              icon: Icons.check_rounded,
+                              fontSize: 25.0,
+                              colour: kPrimaryColor,
+                              height: 40.0,
+                              width: 40.0,
+                              pressed: () {
+                                setState(() {
+                                  expiryTimeSelected = false;
+                                  expiryTimeText = expiryTime;
+                                  setExpiryTime = false;
+                                });
+                              },
+                            ),
+                            SizedBox(height: 20.0),
+                            CircularButton(
+                              icon: Icons.clear_rounded,
+                              fontSize: 25.0,
+                              colour: kPrimaryColor,
+                              height: 40.0,
+                              width: 40.0,
+                              pressed: () {
+                                setState(() {
+                                  setExpiryTime = false;
+                                });
+                              },
+                            )
+                          ],
+                        ),
                       ],
                     ),
                   ),
-                if (!first) SizedBox(height: 15.0),
                 Row(
                   children: <Widget>[
                     IconButton(
@@ -364,6 +389,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                       errorMessage = 'Invalid phone number.';
                     } else if (address == 'NONE') {
                       errorMessage = 'Address not detected.';
+                    } else if (expiryTimeSelected == true) {
+                      errorMessage = 'Expiry time not selected.';
                     }
                     if (errorMessage == 'NONE') {
                       if (widget.editList) {

@@ -37,20 +37,20 @@ Widget kAppBar(
 }
 
 String kFormatDateTime(DateTime givenTime) {
-    String day, month, year, time, date;
-    year = givenTime.toString().substring(0, 4);
-    month = givenTime.toString().substring(5, 7);
-    day = givenTime.toString().substring(8, 10);
-    date = day + '/' + month + '/' + year;
-    time = (givenTime.hour == 0 || givenTime.hour == 12
-                ? 12
-                : givenTime.hour.toInt() % 12)
-            .toString() +
-        ':' +
-        (givenTime.minute.toInt() % 60).toString().padLeft(2, '0') +
-        (givenTime.hour > 12 ? ' PM' : ' AM');
-    return date + ' - ' + time;
-  }
+  String day, month, year, time, date;
+  year = givenTime.toString().substring(0, 4);
+  month = givenTime.toString().substring(5, 7);
+  day = givenTime.toString().substring(8, 10);
+  date = day + '/' + month + '/' + year;
+  time = (givenTime.hour == 0 || givenTime.hour == 12
+              ? 12
+              : givenTime.hour.toInt() % 12)
+          .toString() +
+      ':' +
+      (givenTime.minute.toInt() % 60).toString().padLeft(2, '0') +
+      (givenTime.hour > 12 ? ' PM' : ' AM');
+  return date + '  ' + time;
+}
 
 void kShowFlushBar(
     {String content, BuildContext context, bool customError = false}) {

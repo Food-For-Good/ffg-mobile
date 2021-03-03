@@ -7,13 +7,15 @@ class MyListingCardExpanded extends StatelessWidget {
   final String address;
   final Function onDelete;
   final Function onEdit;
+  final DateTime expiryTime;
 
   MyListingCardExpanded(
       {this.title,
       this.descrtiption,
       this.address,
       this.onDelete,
-      this.onEdit});
+      this.onEdit,
+      this.expiryTime});
 
   @override
   Widget build(BuildContext context) {
@@ -72,9 +74,9 @@ class MyListingCardExpanded extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: 70,
+                  width: 80,
                   child: Text(
-                    '11.30AM 25/02/21',
+                    kFormatDateTime(this.expiryTime),
                     softWrap: true,
                     style: kTextStyle.copyWith(
                         fontSize: 14.5, fontWeight: FontWeight.bold),

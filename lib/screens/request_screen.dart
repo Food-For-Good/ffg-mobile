@@ -82,6 +82,7 @@ class _RequestScreenState extends State<RequestScreen> {
                 final username = listing.data['username'];
                 final description = listing.data['description'];
                 final address = listing.data['address'];
+                final expiryTime = listing.data['expiryTime'].toDate();
                 GeoPoint location = listing.data['location'];
                 addMarker(location.latitude, location.longitude);
 
@@ -95,6 +96,7 @@ class _RequestScreenState extends State<RequestScreen> {
                         title: title,
                         descrtiption: description,
                         address: address,
+                        expiryTime: expiryTime,
                         onCross: () {
                           setState(() {
                             _myAnimatedWidget = allListings();
