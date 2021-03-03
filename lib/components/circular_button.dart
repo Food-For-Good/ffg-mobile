@@ -7,6 +7,7 @@ class CircularButton extends StatelessWidget {
   final Function pressed;
   final double height;
   final double width;
+  final double fontSize;
 
   CircularButton({
     this.splashColour = Colors.deepOrange,
@@ -14,7 +15,8 @@ class CircularButton extends StatelessWidget {
     this.title,
     this.pressed,
     this.height = 150.0,
-    this.width = 150.0
+    this.width = 150.0,
+    this.fontSize = 28.0
   });
 
   @override
@@ -38,7 +40,7 @@ class CircularButton extends StatelessWidget {
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 28.0,
+                  fontSize: this.fontSize,
                 ),
               ),
             ),
