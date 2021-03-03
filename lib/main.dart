@@ -18,7 +18,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // disables vertical orientation
+    // Disables vertical orientation.
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -26,25 +26,34 @@ class MyApp extends StatelessWidget {
     SystemChrome.setEnabledSystemUIOverlays([]);
     return StreamProvider<FirebaseUser>.value(
       value: AuthService().user,
-      child: MaterialApp(
-        title: 'Food For Good',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: kPrimaryColor,
-          accentColor: kSecondaryColor,
-          scaffoldBackgroundColor: kBackgroundColor,
-          fontFamily: 'Proxima Nova',
-        ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => LandingScreen(),
-          '/login': (context) => LoginScreen(),
-          '/register': (context) => RegisterScreen(),
-          '/home': (context) => HomeScreen(),
-          '/giveAway': (context) => GiveAwayScreen(),
-          '/request': (context) => RequestScreen(),
-          '/myList': (context) => MyList(),
+      child: GestureDetector(
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            currentFocus.focusedChild.unfocus();
+          }
         },
+        child: MaterialApp(
+          title: 'Food For Good',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primaryColor: kPrimaryColor,
+            accentColor: kSecondaryColor,
+            scaffoldBackgroundColor: kBackgroundColor,
+            fontFamily: 'Proxima Nova',
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (context) => LandingScreen(),
+            '/login': (context) => LoginScreen(),
+            '/register': (context) => RegisterScreen(),
+            '/home': (context) => HomeScreen(),
+            '/giveAway': (context) => GiveAwayScreen(),
+            '/request': (context) => RequestScreen(),
+            '/myList': (context) => MyList(),
+          },
+        ),
       ),
     );
   }
