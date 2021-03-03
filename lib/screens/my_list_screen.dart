@@ -1,13 +1,13 @@
-import 'package:FoodForGood/screens/give_away_screen.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'package:FoodForGood/components/dialog_box.dart';
-import 'package:FoodForGood/constants.dart';
-import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/components/my_listing_card_expanded.dart';
 import 'package:FoodForGood/components/my_listing_card.dart';
+import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/give_away_screen.dart';
+import 'package:FoodForGood/services/auth_service.dart';
 
 class MyList extends StatefulWidget {
   final String title, description, phoneNo, address;
@@ -24,17 +24,19 @@ class _MyListState extends State<MyList> {
   bool _showSpinner = false;
 
   getUserEmail() async {
+    setState(() {
+      this._showSpinner = true;
+    });
     this.userEmail = await _auth.getEmail();
+    setState(() {
+      this._showSpinner = false;
+    });
   }
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      this._showSpinner = true;
-      this.getUserEmail();
-      this._showSpinner = false;
-    });
+    this.getUserEmail();
   }
 
   @override
@@ -84,6 +86,7 @@ class _MyListState extends State<MyList> {
                               editTitle: title,
                               editDescription: description,
                               listId: listId,
+                              editExpiryTime: expiryTime,
                             ),
                           ),
                         );

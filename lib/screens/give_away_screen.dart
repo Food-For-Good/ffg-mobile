@@ -15,12 +15,14 @@ import 'package:FoodForGood/services/auth_service.dart';
 class GiveAwayScreen extends StatefulWidget {
   final bool editList;
   final String editTitle, editDescription, listId;
+  final DateTime editExpiryTime;
 
   GiveAwayScreen(
       {this.editList = false,
       this.editTitle,
       this.editDescription,
-      this.listId});
+      this.listId,
+      this.editExpiryTime});
 
   @override
   _GiveAwayScreenState createState() => _GiveAwayScreenState();
@@ -54,7 +56,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   DateTime currentTime = DateTime.now();
   DateTime expiryTime;
   DateTime expiryTimeText;
-  bool expiryTimeSelected = true;
+  bool expiryTimeSelected = false;
   bool setExpiryTime = false;
 
   Firestore _firestore = Firestore.instance;
@@ -94,6 +96,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         {
           'title': this.title,
           'description': this.description,
+          'expiryTime': this.expiryTime
         },
       );
       created = true;
@@ -127,7 +130,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     this.getUserEmail();
     this.title = widget.editTitle;
     this.description = widget.editDescription;
-    this.expiryTime = currentTime;
+    this.expiryTime = widget.editList ? widget.editExpiryTime : currentTime;
+    if (widget.editList) {
+      this.expiryTimeText = widget.editExpiryTime;
+    }
   }
 
   @override
@@ -264,9 +270,11 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                         Container(
                           width: MediaQuery.of(context).size.width * .55,
                           child: Text(
-                            !expiryTimeSelected
+                            expiryTimeSelected
                                 ? kFormatDateTime(expiryTimeText)
-                                : 'NONE',
+                                : (widget.editList
+                                    ? kFormatDateTime(expiryTimeText)
+                                    : 'NONE'),
                             style: kTextStyle.copyWith(
                               fontSize: 12.0,
                               color: kSecondaryColor.withAlpha(150),
@@ -313,7 +321,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                               width: 40.0,
                               pressed: () {
                                 setState(() {
-                                  expiryTimeSelected = false;
+                                  expiryTimeSelected = true;
                                   expiryTimeText = expiryTime;
                                   setExpiryTime = false;
                                 });
@@ -374,13 +382,16 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20.0),
+                SizedBox(height: 220.0),
                 RoundedButton(
                   title: widget.editList ? 'SAVE' : 'SHARE',
                   colour: kPrimaryColor,
                   pressed: () async {
                     // Create new request in firebase.
                     String errorMessage = 'NONE';
+                    if (widget.editList) {
+                      expiryTimeSelected = true;
+                    }
                     if (title.length == 0) {
                       errorMessage = 'Title field is blank.';
                     } else if (description.length == 0) {
@@ -389,7 +400,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                       errorMessage = 'Invalid phone number.';
                     } else if (address == 'NONE') {
                       errorMessage = 'Address not detected.';
-                    } else if (expiryTimeSelected == true) {
+                    } else if (expiryTimeSelected == false) {
                       errorMessage = 'Expiry time not selected.';
                     }
                     if (errorMessage == 'NONE') {
@@ -414,6 +425,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     );
                   },
                 ),
+                SizedBox(height: 20.0)
               ],
             ),
           ),
