@@ -4,8 +4,10 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/components/circular_button.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/services/auth_service.dart';
@@ -13,27 +15,20 @@ import 'package:FoodForGood/services/auth_service.dart';
 class GiveAwayScreen extends StatefulWidget {
   final bool editList;
   final String editTitle, editDescription, listId;
+  final DateTime editExpiryTime;
 
   GiveAwayScreen(
       {this.editList = false,
       this.editTitle,
       this.editDescription,
-      this.listId});
+      this.listId,
+      this.editExpiryTime});
 
   @override
   _GiveAwayScreenState createState() => _GiveAwayScreenState();
 }
 
 class _GiveAwayScreenState extends State<GiveAwayScreen> {
-  @override
-  void initState() {
-    super.initState();
-    this.setUsername();
-    this.getUserEmail();
-    this.title = widget.editTitle;
-    this.description = widget.editDescription;
-  }
-
   setUsername() async {
     this.username = await AuthService().getUsername();
   }
@@ -58,7 +53,11 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     ),
   );
   Position currentPosition;
-  int expiryTime = 10;
+  DateTime currentTime = DateTime.now();
+  DateTime expiryTime;
+  DateTime expiryTimeText;
+  bool expiryTimeSelected = false;
+  bool setExpiryTime = false;
 
   Firestore _firestore = Firestore.instance;
 
@@ -69,7 +68,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         'username': this.username,
         'title': this.title,
         'description': this.description,
-        'expiryTimeInHrs': this.expiryTime,
+        'expiryTime': this.expiryTime,
         'location':
             GeoPoint(currentPosition.latitude, currentPosition.longitude),
         'phoneNo': this.phoneNo,
@@ -97,6 +96,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         {
           'title': this.title,
           'description': this.description,
+          'expiryTime': this.expiryTime
         },
       );
       created = true;
@@ -124,6 +124,19 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    this.setUsername();
+    this.getUserEmail();
+    this.title = widget.editTitle;
+    this.description = widget.editDescription;
+    this.expiryTime = widget.editList ? widget.editExpiryTime : currentTime;
+    if (widget.editList) {
+      this.expiryTimeText = widget.editExpiryTime;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -136,211 +149,286 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
             Navigator.pop(context);
           },
         ),
-        body: ListView(
-          shrinkWrap: true,
-          padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
-          children: <Widget>[
-            CustomTextFeild(
-              label: 'TITLE',
-              prefixIcon: Icon(
-                Icons.title,
-                color: kSecondaryColor,
-              ),
-              changed: (value) {
-                this.title = value;
-              },
-              textCap: TextCapitalization.words,
-              editingController: TextEditingController(text: this.title),
-            ),
-            SizedBox(height: 15.0),
-            CustomTextFeild(
-              label: 'DESCRIPTION',
-              kbType: TextInputType.multiline,
-              lines: 2,
-              prefixIcon: Icon(
-                Icons.description,
-                color: kSecondaryColor,
-              ),
-              changed: (value) {
-                this.description = value;
-              },
-              textCap: TextCapitalization.sentences,
-              editingController: TextEditingController(text: this.description),
-            ),
-            SizedBox(height: 15.0),
-            CustomTextFeild(
-              label: 'PHONE NO.',
-              prefixIcon: Icon(
-                Icons.phone,
-                color: kSecondaryColor,
-              ),
-              changed: (value) {
-                phoneNo = value;
-              },
-              kbType: TextInputType.number,
-            ),
-            SizedBox(height: 25.0),
-            Row(
+        body: Container(
+          child: NotificationListener<OverscrollIndicatorNotification>(
+            onNotification: (OverscrollIndicatorNotification overscroll) {
+              // This will stop overscroll glow effect.
+              overscroll.disallowGlow();
+              return;
+            },
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
               children: <Widget>[
-                IconButton(
-                  color: kPrimaryColor,
-                  splashColor: kPrimaryColor.withAlpha(150),
-                  icon: Icon(
-                    FontAwesomeIcons.mapPin,
-                  ),
-                  onPressed: () async {
-                    setState(() {
-                      currentAddressWidget = spinner(context);
-                    });
-                    String addr = await getCurrentLocation();
-                    setState(() {
-                      address = addr;
-                      currentAddressWidget = addressWidget(
-                        context: context,
-                        address: address,
-                      );
-                    });
-                  },
-                ),
-                SizedBox(width: 7.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      'ADD LOCATION',
-                      style: kTextStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: kSecondaryColor,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                    SizedBox(height: 5.0),
-                    currentAddressWidget,
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 15.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'EXPIRY TIME (HRS): ',
-                  style: kHeadingStyle.copyWith(
-                    fontSize: 15.0,
+                CustomTextFeild(
+                  label: 'TITLE',
+                  prefixIcon: Icon(
+                    Icons.title,
                     color: kSecondaryColor,
                   ),
+                  changed: (value) {
+                    this.title = value;
+                  },
+                  textCap: TextCapitalization.words,
+                  editingController: TextEditingController(text: this.title),
                 ),
-                SizedBox(width: 5.0),
-                Text(
-                  this.expiryTime.toString(),
-                  style: kHeadingStyle.copyWith(
-                    fontSize: 25.0,
-                    color: kPrimaryColor,
+                SizedBox(height: 15.0),
+                CustomTextFeild(
+                  label: 'DESCRIPTION',
+                  kbType: TextInputType.multiline,
+                  lines: 2,
+                  prefixIcon: Icon(
+                    Icons.description,
+                    color: kSecondaryColor,
                   ),
+                  changed: (value) {
+                    this.description = value;
+                  },
+                  textCap: TextCapitalization.sentences,
+                  editingController:
+                      TextEditingController(text: this.description),
                 ),
-              ],
-            ),
-            SliderTheme(
-              data: SliderTheme.of(context).copyWith(
-                thumbColor: kPrimaryColor,
-                overlayColor: kPrimaryColor.withAlpha(50),
-                activeTrackColor: kSecondaryColor,
-                inactiveTrackColor: kSecondaryColor.withAlpha(50),
-                overlayShape: RoundSliderOverlayShape(
-                  overlayRadius: 30,
-                ),
-                thumbShape: RoundSliderThumbShape(
-                  enabledThumbRadius: 15,
-                ),
-              ),
-              child: Slider(
-                value: expiryTime.toDouble(),
-                min: 1.0,
-                max: 24.0,
-                onChanged: (double newExpiryTime) {
-                  setState(() {
-                    expiryTime = newExpiryTime.toInt();
-                  });
-                },
-              ),
-            ),
-            Row(
-              children: <Widget>[
-                IconButton(
-                  color: kPrimaryColor,
-                  splashColor: kPrimaryColor.withAlpha(150),
-                  icon: Icon(
-                    FontAwesomeIcons.cameraRetro,
+                SizedBox(height: 15.0),
+                CustomTextFeild(
+                  label: 'PHONE NO.',
+                  prefixIcon: Icon(
+                    Icons.phone,
+                    color: kSecondaryColor,
                   ),
-                  onPressed: () {},
+                  changed: (value) {
+                    phoneNo = value;
+                  },
+                  kbType: TextInputType.number,
                 ),
-                SizedBox(width: 7.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                SizedBox(height: 25.0),
+                Row(
                   children: <Widget>[
-                    Text(
-                      'ADD A PICTURE',
-                      style: kTextStyle.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: kSecondaryColor,
-                        fontSize: 15.0,
+                    IconButton(
+                      color: kPrimaryColor,
+                      splashColor: kPrimaryColor.withAlpha(150),
+                      icon: Icon(
+                        FontAwesomeIcons.mapPin,
                       ),
+                      onPressed: () async {
+                        setState(() {
+                          currentAddressWidget = spinner(context);
+                        });
+                        String addr = await getCurrentLocation();
+                        setState(() {
+                          address = addr;
+                          currentAddressWidget = addressWidget(
+                            context: context,
+                            address: address,
+                          );
+                        });
+                      },
                     ),
-                    SizedBox(height: 5.0),
-                    Container(
-                      width: MediaQuery.of(context).size.width * .55,
-                      child: Text(
-                        pictureName,
-                        style: kTextStyle.copyWith(
-                          fontSize: 12.0,
-                          color: kSecondaryColor.withAlpha(150),
+                    SizedBox(width: 7.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'ADD LOCATION',
+                          style: kTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: kSecondaryColor,
+                            fontSize: 15.0,
+                          ),
                         ),
-                      ),
+                        SizedBox(height: 5.0),
+                        currentAddressWidget,
+                      ],
                     ),
                   ],
                 ),
+                SizedBox(height: 15.0),
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      color: kPrimaryColor,
+                      splashColor: kPrimaryColor.withAlpha(150),
+                      icon: Icon(Icons.schedule_rounded),
+                      onPressed: () {
+                        setState(() {
+                          setExpiryTime = true;
+                        });
+                      },
+                    ),
+                    SizedBox(width: 7.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'EXPIRY TIME',
+                          style: kTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: kSecondaryColor,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        SizedBox(height: 5.0),
+                        Container(
+                          width: MediaQuery.of(context).size.width * .55,
+                          child: Text(
+                            expiryTimeSelected
+                                ? kFormatDateTime(expiryTimeText)
+                                : (widget.editList
+                                    ? kFormatDateTime(expiryTimeText)
+                                    : 'NONE'),
+                            style: kTextStyle.copyWith(
+                              fontSize: 12.0,
+                              color: kSecondaryColor.withAlpha(150),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 15.0),
+                if (setExpiryTime)
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 200.0,
+                          width: 250.0,
+                          child: CupertinoTheme(
+                            data: CupertinoThemeData(
+                                textTheme: CupertinoTextThemeData(
+                                    dateTimePickerTextStyle: kTextStyle)),
+                            child: CupertinoDatePicker(
+                              initialDateTime: this.expiryTime,
+                              minimumDate:
+                                  currentTime.subtract(Duration(seconds: 30)),
+                              maximumYear: currentTime.year + 1,
+                              onDateTimeChanged: (dateTime) {
+                                setState(() {
+                                  this.expiryTime = dateTime;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            CircularButton(
+                              icon: Icons.check_rounded,
+                              fontSize: 25.0,
+                              colour: kPrimaryColor,
+                              height: 40.0,
+                              width: 40.0,
+                              pressed: () {
+                                setState(() {
+                                  expiryTimeSelected = true;
+                                  expiryTimeText = expiryTime;
+                                  setExpiryTime = false;
+                                });
+                              },
+                            ),
+                            SizedBox(height: 20.0),
+                            CircularButton(
+                              icon: Icons.clear_rounded,
+                              fontSize: 25.0,
+                              colour: kPrimaryColor,
+                              height: 40.0,
+                              width: 40.0,
+                              pressed: () {
+                                setState(() {
+                                  setExpiryTime = false;
+                                });
+                              },
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      color: kPrimaryColor,
+                      splashColor: kPrimaryColor.withAlpha(150),
+                      icon: Icon(
+                        FontAwesomeIcons.cameraRetro,
+                      ),
+                      onPressed: () {},
+                    ),
+                    SizedBox(width: 7.0),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'ADD A PICTURE',
+                          style: kTextStyle.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: kSecondaryColor,
+                            fontSize: 15.0,
+                          ),
+                        ),
+                        SizedBox(height: 5.0),
+                        Container(
+                          width: MediaQuery.of(context).size.width * .55,
+                          child: Text(
+                            pictureName,
+                            style: kTextStyle.copyWith(
+                              fontSize: 12.0,
+                              color: kSecondaryColor.withAlpha(150),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(height: 220.0),
+                RoundedButton(
+                  title: widget.editList ? 'SAVE' : 'SHARE',
+                  colour: kPrimaryColor,
+                  pressed: () async {
+                    // Create new request in firebase.
+                    String errorMessage = 'NONE';
+                    if (widget.editList) {
+                      expiryTimeSelected = true;
+                    }
+                    if (title.length == 0) {
+                      errorMessage = 'Title field is blank.';
+                    } else if (description.length == 0) {
+                      errorMessage = 'Description field is blank.';
+                    } else if (phoneNo.length != 10) {
+                      errorMessage = 'Invalid phone number.';
+                    } else if (address == 'NONE') {
+                      errorMessage = 'Address not detected.';
+                    } else if (expiryTimeSelected == false) {
+                      errorMessage = 'Expiry time not selected.';
+                    }
+                    if (errorMessage == 'NONE') {
+                      if (widget.editList) {
+                        bool created = await editListing(widget.listId);
+                        errorMessage = created
+                            ? 'Listing saved!'
+                            : 'Listing not saved due to some error.';
+                        Navigator.pop(context);
+                      } else {
+                        bool created = await createListing();
+                        errorMessage = created
+                            ? 'Listing created!'
+                            : 'Listing not created due to some error.';
+                        Navigator.pushReplacementNamed(context, '/request');
+                      }
+                    }
+                    kShowFlushBar(
+                      content: errorMessage,
+                      context: context,
+                      customError: true,
+                    );
+                  },
+                ),
+                SizedBox(height: 20.0)
               ],
             ),
-            SizedBox(height: 20.0),
-            RoundedButton(
-              title: widget.editList ? 'SAVE' : 'SHARE',
-              colour: kPrimaryColor,
-              pressed: () async {
-                // Create new request in firebase.
-                String errorMessage = 'NONE';
-                if (title.length == 0) {
-                  errorMessage = 'Title field is blank.';
-                } else if (description.length == 0) {
-                  errorMessage = 'Description field is blank.';
-                } else if (phoneNo.length != 10) {
-                  errorMessage = 'Invalid phone number.';
-                } else if (address == 'NONE') {
-                  errorMessage = 'Address not detected.';
-                }
-                if (errorMessage == 'NONE') {
-                  if (widget.editList) {
-                    bool created = await editListing(widget.listId);
-                    errorMessage = created
-                        ? 'Listing saved!'
-                        : 'Listing not saved due to some error.';
-                    Navigator.pop(context);
-                  } else {
-                    bool created = await createListing();
-                    errorMessage = created
-                        ? 'Listing created!'
-                        : 'Listing not created due to some error.';
-                    Navigator.pushReplacementNamed(context, '/request');
-                  }
-                }
-                kShowFlushBar(
-                  content: errorMessage,
-                  context: context,
-                  customError: true,
-                );
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );

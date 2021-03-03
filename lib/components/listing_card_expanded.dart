@@ -8,13 +8,15 @@ class ListingCardExpanded extends StatelessWidget {
   final String descrtiption;
   final String address;
   final Function onCross;
+  final DateTime expiryTime;
 
   ListingCardExpanded(
       {this.username,
       this.title,
       this.descrtiption,
       this.address,
-      this.onCross});
+      this.onCross,
+      this.expiryTime});
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +100,9 @@ class ListingCardExpanded extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  width: 70,
+                  width: 80,
                   child: Text(
-                    '11.30AM 15.11.19',
+                    kFormatDateTime(this.expiryTime),
                     style: kTextStyle.copyWith(
                         fontSize: 14.5, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,

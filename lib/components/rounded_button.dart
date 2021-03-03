@@ -11,16 +11,16 @@ class RoundedButton extends StatelessWidget {
   final Color borderColour;
   final Color textColour;
 
-  RoundedButton(
-      {@required this.title,
-      @required this.pressed,
-      this.colour,
-      this.splashColour = Colors.deepOrange,
-      this.height = 50.0,
-      this.width = 250.0,
-      this.borderColour,
-      this.textColour = kBackgroundColor,
-      });
+  RoundedButton({
+    @required this.title,
+    @required this.pressed,
+    this.colour,
+    this.splashColour = Colors.deepOrange,
+    this.height = 50.0,
+    this.width = 280.0,
+    this.borderColour,
+    this.textColour = kBackgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,10 @@ class RoundedButton extends StatelessWidget {
       minWidth: this.width,
       shape: RoundedRectangleBorder(
         side: BorderSide(
-          color: kSecondaryColor,
-          width: 2.0,
-          style: (borderColour == null) ? BorderStyle.none : BorderStyle.solid),
+            color: kSecondaryColor,
+            width: 2.0,
+            style:
+                (borderColour == null) ? BorderStyle.none : BorderStyle.solid),
         borderRadius: BorderRadius.circular(30.0),
       ),
       color: this.colour,
