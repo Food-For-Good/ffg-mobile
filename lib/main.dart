@@ -28,11 +28,9 @@ class MyApp extends StatelessWidget {
       value: AuthService().user,
       child: GestureDetector(
         onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus &&
-              currentFocus.focusedChild != null) {
-            currentFocus.focusedChild.unfocus();
-          }
+          //Dispose keyboard when clicked on
+          //non-responsive portion of screen any where in the application.
+          FocusManager.instance.primaryFocus.unfocus();
         },
         child: MaterialApp(
           title: 'Food For Good',

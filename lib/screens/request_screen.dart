@@ -23,6 +23,7 @@ class _RequestScreenState extends State<RequestScreen> {
   LatLng currentLatLng = LatLng(0.0, 0.0);
   List<Marker> markers = [];
   Widget _myAnimatedWidget;
+  DateTime currentTime = DateTime.now();
 
   List<Marker> addMarker(double lat, double lon) {
     Marker newMarker = Marker(
@@ -106,7 +107,9 @@ class _RequestScreenState extends State<RequestScreen> {
                     });
                   },
                 );
-                listingWidgets.add(listingWidget);
+                if (currentTime.isBefore(expiryTime)) {
+                  listingWidgets.add(listingWidget);
+                }
               }
             }
             return Column(
