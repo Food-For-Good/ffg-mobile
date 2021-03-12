@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/services/helper_service.dart';
 
 class MyListingCardExpanded extends StatelessWidget {
   final String title;
@@ -76,7 +78,7 @@ class MyListingCardExpanded extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    kFormatDateTime(this.expiryTime),
+                    HelperService.convertDateTimeToHumanReadable(this.expiryTime),
                     softWrap: true,
                     style: kTextStyle.copyWith(
                         fontSize: 14.5, fontWeight: FontWeight.bold),

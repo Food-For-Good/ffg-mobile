@@ -1,16 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/components/circular_button.dart';
 import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/services/auth_service.dart';
+import 'package:FoodForGood/services/helper_service.dart';
 
 class GiveAwayScreen extends StatefulWidget {
   final bool editList;
@@ -55,7 +56,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   Position currentPosition;
   DateTime currentTime = DateTime.now();
   DateTime expiryTime;
-  DateTime expiryTimeText;
+  DateTime finalExpiryTime;
   bool expiryTimeSelected = false;
   bool setExpiryTime = false;
 
@@ -132,7 +133,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     this.description = widget.editDescription;
     this.expiryTime = widget.editList ? widget.editExpiryTime : currentTime;
     if (widget.editList) {
-      this.expiryTimeText = widget.editExpiryTime;
+      this.finalExpiryTime = widget.editExpiryTime;
+      expiryTimeSelected = true;
     }
   }
 
@@ -271,9 +273,12 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                           width: MediaQuery.of(context).size.width * .55,
                           child: Text(
                             expiryTimeSelected
-                                ? kFormatDateTime(expiryTimeText)
+                                ? HelperService.convertDateTimeToHumanReadable(
+                                    finalExpiryTime)
                                 : (widget.editList
-                                    ? kFormatDateTime(expiryTimeText)
+                                    ? HelperService
+                                        .convertDateTimeToHumanReadable(
+                                            finalExpiryTime)
                                     : 'NONE'),
                             style: kTextStyle.copyWith(
                               fontSize: 12.0,
@@ -299,7 +304,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                                 textTheme: CupertinoTextThemeData(
                                     dateTimePickerTextStyle: kTextStyle)),
                             child: CupertinoDatePicker(
-                              initialDateTime: this.expiryTime,
+                              initialDateTime:
+                                  this.expiryTime.isBefore(currentTime)
+                                      ? currentTime
+                                      : this.expiryTime,
                               minimumDate:
                                   currentTime.subtract(Duration(seconds: 30)),
                               maximumYear: currentTime.year + 1,
@@ -322,7 +330,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                               pressed: () {
                                 setState(() {
                                   expiryTimeSelected = true;
-                                  expiryTimeText = expiryTime;
+                                  finalExpiryTime = expiryTime;
                                   setExpiryTime = false;
                                 });
                               },
@@ -389,9 +397,6 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                   pressed: () async {
                     // Create new request in firebase.
                     String errorMessage = 'NONE';
-                    if (widget.editList) {
-                      expiryTimeSelected = true;
-                    }
                     if (title.length == 0) {
                       errorMessage = 'Title field is blank.';
                     } else if (description.length == 0) {

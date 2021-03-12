@@ -57,7 +57,7 @@ class _MyListState extends State<MyList> {
           child: StreamBuilder(
             stream: _firestore.collection('Listings').snapshots(),
             builder: (context, snapshot) {
-              List<MyListingCard> listingWidgets = [];
+              List<MyListingCard> myListingWidgets = [];
               if (snapshot.hasData) {
                 final listings = snapshot.data.documents;
                 for (var listing in listings) {
@@ -117,13 +117,13 @@ class _MyListState extends State<MyList> {
                     ),
                   );
                   if (email == userEmail) {
-                    listingWidgets.add(myListingWidget);
+                    myListingWidgets.add(myListingWidget);
                   }
                 }
               }
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: listingWidgets,
+                children: myListingWidgets,
               );
             },
           ),
