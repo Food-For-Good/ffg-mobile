@@ -22,9 +22,6 @@ const kTitleStyle = TextStyle(
   color: kBackgroundColor,
 );
 
-enum ListingState {
-  open, progress, completed, deleted
-}
 
 Widget kAppBar(
     {BuildContext context, Widget title, Icon icon, Function pressed}) {

@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+String listingStateOpen = 'Open';
+String listingStateProgress = 'Progress';
+String listingStateCompleted = 'Completed';
+String listingStateDeleted = 'Deleted';
+
 class Listing {
   final String username;
   final String title;
@@ -11,6 +16,7 @@ class Listing {
   final String email;
   final GeoPoint location;
   final String listId;
+  final String listingState;
 
   Listing(
       {this.username,
@@ -22,7 +28,8 @@ class Listing {
       this.address,
       this.email,
       this.location,
-      this.listId});
+      this.listId,
+      this.listingState});
 
   Map<String, dynamic> toMap() {
     return {
@@ -35,6 +42,7 @@ class Listing {
       'pictureName': this.pictureName,
       'address': this.address,
       'email': this.email,
+      'listingState': listingStateOpen
     };
   }
 
@@ -52,6 +60,7 @@ class Listing {
     final String email = data['email'];
     final GeoPoint location = data['location'];
     final String listId = data['docId'];
+    final String listingState = listingStateOpen;
     return Listing(
         username: username,
         title: title,
@@ -62,6 +71,7 @@ class Listing {
         pictureName: pictureName,
         address: address,
         email: email,
-        listId: listId);
+        listId: listId,
+        listingState: listingState);
   }
 }
