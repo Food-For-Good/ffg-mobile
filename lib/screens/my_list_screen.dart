@@ -31,7 +31,7 @@ class _MyListState extends State<MyList> {
 
   final database = FirestoreDatabase();
 
-  Widget _getMyListings(String listingState) {
+  Widget _getMyListings(ListingState listingState) {
     return StreamBuilder<List<Listing>>(
       stream: database.listingStream(),
       builder: (context, snapshot) {
@@ -41,18 +41,18 @@ class _MyListState extends State<MyList> {
               .map(
                 (listing) {
                   if (listing.email == userEmail) {
-                    if (listingState == 'open') {
+                    if (listingState == ListingState.open) {
                       if (listing.expiryTime.isAfter(currentTime)) {
                         return MyListing(
                           database: database,
                           listing: listing,
                         );
                       }
-                    } else if (listingState == 'progress') {
+                    } else if (listingState == ListingState.progress) {
                       return MyListing(listing: listing, database: database);
-                    } else if (listingState == 'completed') {
+                    } else if (listingState == ListingState.completed) {
                       return MyListing(listing: listing, database: database);
-                    } else if (listingState == 'deleted') {
+                    } else if (listingState == ListingState.deleted) {
                       if (listing.expiryTime.isBefore(currentTime)) {
                         return MyListing(listing: listing, database: database);
                       }
@@ -111,12 +111,12 @@ class _MyListState extends State<MyList> {
                 label: 'Open',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.done_all_rounded),
-                label: 'Completed',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.lock_outline_rounded),
                 label: 'In Progress',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.done_all_rounded),
+                label: 'Completed',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.delete_forever_rounded),
@@ -144,10 +144,10 @@ class _MyListState extends State<MyList> {
             });
           },
           children: [
-            _getMyListings('open'),
-            _getMyListings('open'),
-            _getMyListings('open'),
-            _getMyListings('deleted'),
+            _getMyListings(ListingState.open),
+            _getMyListings(ListingState.open),
+            _getMyListings(ListingState.open),
+            _getMyListings(ListingState.deleted),
           ],
         ),
       ),
