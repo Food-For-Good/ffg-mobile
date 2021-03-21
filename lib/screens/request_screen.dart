@@ -1,3 +1,4 @@
+import 'package:FoodForGood/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -9,7 +10,9 @@ import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
 import 'package:FoodForGood/components/listing_card_expanded.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/location_service.dart';
+import 'package:FoodForGood/models/listing_model.dart';
 
 class RequestScreen extends StatefulWidget {
   @override
@@ -18,12 +21,24 @@ class RequestScreen extends StatefulWidget {
 
 class _RequestScreenState extends State<RequestScreen> {
   final Firestore _firestore = Firestore.instance;
+  String myUsername = '';
+  String myEmail = '';
   LatLng locationMapBox;
   MapboxMapController controller;
   LatLng currentLatLng = LatLng(0.0, 0.0);
   List<Marker> markers = [];
   Widget _myAnimatedWidget;
   DateTime currentTime = DateTime.now();
+
+  String requestId = '';
+
+  setUsername() async {
+    this.myUsername = await AuthService().getUsername();
+  }
+
+  getUserEmail() async {
+    this.myEmail = await AuthService().getEmail();
+  }
 
   List<Marker> addMarker(double lat, double lon) {
     Marker newMarker = Marker(
@@ -69,63 +84,87 @@ class _RequestScreenState extends State<RequestScreen> {
     return markers;
   }
 
-  Widget allListings() {
-    return ListView(
-      children: <Widget>[
-        StreamBuilder(
-          stream: _firestore.collection('Listings').snapshots(),
-          builder: (context, snapshot) {
-            List<ListingCard> listingWidgets = [];
-            if (snapshot.hasData) {
-              final listings = snapshot.data.documents;
-              for (var listing in listings) {
-                final title = listing.data['title'];
-                final username = listing.data['username'];
-                final description = listing.data['description'];
-                final address = listing.data['address'];
-                final expiryTime = listing.data['expiryTime'].toDate();
-                GeoPoint location = listing.data['location'];
-                addMarker(location.latitude, location.longitude);
-
-                final listingWidget = ListingCard(
-                  username: username,
-                  title: title,
-                  onPressed: () {
-                    setState(() {
-                      _myAnimatedWidget = ListingCardExpanded(
-                        username: username,
-                        title: title,
-                        descrtiption: description,
-                        address: address,
-                        expiryTime: expiryTime,
-                        onCross: () {
-                          setState(() {
-                            _myAnimatedWidget = allListings();
-                          });
-                        },
-                      );
-                    });
-                  },
-                );
-                if (currentTime.isBefore(expiryTime)) {
-                  listingWidgets.add(listingWidget);
-                }
-              }
-            }
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: listingWidgets,
-            );
-          },
-        ),
-      ],
+  Widget _getAllListings() {
+    final database = FirestoreDatabase();
+    return StreamBuilder<List<Listing>>(
+      stream: database.listingStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final listings = snapshot.data;
+          final children = listings
+              .map(
+                (listing) {
+                  if (listing.expiryTime.isAfter(currentTime)) {
+                    return ListingCard(
+                      username: listing.username,
+                      title: listing.title,
+                      onPressed: () {
+                        setState(() {
+                          _myAnimatedWidget = ListingCardExpanded(
+                            username: listing.username,
+                            title: listing.title,
+                            descrtiption: listing.description,
+                            address: listing.address,
+                            expiryTime: listing.expiryTime,
+                            tickMarkColor: kPrimaryColor,
+                            onPressedTickMark: () async {
+                              final request = _firestore
+                                  .collection('Listings')
+                                  .document(listing.listId)
+                                  .collection('Requests')
+                                  .document(myEmail);
+                              final requestedList = await request.get();
+                              try {
+                                if (!requestedList.exists) {
+                                  await request.setData({
+                                    'username': myUsername,
+                                  });
+                                  print('Listing request created.');
+                                } else {
+                                  await request.delete();
+                                  print('Listing request deleted.');
+                                }
+                              } catch (e) {
+                                print(e.toString());
+                              }
+                            },
+                            onCross: () {
+                              setState(() {
+                                _myAnimatedWidget = _getAllListings();
+                              });
+                            },
+                          );
+                        });
+                      },
+                    );
+                  }
+                },
+              )
+              .whereType<ListingCard>()
+              .toList();
+          return ListView(children: children);
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Some Error Occured',
+              style: kTextStyle,
+            ),
+          );
+        }
+        return Center(
+          child: Text('No listing available'),
+        );
+      },
     );
   }
 
   @override
   void initState() {
     super.initState();
-    _myAnimatedWidget = allListings();
+    this.setUsername();
+    this.getUserEmail();
+    _myAnimatedWidget = _getAllListings();
   }
 
   @override

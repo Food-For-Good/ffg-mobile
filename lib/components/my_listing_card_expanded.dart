@@ -112,7 +112,7 @@ class MyListingCardExpanded extends StatelessWidget {
         ),
         SizedBox(
           height: 10.0,
-        )
+        ),
       ],
     );
   }
