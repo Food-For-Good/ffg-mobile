@@ -10,10 +10,10 @@ class FirestoreDatabase {
         builder: (data) => Listing.fromMap(data),
       );
 
-  Future<void> deleteListing({String listId}) async =>
+  Future<void> deleteListing({Listing listing}) async =>
       await _service.deleteData(
         path: APIPath.listing(),
-        docId: listId,
+        docId: listing.listId,
       );
 
   Future<void> createListing(Listing listing) async => await _service.addData(
@@ -21,17 +21,27 @@ class FirestoreDatabase {
         data: listing.toMap(),
       );
 
-  Future<void> editListing(Listing listing, String listId) async =>
+  Future<void> editListing(Listing listing) async =>
       await _service.updateData(
         path: APIPath.listing(),
-        docId: listId,
+        docId: listing.listId,
         data: listing.toMap(),
       );
-      
-  Future<void> editListingState(String listingState, String listId) async =>
+
+  Future<void> editListingState(String listingState, Listing listing) async =>
       await _service.updateData(
         path: APIPath.listing(),
-        docId: listId,
+        docId: listing.listId,
         data: {'listingState': listingState},
+      );
+  Future<void> createListingRequest(
+          Listing listing, Map<String, dynamic> updatedRequestsList) async =>
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {
+          'requests': updatedRequestsList,
+          'listingState': listingStateProgress
+        },
       );
 }

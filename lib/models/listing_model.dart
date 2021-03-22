@@ -17,6 +17,7 @@ class Listing {
   final GeoPoint location;
   final String listId;
   final String listingState;
+  final Map<String, dynamic> requests;
 
   Listing(
       {this.username,
@@ -29,7 +30,8 @@ class Listing {
       this.email,
       this.location,
       this.listId,
-      this.listingState});
+      this.listingState,
+      this.requests});
 
   Map<String, dynamic> toMap() {
     return {
@@ -42,7 +44,8 @@ class Listing {
       'pictureName': this.pictureName,
       'address': this.address,
       'email': this.email,
-      'listingState': listingState
+      'listingState': listingState,
+      'requests': this.requests,
     };
   }
 
@@ -61,6 +64,7 @@ class Listing {
     final GeoPoint location = data['location'];
     final String listId = data['docId'];
     final String listingState = data['listingState'];
+    final Map<String, dynamic> requests = data['requests'];
     return Listing(
         username: username,
         title: title,
@@ -72,6 +76,7 @@ class Listing {
         address: address,
         email: email,
         listId: listId,
-        listingState: listingState);
+        listingState: listingState,
+        requests: requests);
   }
 }

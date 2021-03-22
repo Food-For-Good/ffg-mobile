@@ -78,6 +78,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         email: this.email,
         location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
         listingState: listingStateOpen,
+        requests: {},
       ));
       created = true;
     } catch (error) {
@@ -103,7 +104,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
           listingState: finalExpiryTime.isBefore(currentTime)
               ? listingStateDeleted
               : listingStateOpen);
-      database.editListing(listing, listId);
+      await database.editListing(listing);
       created = true;
     } catch (error) {
       print('ERROR: ' + error.toString());

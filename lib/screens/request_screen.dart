@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart' as dartLatLng;
 import 'package:mapbox_gl/mapbox_gl.dart';
+import "dart:convert";
 
 import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
@@ -108,25 +109,15 @@ class _RequestScreenState extends State<RequestScreen> {
                             expiryTime: listing.expiryTime,
                             tickMarkColor: kPrimaryColor,
                             onPressedTickMark: () async {
-                              final request = _firestore
-                                  .collection('Listings')
-                                  .document(listing.listId)
-                                  .collection('Requests')
-                                  .document(myEmail);
-                              final requestedList = await request.get();
-                              try {
-                                if (!requestedList.exists) {
-                                  await request.setData({
-                                    'username': myUsername,
-                                  });
-                                  print('Listing request created.');
-                                } else {
-                                  await request.delete();
-                                  print('Listing request deleted.');
-                                }
-                              } catch (e) {
-                                print(e.toString());
+                              Map<String, dynamic> requests = listing.requests;
+                              if (requests.containsKey(myEmail)) {
+                                print('Request is already created');
+                              } else {
+                                requests[myEmail] = currentTime.toString();
+                                await database.createListingRequest(
+                                    listing, requests);
                               }
+                              print('Listing request is successfully created');
                             },
                             onCross: () {
                               setState(() {

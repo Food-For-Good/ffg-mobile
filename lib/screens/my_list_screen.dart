@@ -41,22 +41,13 @@ class _MyListState extends State<MyList> {
               .map(
                 (listing) {
                   if (listing.email == userEmail) {
-                    if ((listing.listingState == listingState) &&
-                        (listing.expiryTime.isAfter(currentTime))) {
-                      return MyListing(
-                        database: database,
-                        listing: listing,
-                      );
-                    } 
-                    else if (listing.listingState == listingStateProgress) {
+                    if (listing.listingState == listingState) {
                       return MyListing(listing: listing, database: database);
-                    } 
-                    else if (listing.listingState == listingState) {
-                      return MyListing(listing: listing, database: database);
-                    } 
-                    else if ((listing.listingState == listingState) ||
+                    }
+                    if (listing.listingState == listingStateOpen &&
                         listing.expiryTime.isBefore(currentTime)) {
-                      return MyListing(listing: listing, database: database);
+                      database.editListingState(
+                          listingStateDeleted, listing);
                     }
                   }
                 },
@@ -112,12 +103,12 @@ class _MyListState extends State<MyList> {
                 label: 'Open',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.done_all_rounded),
-                label: 'Completed',
-              ),
-              BottomNavigationBarItem(
                 icon: Icon(Icons.lock_outline_rounded),
                 label: 'In Progress',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.done_all_rounded),
+                label: 'Completed',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.delete_forever_rounded),
@@ -139,7 +130,7 @@ class _MyListState extends State<MyList> {
         ),
         body: PageView(
           controller: _pageController,
-          onPageChanged: (index) {
+          onPageChanged: (index) async {
             setState(() {
               _selectedIndex = index;
             });
@@ -201,7 +192,7 @@ class MyListing extends StatelessWidget {
                   try {
                     // Change the listing state to deleted state.
                     await database.editListingState(
-                        listingStateDeleted, listing.listId);
+                        listingStateDeleted, listing);
                     Navigator.pop(context);
                   } catch (error) {
                     print('ERROR: ' + error.toString());
