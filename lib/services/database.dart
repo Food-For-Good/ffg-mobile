@@ -20,10 +20,18 @@ class FirestoreDatabase {
         path: APIPath.listing(),
         data: listing.toMap(),
       );
+
+  Future<void> editListing(Listing listing, String listId) async =>
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listId,
+        data: listing.toMap(),
+      );
       
-  Future<void> editListing(Listing listing, String listId) async => await _service.updateData(
-    path: APIPath.listing(),
-    docId: listId,
-    data: listing.toMap(),
-  );
+  Future<void> editListingState(String listingState, String listId) async =>
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listId,
+        data: {'listingState': listingState},
+      );
 }

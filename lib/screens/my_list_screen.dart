@@ -41,21 +41,22 @@ class _MyListState extends State<MyList> {
               .map(
                 (listing) {
                   if (listing.email == userEmail) {
-                    if (listingState == listingStateOpen) {
-                      if (listing.expiryTime.isAfter(currentTime)) {
-                        return MyListing(
-                          database: database,
-                          listing: listing,
-                        );
-                      }
-                    } else if (listingState == listingStateOpen) {
+                    if ((listing.listingState == listingState) &&
+                        (listing.expiryTime.isAfter(currentTime))) {
+                      return MyListing(
+                        database: database,
+                        listing: listing,
+                      );
+                    } 
+                    else if (listing.listingState == listingStateProgress) {
                       return MyListing(listing: listing, database: database);
-                    } else if (listingState == listingStateCompleted) {
+                    } 
+                    else if (listing.listingState == listingState) {
                       return MyListing(listing: listing, database: database);
-                    } else if (listingState == listingStateDeleted) {
-                      if (listing.expiryTime.isBefore(currentTime)) {
-                        return MyListing(listing: listing, database: database);
-                      }
+                    } 
+                    else if ((listing.listingState == listingState) ||
+                        listing.expiryTime.isBefore(currentTime)) {
+                      return MyListing(listing: listing, database: database);
                     }
                   }
                 },
@@ -145,8 +146,8 @@ class _MyListState extends State<MyList> {
           },
           children: [
             _getMyListings(listingStateOpen),
-            _getMyListings(listingStateOpen),
-            _getMyListings(listingStateOpen),
+            _getMyListings(listingStateProgress),
+            _getMyListings(listingStateCompleted),
             _getMyListings(listingStateDeleted),
           ],
         ),
@@ -198,7 +199,9 @@ class MyListing extends StatelessWidget {
                 text: 'Are you sure you want to delete this Listing?',
                 onYes: () async {
                   try {
-                    database.deleteListing(listId: listing.listId);
+                    // Change the listing state to deleted state.
+                    await database.editListingState(
+                        listingStateDeleted, listing.listId);
                     Navigator.pop(context);
                   } catch (error) {
                     print('ERROR: ' + error.toString());

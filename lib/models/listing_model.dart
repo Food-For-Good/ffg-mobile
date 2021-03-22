@@ -42,7 +42,7 @@ class Listing {
       'pictureName': this.pictureName,
       'address': this.address,
       'email': this.email,
-      'listingState': listingStateOpen
+      'listingState': listingState
     };
   }
 
@@ -60,7 +60,7 @@ class Listing {
     final String email = data['email'];
     final GeoPoint location = data['location'];
     final String listId = data['docId'];
-    final String listingState = listingStateOpen;
+    final String listingState = data['listingState'];
     return Listing(
         username: username,
         title: title,

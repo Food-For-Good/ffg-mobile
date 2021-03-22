@@ -77,6 +77,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         address: this.address,
         email: this.email,
         location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
+        listingState: listingStateOpen,
       ));
       created = true;
     } catch (error) {
@@ -89,16 +90,19 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     bool created = false;
     try {
       Listing listing = Listing(
-        username: this.username,
-        title: this.title,
-        description: this.description,
-        expiryTime: this.finalExpiryTime,
-        phoneNo: this.phoneNo,
-        pictureName: this.pictureName,
-        address: this.address,
-        email: this.email,
-        location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
-      );
+          username: this.username,
+          title: this.title,
+          description: this.description,
+          expiryTime: this.finalExpiryTime,
+          phoneNo: this.phoneNo,
+          pictureName: this.pictureName,
+          address: this.address,
+          email: this.email,
+          location:
+              GeoPoint(currentPosition.latitude, currentPosition.longitude),
+          listingState: finalExpiryTime.isBefore(currentTime)
+              ? listingStateDeleted
+              : listingStateOpen);
       database.editListing(listing, listId);
       created = true;
     } catch (error) {
