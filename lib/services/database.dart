@@ -21,8 +21,7 @@ class FirestoreDatabase {
         data: listing.toMap(),
       );
 
-  Future<void> editListing(Listing listing) async =>
-      await _service.updateData(
+  Future<void> editListing(Listing listing) async => await _service.updateData(
         path: APIPath.listing(),
         docId: listing.listId,
         data: listing.toMap(),
@@ -41,7 +40,47 @@ class FirestoreDatabase {
         docId: listing.listId,
         data: {
           'requests': updatedRequestsList,
-          'listingState': listingStateProgress
+        },
+      );
+
+//On rejecting request,
+  //If the request is rejected in OPEN state, update the requests by removing the rejected request.
+  //
+  //Else If the request is in PROGRESS state, empty the accepted request,
+  //and show all the requests, also change the state to OPEN state again.
+  Future<void> deleteListingRequest(
+      {bool isAlreadyAccepted,
+      Listing listing,}) async {
+    if (isAlreadyAccepted) {
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {
+          'acceptedRequest': {},
+          'listingState': listingStateOpen,
+        },
+      );
+    } else {
+      Map<String, dynamic> requests = listing.requests;
+      requests.remove(listing.email);
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {
+          'requests': requests,
+        },
+      );
+    }
+  }
+
+  Future<void> acceptListingRequest(
+          Listing listing, Map<String, dynamic> accceptedRequest) async =>
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {
+          'acceptedRequest': accceptedRequest,
+          'listingState': listingStateProgress,
         },
       );
 }

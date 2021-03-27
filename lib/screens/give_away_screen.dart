@@ -79,6 +79,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
         listingState: listingStateOpen,
         requests: {},
+        acceptedRequest: {},
       ));
       created = true;
     } catch (error) {
@@ -91,19 +92,21 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     bool created = false;
     try {
       Listing listing = Listing(
-          username: this.username,
-          title: this.title,
-          description: this.description,
-          expiryTime: this.finalExpiryTime,
-          phoneNo: this.phoneNo,
-          pictureName: this.pictureName,
-          address: this.address,
-          email: this.email,
-          location:
-              GeoPoint(currentPosition.latitude, currentPosition.longitude),
-          listingState: finalExpiryTime.isBefore(currentTime)
-              ? listingStateDeleted
-              : listingStateOpen);
+        username: this.username,
+        title: this.title,
+        description: this.description,
+        expiryTime: this.finalExpiryTime,
+        phoneNo: this.phoneNo,
+        pictureName: this.pictureName,
+        address: this.address,
+        email: this.email,
+        location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
+        listingState: finalExpiryTime.isBefore(currentTime)
+            ? listingStateDeleted
+            : listingStateOpen,
+        requests: {},
+        acceptedRequest: {},
+      );
       await database.editListing(listing);
       created = true;
     } catch (error) {

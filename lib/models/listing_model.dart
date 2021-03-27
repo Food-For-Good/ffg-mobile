@@ -18,6 +18,7 @@ class Listing {
   final String listId;
   final String listingState;
   final Map<String, dynamic> requests;
+  final Map<String, dynamic> acceptedRequest;
 
   Listing(
       {this.username,
@@ -31,7 +32,8 @@ class Listing {
       this.location,
       this.listId,
       this.listingState,
-      this.requests});
+      this.requests,
+      this.acceptedRequest});
 
   Map<String, dynamic> toMap() {
     return {
@@ -46,6 +48,7 @@ class Listing {
       'email': this.email,
       'listingState': listingState,
       'requests': this.requests,
+      'acceptedRequest': this.acceptedRequest,
     };
   }
 
@@ -65,6 +68,7 @@ class Listing {
     final String listId = data['docId'];
     final String listingState = data['listingState'];
     final Map<String, dynamic> requests = data['requests'];
+    final Map<String, dynamic> acceptedRequest = data['acceptedRequest'];
     return Listing(
         username: username,
         title: title,
@@ -77,6 +81,7 @@ class Listing {
         email: email,
         listId: listId,
         listingState: listingState,
-        requests: requests);
+        requests: requests,
+        acceptedRequest: acceptedRequest);
   }
 }

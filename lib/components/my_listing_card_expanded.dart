@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/services/helper_service.dart';
+import 'package:FoodForGood/models/listing_model.dart';
 
 class MyListingCardExpanded extends StatelessWidget {
   final String title;
@@ -10,17 +11,40 @@ class MyListingCardExpanded extends StatelessWidget {
   final Function onDelete;
   final Function onEdit;
   final DateTime expiryTime;
+  final Listing listing;
+  // final Map<String, dynamic> request;
+  final List<Widget> requestCards;
 
-  MyListingCardExpanded(
-      {this.title,
-      this.descrtiption,
-      this.address,
-      this.onDelete,
-      this.onEdit,
-      this.expiryTime});
+  MyListingCardExpanded({
+    this.title,
+    this.descrtiption,
+    this.address,
+    this.onDelete,
+    this.onEdit,
+    this.expiryTime,
+    this.listing,
+    // this.request,
+    this.requestCards
+  });
 
   @override
   Widget build(BuildContext context) {
+    // List<Widget> requestWidget = [];
+    // print(request);
+    // if (request.isNotEmpty) {
+    //   request.forEach((key, value) {
+    //     requestWidget.add(RequestCard(
+    //       title: key,
+    //       onAccept: () async {
+    //         await database.editListingState(listingStateProgress, listing);
+    //         kShowFlushBar(
+    //             content: 'Request accepted successfully',
+    //             context: context,
+    //             customError: true);
+    //       },
+    //     ));
+    //   });
+    // }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -78,7 +102,8 @@ class MyListingCardExpanded extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    HelperService.convertDateTimeToHumanReadable(this.expiryTime),
+                    HelperService.convertDateTimeToHumanReadable(
+                        this.expiryTime),
                     softWrap: true,
                     style: kTextStyle.copyWith(
                         fontSize: 14.5, fontWeight: FontWeight.bold),
@@ -113,6 +138,7 @@ class MyListingCardExpanded extends StatelessWidget {
         SizedBox(
           height: 10.0,
         ),
+        ...requestCards
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'package:FoodForGood/components/request_card.dart';
 import 'package:flutter/material.dart';
 
 import 'package:FoodForGood/components/dialog_box.dart';
@@ -42,12 +43,14 @@ class _MyListState extends State<MyList> {
                 (listing) {
                   if (listing.email == userEmail) {
                     if (listing.listingState == listingState) {
-                      return MyListing(listing: listing, database: database);
+                      return MyListing(
+                        listing: listing,
+                        database: database,
+                      );
                     }
                     if (listing.listingState == listingStateOpen &&
                         listing.expiryTime.isBefore(currentTime)) {
-                      database.editListingState(
-                          listingStateDeleted, listing);
+                      database.editListingState(listingStateDeleted, listing);
                     }
                   }
                 },
@@ -159,6 +162,66 @@ class MyListing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<RequestCard> requestCards = [];
+    bool requestIsAlreadyAccepted = listing.acceptedRequest.isNotEmpty;
+    Map<String, dynamic> allRequests = listing.requests;
+    Map<String, dynamic> acceptedRequest = listing.acceptedRequest;
+    Map<String, dynamic> requestsToShow =
+        requestIsAlreadyAccepted ? acceptedRequest : allRequests;
+    if (requestsToShow.isNotEmpty) {
+      requestsToShow.forEach(
+        (email, time) {
+          requestCards.add(
+            RequestCard(
+              title: email,
+              requestIsAccepted: requestIsAlreadyAccepted,
+              onAccept: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogBox(
+                      title: 'Accept Request',
+                      text: 'Are you sure you want to accept this request',
+                      onYes: () async {
+                        try {
+                          await database.acceptListingRequest(
+                              listing, {email: listing.requests[email]});
+                        } catch (e) {
+                          print(e.toString());
+                        }
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                );
+              },
+              onDecline: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogBox(
+                      title: 'Decline Request',
+                      text: 'Are you sure you want to reject this request',
+                      onYes: () async {
+                        try {
+                          await database.deleteListingRequest(
+                            isAlreadyAccepted: requestIsAlreadyAccepted,
+                            listing: listing,
+                          );
+                        } catch (e) {
+                          print(e.toString());
+                        }
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
     return MyListingCard(
       title: listing.title,
       subtitle: listing.description,
@@ -167,6 +230,7 @@ class MyListing extends StatelessWidget {
         descrtiption: listing.description,
         address: listing.address,
         expiryTime: listing.expiryTime,
+        requestCards: requestCards,
         onEdit: () {
           Navigator.push(
             context,
