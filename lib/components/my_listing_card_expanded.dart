@@ -12,7 +12,6 @@ class MyListingCardExpanded extends StatelessWidget {
   final Function onEdit;
   final DateTime expiryTime;
   final Listing listing;
-  // final Map<String, dynamic> request;
   final List<Widget> requestCards;
 
   MyListingCardExpanded({
@@ -23,28 +22,11 @@ class MyListingCardExpanded extends StatelessWidget {
     this.onEdit,
     this.expiryTime,
     this.listing,
-    // this.request,
     this.requestCards
   });
 
   @override
   Widget build(BuildContext context) {
-    // List<Widget> requestWidget = [];
-    // print(request);
-    // if (request.isNotEmpty) {
-    //   request.forEach((key, value) {
-    //     requestWidget.add(RequestCard(
-    //       title: key,
-    //       onAccept: () async {
-    //         await database.editListingState(listingStateProgress, listing);
-    //         kShowFlushBar(
-    //             content: 'Request accepted successfully',
-    //             context: context,
-    //             customError: true);
-    //       },
-    //     ));
-    //   });
-    // }
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[

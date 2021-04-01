@@ -82,11 +82,11 @@ class _RequestScreenState extends State<RequestScreen> {
     return markers;
   }
 
-  Widget _getAllListings() {
+  Widget _getAllListings(BuildContext ctx) {
     final database = FirestoreDatabase();
     return StreamBuilder<List<Listing>>(
       stream: database.listingStream(),
-      builder: (context, snapshot) {
+      builder: (_, snapshot) {
         if (snapshot.hasData) {
           final listings = snapshot.data;
           final children = listings
@@ -110,16 +110,26 @@ class _RequestScreenState extends State<RequestScreen> {
                               Map<String, dynamic> requests = listing.requests;
                               if (requests.containsKey(myEmail)) {
                                 print('Request is already created');
+                                kShowFlushBar(
+                                    context: ctx,
+                                    content:
+                                        'Request is already created for this listing!',
+                                    customError: true);
                               } else {
                                 requests[myEmail] = currentTime.toString();
                                 await database.createListingRequest(
                                     listing, requests);
+                                kShowFlushBar(
+                                    context: ctx,
+                                    content: 'Request generated successfully',
+                                    customError: true);
+                                print(
+                                    'Listing request is successfully created');
                               }
-                              print('Listing request is successfully created');
                             },
                             onCross: () {
                               setState(() {
-                                _myAnimatedWidget = _getAllListings();
+                                _myAnimatedWidget = _getAllListings(ctx);
                               });
                             },
                           );
@@ -153,7 +163,6 @@ class _RequestScreenState extends State<RequestScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
-    _myAnimatedWidget = _getAllListings();
   }
 
   @override
@@ -203,7 +212,7 @@ class _RequestScreenState extends State<RequestScreen> {
                 height: MediaQuery.of(context).size.height * .35,
                 child: AnimatedSwitcher(
                   duration: Duration(milliseconds: 300),
-                  child: _myAnimatedWidget,
+                  child: _myAnimatedWidget ?? _getAllListings(context),
                 ),
               ),
             ),
