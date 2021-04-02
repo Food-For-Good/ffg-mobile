@@ -1,3 +1,4 @@
+import 'package:FoodForGood/components/icon_button.dart';
 import 'package:flutter/material.dart';
 
 import 'package:FoodForGood/constants.dart';
@@ -14,16 +15,15 @@ class MyListingCardExpanded extends StatelessWidget {
   final Listing listing;
   final List<Widget> requestCards;
 
-  MyListingCardExpanded({
-    this.title,
-    this.descrtiption,
-    this.address,
-    this.onDelete,
-    this.onEdit,
-    this.expiryTime,
-    this.listing,
-    this.requestCards
-  });
+  MyListingCardExpanded(
+      {this.title,
+      this.descrtiption,
+      this.address,
+      this.onDelete,
+      this.onEdit,
+      this.expiryTime,
+      this.listing,
+      this.requestCards});
 
   @override
   Widget build(BuildContext context) {
@@ -99,22 +99,18 @@ class MyListingCardExpanded extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            IconButton(
+            CustomIconButton(
+              icon: Icons.edit_rounded,
+              color: kPrimaryColor,
               onPressed: this.onEdit,
-              icon: Icon(
-                Icons.edit,
-                color: kPrimaryColor,
-                size: 40.0,
-              ),
+              size: 40.0,
             ),
-            IconButton(
+            CustomIconButton(
+              icon: Icons.delete,
+              color: kSecondaryColor,
               onPressed: this.onDelete,
-              icon: Icon(
-                Icons.delete,
-                color: kSecondaryColor,
-                size: 40.0,
-              ),
-            )
+              size: 40.0,
+            ),
           ],
         ),
         SizedBox(

@@ -57,7 +57,7 @@ class _MyListState extends State<MyList> {
               )
               .whereType<MyListing>()
               .toList();
-          return Column(
+          return ListView(
             children: children,
           );
         }

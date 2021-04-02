@@ -1,23 +1,32 @@
 import 'package:flutter/material.dart';
+import '../constants.dart';
 
 class CustomIconButton extends StatelessWidget {
-  final Color color;
   final IconData icon;
+  final Color color;
   final double size;
   final Function onPressed;
 
-  CustomIconButton({this.color, this.icon, this.size, this.onPressed});
+  CustomIconButton({
+    @required this.icon,
+    this.color = kPrimaryColor,
+    this.size = 24.0,
+    this.onPressed,
+  });
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: this.onPressed,
-      child: Container(
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          color: Colors.redAccent,
-          borderRadius: BorderRadius.circular(40.0),
+    return Material(
+      color: kBackgroundColor,
+      type: MaterialType.circle,
+      child: IconButton(
+        iconSize: this.size,
+        splashColor: kPrimaryColor.withAlpha(150),
+        splashRadius: size / 2 + 8.0,
+        onPressed: this.onPressed,
+        icon: Icon(
+          this.icon,
+          color: this.color,
         ),
-        child: Icon(this.icon, color: this.color, size: this.size),
       ),
     );
   }
