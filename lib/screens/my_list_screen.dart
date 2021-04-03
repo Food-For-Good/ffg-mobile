@@ -237,10 +237,7 @@ class MyListing extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => GiveAwayScreen(
                 editList: true,
-                editTitle: listing.title,
-                editDescription: listing.description,
-                listId: listing.listId,
-                editExpiryTime: listing.expiryTime,
+                editListing: listing,
               ),
             ),
           );
