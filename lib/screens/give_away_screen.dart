@@ -261,6 +261,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                       onPressed: () {
                         setState(() {
                           setExpiryTime = true;
+                          //Remove focus from other nodes, close open keyboard if any.
+                          FocusManager.instance.primaryFocus.unfocus();
                         });
                       },
                     ),
@@ -398,7 +400,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     ),
                   ],
                 ),
-                SizedBox(height: 220.0),
+                SizedBox(height: 50.0),
                 RoundedButton(
                   title: widget.editList ? 'SAVE' : 'SHARE',
                   colour: kPrimaryColor,
