@@ -17,15 +17,12 @@ import 'package:FoodForGood/services/helper_service.dart';
 
 class GiveAwayScreen extends StatefulWidget {
   final bool editList;
-  final String editTitle, editDescription, listId;
-  final DateTime editExpiryTime;
+  final Listing editListing;
 
-  GiveAwayScreen(
-      {this.editList = false,
-      this.editTitle,
-      this.editDescription,
-      this.listId,
-      this.editExpiryTime});
+  GiveAwayScreen({
+    this.editList = false,
+    this.editListing,
+  });
 
   @override
   _GiveAwayScreenState createState() => _GiveAwayScreenState();
@@ -88,10 +85,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     return created;
   }
 
-  Future<bool> _editListing(String listId) async {
+  Future<bool> _editListing(Listing editListing) async {
     bool created = false;
     try {
-      Listing listing = Listing(
+      Listing editedListing = Listing(
         username: this.username,
         title: this.title,
         description: this.description,
@@ -100,14 +97,15 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         pictureName: this.pictureName,
         address: this.address,
         email: this.email,
+        listId: editListing.listId,
         location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
         listingState: finalExpiryTime.isBefore(currentTime)
             ? listingStateDeleted
             : listingStateOpen,
-        requests: {},
-        acceptedRequest: {},
+        requests: editListing.requests,
+        acceptedRequest: editListing.acceptedRequest,
       );
-      await database.editListing(listing);
+      await database.editListing(editedListing);
       created = true;
     } catch (error) {
       print('ERROR: ' + error.toString());
@@ -137,11 +135,12 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
-    this.title = widget.editTitle;
-    this.description = widget.editDescription;
-    this.expiryTime = widget.editList ? widget.editExpiryTime : currentTime;
+    this.title = widget.editListing.title;
+    this.description = widget.editListing.description;
+    this.expiryTime =
+        widget.editList ? widget.editListing.expiryTime : currentTime;
     if (widget.editList) {
-      this.finalExpiryTime = widget.editExpiryTime;
+      this.finalExpiryTime = widget.editListing.expiryTime;
       expiryTimeSelected = true;
     }
   }
@@ -420,7 +419,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     }
                     if (errorMessage == 'NONE') {
                       if (widget.editList) {
-                        bool created = await _editListing(widget.listId);
+                        bool created = await _editListing(widget.editListing);
                         errorMessage = created
                             ? 'Listing saved!'
                             : 'Listing not saved due to some error.';
