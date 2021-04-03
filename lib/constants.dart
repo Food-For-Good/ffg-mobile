@@ -22,6 +22,7 @@ const kTitleStyle = TextStyle(
   color: kBackgroundColor,
 );
 
+
 Widget kAppBar(
     {BuildContext context, Widget title, Icon icon, Function pressed}) {
   return AppBar(

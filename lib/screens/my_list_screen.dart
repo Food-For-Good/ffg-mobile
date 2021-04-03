@@ -1,13 +1,14 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:FoodForGood/components/request_card.dart';
 import 'package:flutter/material.dart';
-import 'package:modal_progress_hud/modal_progress_hud.dart';
 
 import 'package:FoodForGood/components/dialog_box.dart';
 import 'package:FoodForGood/components/my_listing_card_expanded.dart';
 import 'package:FoodForGood/components/my_listing_card.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/models/listing_model.dart';
 import 'package:FoodForGood/screens/give_away_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
+import 'package:FoodForGood/services/database.dart';
 
 class MyList extends StatefulWidget {
   final String title, description, phoneNo, address;
@@ -18,19 +19,61 @@ class MyList extends StatefulWidget {
 }
 
 class _MyListState extends State<MyList> {
-  final Firestore _firestore = Firestore.instance;
   final AuthService _auth = AuthService();
   String userEmail = '';
-  bool _showSpinner = false;
+
+  int _selectedIndex = 0;
+  PageController _pageController = PageController();
+  DateTime currentTime = DateTime.now();
 
   getUserEmail() async {
-    setState(() {
-      this._showSpinner = true;
-    });
     this.userEmail = await _auth.getEmail();
-    setState(() {
-      this._showSpinner = false;
-    });
+  }
+
+  final database = FirestoreDatabase();
+
+  Widget _getMyListings(String listingState) {
+    return StreamBuilder<List<Listing>>(
+      stream: database.listingStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final listings = snapshot.data;
+          final children = listings
+              .map(
+                (listing) {
+                  if (listing.email == userEmail) {
+                    if (listing.listingState == listingState) {
+                      return MyListing(
+                        listing: listing,
+                        database: database,
+                      );
+                    }
+                    if (listing.listingState == listingStateOpen &&
+                        listing.expiryTime.isBefore(currentTime)) {
+                      database.editListingState(listingStateDeleted, listing);
+                    }
+                  }
+                },
+              )
+              .whereType<MyListing>()
+              .toList();
+          return ListView(
+            children: children,
+          );
+        }
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Some Error Occured',
+              style: kTextStyle,
+            ),
+          );
+        }
+        return Center(
+          child: Text('No listing available'),
+        );
+      },
+    );
   }
 
   @override
@@ -52,82 +95,177 @@ class _MyListState extends State<MyList> {
             Navigator.pop(context);
           },
         ),
-        body: ModalProgressHUD(
-          inAsyncCall: this._showSpinner,
-          child: StreamBuilder(
-            stream: _firestore.collection('Listings').snapshots(),
-            builder: (context, snapshot) {
-              List<MyListingCard> myListingWidgets = [];
-              if (snapshot.hasData) {
-                final listings = snapshot.data.documents;
-                for (var listing in listings) {
-                  final title = (listing.data['title'] == null
-                      ? ''
-                      : listing.data['title']);
-                  final description = listing.data['description'];
-                  final address = listing.data['address'];
-                  final email = listing.data['email'];
-                  final listId = listing.data['docId'];
-                  final expiryTime = listing.data['expiryTime'].toDate();
-                  final myListingWidget = MyListingCard(
-                    title: title,
-                    subtitle: description,
-                    myExpandedListingCard: MyListingCardExpanded(
-                      title: title,
-                      descrtiption: description,
-                      address: address,
-                      expiryTime: expiryTime,
-                      onEdit: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => GiveAwayScreen(
-                              editList: true,
-                              editTitle: title,
-                              editDescription: description,
-                              listId: listId,
-                              editExpiryTime: expiryTime,
-                            ),
-                          ),
-                        );
-                      },
-                      onDelete: () {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return DialogBox(
-                              title: 'Delete',
-                              text:
-                                  'Are you sure you want to delete this Listing?',
-                              onYes: () async {
-                                try {
-                                  await _firestore
-                                      .collection('Listings')
-                                      .document(listing.data['docId'])
-                                      .delete();
-                                  Navigator.pop(context);
-                                } catch (error) {
-                                  print('ERROR: ' + error.toString());
-                                }
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  );
-                  if (email == userEmail) {
-                    myListingWidgets.add(myListingWidget);
-                  }
-                }
-              }
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: myListingWidgets,
-              );
+        bottomNavigationBar: Container(
+          height: 100.0,
+          child: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: kSecondaryColor,
+            items: const <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: Icon(Icons.lock_open_rounded),
+                label: 'Open',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.lock_outline_rounded),
+                label: 'In Progress',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.done_all_rounded),
+                label: 'Completed',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.delete_forever_rounded),
+                label: 'Deleted',
+              ),
+            ],
+            currentIndex: _selectedIndex,
+            selectedItemColor: kPrimaryColor,
+            unselectedItemColor: kBackgroundColor,
+            onTap: (index) {
+              setState(() {
+                _selectedIndex = index;
+                _pageController.animateToPage(index,
+                    duration: Duration(milliseconds: 500),
+                    curve: Curves.linear);
+              });
             },
           ),
         ),
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (index) async {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          children: [
+            _getMyListings(listingStateOpen),
+            _getMyListings(listingStateProgress),
+            _getMyListings(listingStateCompleted),
+            _getMyListings(listingStateDeleted),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyListing extends StatelessWidget {
+  const MyListing({
+    Key key,
+    @required this.listing,
+    @required this.database,
+  }) : super(key: key);
+
+  final FirestoreDatabase database;
+  final Listing listing;
+
+  @override
+  Widget build(BuildContext context) {
+    List<RequestCard> requestCards = [];
+    bool requestIsAlreadyAccepted = listing.acceptedRequest.isNotEmpty;
+    Map<String, dynamic> allRequests = listing.requests;
+    Map<String, dynamic> acceptedRequest = listing.acceptedRequest;
+    Map<String, dynamic> requestsToShow =
+        requestIsAlreadyAccepted ? acceptedRequest : allRequests;
+    if (requestsToShow.isNotEmpty) {
+      requestsToShow.forEach(
+        (email, time) {
+          requestCards.add(
+            RequestCard(
+              title: email,
+              requestIsAccepted: requestIsAlreadyAccepted,
+              onAccept: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogBox(
+                      title: 'Accept Request',
+                      text: 'Are you sure you want to accept this request',
+                      onYes: () async {
+                        try {
+                          await database.acceptListingRequest(
+                              listing, {email: listing.requests[email]});
+                        } catch (e) {
+                          print(e.toString());
+                        }
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                );
+              },
+              onDecline: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return DialogBox(
+                      title: 'Decline Request',
+                      text: 'Are you sure you want to reject this request',
+                      onYes: () async {
+                        try {
+                          await database.deleteListingRequest(
+                            isAlreadyAccepted: requestIsAlreadyAccepted,
+                            listing: listing,
+                          );
+                        } catch (e) {
+                          print(e.toString());
+                        }
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          );
+        },
+      );
+    }
+    return MyListingCard(
+      title: listing.title,
+      subtitle: listing.description,
+      myExpandedListingCard: MyListingCardExpanded(
+        title: listing.title,
+        descrtiption: listing.description,
+        address: listing.address,
+        expiryTime: listing.expiryTime,
+        requestCards: requestCards,
+        onEdit: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GiveAwayScreen(
+                editList: true,
+                editTitle: listing.title,
+                editDescription: listing.description,
+                listId: listing.listId,
+                editExpiryTime: listing.expiryTime,
+              ),
+            ),
+          );
+        },
+        onDelete: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return DialogBox(
+                title: 'Delete',
+                text: 'Are you sure you want to delete this Listing?',
+                onYes: () async {
+                  try {
+                    // Change the listing state to deleted state.
+                    await database.editListingState(
+                        listingStateDeleted, listing);
+                    Navigator.pop(context);
+                  } catch (error) {
+                    print('ERROR: ' + error.toString());
+                  }
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

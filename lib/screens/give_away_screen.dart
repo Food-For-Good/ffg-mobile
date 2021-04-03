@@ -1,3 +1,5 @@
+import 'package:FoodForGood/models/listing_model.dart';
+import 'package:FoodForGood/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -60,29 +62,25 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   bool expiryTimeSelected = false;
   bool setExpiryTime = false;
 
-  Firestore _firestore = Firestore.instance;
+  final database = FirestoreDatabase();
 
-  Future<bool> createListing() async {
+  Future<bool> _createListing() async {
     bool created = false;
     try {
-      final docRef = await _firestore.collection('Listings').add({
-        'username': this.username,
-        'title': this.title,
-        'description': this.description,
-        'expiryTime': this.expiryTime,
-        'location':
-            GeoPoint(currentPosition.latitude, currentPosition.longitude),
-        'phoneNo': this.phoneNo,
-        'pictureName': this.pictureName,
-        'address': this.address,
-        'email': this.email,
-      });
-      await _firestore
-          .collection('Listings')
-          .document(docRef.documentID)
-          .updateData({
-        'docId': docRef.documentID, // Adding auto-generated document Id.
-      });
+      await database.createListing(Listing(
+        username: this.username,
+        title: this.title,
+        description: this.description,
+        expiryTime: this.finalExpiryTime,
+        phoneNo: this.phoneNo,
+        pictureName: this.pictureName,
+        address: this.address,
+        email: this.email,
+        location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
+        listingState: listingStateOpen,
+        requests: {},
+        acceptedRequest: {},
+      ));
       created = true;
     } catch (error) {
       print('ERROR: ' + error.toString());
@@ -90,16 +88,26 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     return created;
   }
 
-  Future<bool> editListing(String listId) async {
+  Future<bool> _editListing(String listId) async {
     bool created = false;
     try {
-      await _firestore.collection('Listings').document(listId).updateData(
-        {
-          'title': this.title,
-          'description': this.description,
-          'expiryTime': this.expiryTime
-        },
+      Listing listing = Listing(
+        username: this.username,
+        title: this.title,
+        description: this.description,
+        expiryTime: this.finalExpiryTime,
+        phoneNo: this.phoneNo,
+        pictureName: this.pictureName,
+        address: this.address,
+        email: this.email,
+        location: GeoPoint(currentPosition.latitude, currentPosition.longitude),
+        listingState: finalExpiryTime.isBefore(currentTime)
+            ? listingStateDeleted
+            : listingStateOpen,
+        requests: {},
+        acceptedRequest: {},
       );
+      await database.editListing(listing);
       created = true;
     } catch (error) {
       print('ERROR: ' + error.toString());
@@ -410,13 +418,13 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     }
                     if (errorMessage == 'NONE') {
                       if (widget.editList) {
-                        bool created = await editListing(widget.listId);
+                        bool created = await _editListing(widget.listId);
                         errorMessage = created
                             ? 'Listing saved!'
                             : 'Listing not saved due to some error.';
                         Navigator.pop(context);
                       } else {
-                        bool created = await createListing();
+                        bool created = await _createListing();
                         errorMessage = created
                             ? 'Listing created!'
                             : 'Listing not created due to some error.';

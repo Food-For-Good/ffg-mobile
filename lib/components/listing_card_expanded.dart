@@ -11,6 +11,8 @@ class ListingCardExpanded extends StatelessWidget {
   final String address;
   final Function onCross;
   final DateTime expiryTime;
+  final Function onPressedTickMark;
+  final Color tickMarkColor;
 
   ListingCardExpanded(
       {this.username,
@@ -18,7 +20,9 @@ class ListingCardExpanded extends StatelessWidget {
       this.descrtiption,
       this.address,
       this.onCross,
-      this.expiryTime});
+      this.expiryTime,
+      this.onPressedTickMark,
+      this.tickMarkColor = kPrimaryColor});
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +108,8 @@ class ListingCardExpanded extends StatelessWidget {
                 Container(
                   width: 80,
                   child: Text(
-                    HelperService.convertDateTimeToHumanReadable(this.expiryTime),
+                    HelperService.convertDateTimeToHumanReadable(
+                        this.expiryTime),
                     style: kTextStyle.copyWith(
                         fontSize: 14.5, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
@@ -118,10 +123,10 @@ class ListingCardExpanded extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             IconButton(
-              onPressed: () {},
+              onPressed: this.onPressedTickMark,
               icon: Icon(
                 FontAwesomeIcons.check,
-                color: kPrimaryColor,
+                color: this.tickMarkColor,
                 size: 40.0,
               ),
             ),
