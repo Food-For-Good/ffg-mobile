@@ -38,15 +38,6 @@ class RequestCard extends StatelessWidget {
                     icon: Icons.clear_rounded,
                     onPressed: this.onDecline,
                   ),
-                  // IconButton(
-                  //   splashColor: kSecondaryColor,
-                  //   padding: EdgeInsets.all(0.0),
-                  //   icon: Icon(
-                  //     Icons.clear_rounded,
-                  //     color: kPrimaryColor,
-                  //   ),
-                  //   onPressed: this.onDecline,
-                  // ),
                   if (!requestIsAccepted)
                     SizedBox(
                       width: 10.0,
@@ -56,14 +47,6 @@ class RequestCard extends StatelessWidget {
                       icon: Icons.check_rounded,
                       onPressed: this.onAccept,
                     ),
-                  // IconButton(
-                  //   padding: EdgeInsets.all(0.0),
-                  //   icon: Icon(
-                  //     Icons.check_rounded,
-                  //     color: kPrimaryColor,
-                  //   ),
-                  //   onPressed: this.onAccept,
-                  // ),
                 ],
               ),
             ],
