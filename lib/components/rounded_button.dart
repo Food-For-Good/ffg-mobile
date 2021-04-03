@@ -17,7 +17,7 @@ class RoundedButton extends StatelessWidget {
     this.colour,
     this.splashColour = Colors.deepOrange,
     this.height = 50.0,
-    this.width = 280.0,
+    this.width,
     this.borderColour,
     this.textColour = kBackgroundColor,
   });
@@ -26,7 +26,8 @@ class RoundedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FlatButton(
       height: this.height,
-      minWidth: this.width,
+      //If width is not provided, then minWidth is 75% of screen size.
+      minWidth: this.width ?? MediaQuery.of(context).size.width * 0.75,
       shape: RoundedRectangleBorder(
         side: BorderSide(
             color: kSecondaryColor,
