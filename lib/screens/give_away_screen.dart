@@ -135,11 +135,11 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
-    this.title = widget.editListing.title;
-    this.description = widget.editListing.description;
-    this.expiryTime =
-        widget.editList ? widget.editListing.expiryTime : currentTime;
+
     if (widget.editList) {
+      this.title = widget.editListing.title;
+      this.description = widget.editListing.description;
+      this.expiryTime = widget.editListing.expiryTime;
       this.finalExpiryTime = widget.editListing.expiryTime;
       expiryTimeSelected = true;
     }
