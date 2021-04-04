@@ -49,8 +49,9 @@ class FirestoreDatabase {
   //Else If the request is in PROGRESS state, empty the accepted request,
   //and show all the requests, also change the state to OPEN state again.
   Future<void> deleteListingRequest(
-      {bool isAlreadyAccepted,
-      Listing listing,}) async {
+      {bool isAlreadyAccepted = false,
+      Listing listing,
+      String requesterEmail}) async {
     if (isAlreadyAccepted) {
       await _service.updateData(
         path: APIPath.listing(),
@@ -62,7 +63,7 @@ class FirestoreDatabase {
       );
     } else {
       Map<String, dynamic> requests = listing.requests;
-      requests.remove(listing.email);
+      requests.remove(requesterEmail);
       await _service.updateData(
         path: APIPath.listing(),
         docId: listing.listId,

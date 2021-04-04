@@ -34,19 +34,19 @@ class RequestCard extends StatelessWidget {
               Row(
                 children: [
                   SizedBox(width: 10.0),
-                  CustomIconButton(
-                    icon: Icons.clear_rounded,
-                    onPressed: this.onDecline,
-                  ),
+                  if (!requestIsAccepted)
+                    CustomIconButton(
+                      icon: Icons.clear_rounded,
+                      onPressed: this.onDecline,
+                    ),
                   if (!requestIsAccepted)
                     SizedBox(
                       width: 10.0,
                     ),
-                  if (!requestIsAccepted)
-                    CustomIconButton(
-                      icon: Icons.check_rounded,
-                      onPressed: this.onAccept,
-                    ),
+                  CustomIconButton(
+                    icon: Icons.check_rounded,
+                    onPressed: this.onAccept,
+                  ),
                 ],
               ),
             ],

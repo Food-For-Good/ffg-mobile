@@ -1,8 +1,8 @@
+import 'package:FoodForGood/components/icon_button.dart';
 import 'package:FoodForGood/components/request_card.dart';
 import 'package:flutter/material.dart';
 
 import 'package:FoodForGood/components/dialog_box.dart';
-import 'package:FoodForGood/components/my_listing_card_expanded.dart';
 import 'package:FoodForGood/components/my_listing_card.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/models/listing_model.dart';
@@ -207,6 +207,7 @@ class MyListing extends StatelessWidget {
                           await database.deleteListingRequest(
                             isAlreadyAccepted: requestIsAlreadyAccepted,
                             listing: listing,
+                            requesterEmail: email,
                           );
                         } catch (e) {
                           print(e.toString());
@@ -223,47 +224,53 @@ class MyListing extends StatelessWidget {
       );
     }
     return MyListingCard(
-      title: listing.title,
-      subtitle: listing.description,
-      myExpandedListingCard: MyListingCardExpanded(
         title: listing.title,
-        descrtiption: listing.description,
-        address: listing.address,
-        expiryTime: listing.expiryTime,
+        subtitle: listing.description,
+        listing: listing,
         requestCards: requestCards,
-        onEdit: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => GiveAwayScreen(
-                editList: true,
-                editListing: listing,
-              ),
-            ),
-          );
-        },
-        onDelete: () {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return DialogBox(
-                title: 'Delete',
-                text: 'Are you sure you want to delete this Listing?',
-                onYes: () async {
-                  try {
-                    // Change the listing state to deleted state.
-                    await database.editListingState(
-                        listingStateDeleted, listing);
-                    Navigator.pop(context);
-                  } catch (error) {
-                    print('ERROR: ' + error.toString());
-                  }
+        customIconButtons: [
+          CustomIconButton(
+            icon: Icons.edit_rounded,
+            color: kPrimaryColor,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => GiveAwayScreen(
+                    editList: true,
+                    editListing: listing,
+                  ),
+                ),
+              );
+            },
+            size: 40.0,
+          ),
+          CustomIconButton(
+            icon: Icons.delete,
+            color: kSecondaryColor,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return DialogBox(
+                    title: 'Delete',
+                    text: 'Are you sure you want to delete this Listing?',
+                    onYes: () async {
+                      try {
+                        // Change the listing state to deleted state.
+                        await database.editListingState(
+                            listingStateDeleted, listing);
+                        Navigator.pop(context);
+                      } catch (error) {
+                        print('ERROR: ' + error.toString());
+                      }
+                    },
+                  );
                 },
               );
             },
-          );
-        },
-      ),
-    );
+            size: 40.0,
+          ),
+        ]);
   }
 }

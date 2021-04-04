@@ -54,7 +54,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   );
   Position currentPosition;
   DateTime currentTime = DateTime.now();
-  DateTime expiryTime;
+  DateTime expiryTime = DateTime.now();
   DateTime finalExpiryTime;
   bool expiryTimeSelected = false;
   bool setExpiryTime = false;
