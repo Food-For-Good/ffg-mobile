@@ -10,8 +10,8 @@ import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/database.dart';
 
 class MyRequestScreen extends StatefulWidget {
-  final String title, description, phoneNo, address;
-  MyRequestScreen({this.title, this.description, this.phoneNo, this.address});
+  final int selectedIndexFromRequestPage;
+  MyRequestScreen({this.selectedIndexFromRequestPage});
 
   @override
   _MyRequestScreenState createState() => _MyRequestScreenState();
@@ -149,6 +149,17 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
   void initState() {
     super.initState();
     this.getUserEmail();
+    if (widget.selectedIndexFromRequestPage != null) {
+      _selectedIndex = widget.selectedIndexFromRequestPage;
+      _pageController =
+          PageController(initialPage: widget.selectedIndexFromRequestPage);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
   }
 
   @override
