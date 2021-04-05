@@ -77,6 +77,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
         listingState: listingStateOpen,
         requests: {},
         acceptedRequest: {},
+        foodReceivedByRequester: false,
+        foodGivenByDonor: false,
       ));
       created = true;
     } catch (error) {
@@ -104,6 +106,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
             : listingStateOpen,
         requests: editListing.requests,
         acceptedRequest: editListing.acceptedRequest,
+        foodReceivedByRequester: editListing.foodReceivedByRequester,
+        foodGivenByDonor: editListing.foodGivenByDonor,
       );
       await database.editListing(editedListing);
       created = true;

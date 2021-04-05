@@ -40,7 +40,7 @@ class MyListingCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        'Sharing $title',
+                        'Sharing ${listing.title}',
                         style: kTextStyle.copyWith(
                           fontWeight: FontWeight.bold,
                           fontSize: 20.0,

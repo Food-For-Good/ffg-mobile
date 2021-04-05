@@ -164,6 +164,12 @@ class MyListing extends StatelessWidget {
   Widget build(BuildContext context) {
     List<RequestCard> requestCards = [];
     bool requestIsAlreadyAccepted = listing.acceptedRequest.isNotEmpty;
+    String requestState = listing.acceptedRequest.isNotEmpty
+        ? requestStateAccepted
+        : requestStatePending;
+    if (listing.listingState == listingStateCompleted) {
+      requestState = requestStateCompleted;
+    }
     Map<String, dynamic> allRequests = listing.requests;
     Map<String, dynamic> acceptedRequest = listing.acceptedRequest;
     Map<String, dynamic> requestsToShow =
@@ -174,24 +180,44 @@ class MyListing extends StatelessWidget {
           requestCards.add(
             RequestCard(
               title: email,
-              requestIsAccepted: requestIsAlreadyAccepted,
+              // requestIsAccepted: requestIsAlreadyAccepted,
+              requestState: requestState,
               onAccept: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return DialogBox(
-                      title: 'Accept Request',
-                      text: 'Are you sure you want to accept this request',
-                      onYes: () async {
-                        try {
-                          await database.acceptListingRequest(
-                              listing, {email: listing.requests[email]});
-                        } catch (e) {
-                          print(e.toString());
-                        }
-                        Navigator.pop(context);
-                      },
-                    );
+                    if (requestIsAlreadyAccepted) {
+                      return DialogBox(
+                        title: 'Food Given',
+                        text:
+                            'Is the food successfully received by the requester?',
+                        onYes: () async {
+                          try {
+                            await database.editFoodHandoverState(
+                                listing: listing,
+                                confirmationByUser: true,
+                                user: 'donor');
+                          } catch (e) {
+                            print(e.toString());
+                          }
+                          Navigator.pop(context);
+                        },
+                      );
+                    } else {
+                      return DialogBox(
+                        title: 'Accept Request',
+                        text: 'Are you sure you want to accept this request',
+                        onYes: () async {
+                          try {
+                            await database.acceptListingRequest(
+                                listing, {email: listing.requests[email]});
+                          } catch (e) {
+                            print(e.toString());
+                          }
+                          Navigator.pop(context);
+                        },
+                      );
+                    }
                   },
                 );
               },
@@ -228,49 +254,51 @@ class MyListing extends StatelessWidget {
         subtitle: listing.description,
         listing: listing,
         requestCards: requestCards,
-        customIconButtons: [
-          CustomIconButton(
-            icon: Icons.edit_rounded,
-            color: kPrimaryColor,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => GiveAwayScreen(
-                    editList: true,
-                    editListing: listing,
-                  ),
+        customIconButtons: listing.listingState == listingStateCompleted
+            ? []
+            : [
+                CustomIconButton(
+                  icon: Icons.edit_rounded,
+                  color: kPrimaryColor,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GiveAwayScreen(
+                          editList: true,
+                          editListing: listing,
+                        ),
+                      ),
+                    );
+                  },
+                  size: 40.0,
                 ),
-              );
-            },
-            size: 40.0,
-          ),
-          CustomIconButton(
-            icon: Icons.delete,
-            color: kSecondaryColor,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return DialogBox(
-                    title: 'Delete',
-                    text: 'Are you sure you want to delete this Listing?',
-                    onYes: () async {
-                      try {
-                        // Change the listing state to deleted state.
-                        await database.editListingState(
-                            listingStateDeleted, listing);
-                        Navigator.pop(context);
-                      } catch (error) {
-                        print('ERROR: ' + error.toString());
-                      }
-                    },
-                  );
-                },
-              );
-            },
-            size: 40.0,
-          ),
-        ]);
+                CustomIconButton(
+                  icon: Icons.delete,
+                  color: kSecondaryColor,
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return DialogBox(
+                          title: 'Delete',
+                          text: 'Are you sure you want to delete this Listing?',
+                          onYes: () async {
+                            try {
+                              // Change the listing state to deleted state.
+                              await database.editListingState(
+                                  listingStateDeleted, listing);
+                              Navigator.pop(context);
+                            } catch (error) {
+                              print('ERROR: ' + error.toString());
+                            }
+                          },
+                        );
+                      },
+                    );
+                  },
+                  size: 40.0,
+                ),
+              ]);
   }
 }

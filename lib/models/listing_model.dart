@@ -5,6 +5,10 @@ String listingStateProgress = 'Progress';
 String listingStateCompleted = 'Completed';
 String listingStateDeleted = 'Deleted';
 
+final String requestStateAccepted = 'requestAccepted';
+final String requestStatePending = 'requestPending';
+final String requestStateCompleted = 'requestCompleted';
+
 class Listing {
   final String username;
   final String title;
@@ -19,21 +23,26 @@ class Listing {
   final String listingState;
   final Map<String, dynamic> requests;
   final Map<String, dynamic> acceptedRequest;
+  final bool foodReceivedByRequester;
+  final bool foodGivenByDonor;
 
-  Listing(
-      {this.username,
-      this.title,
-      this.description,
-      this.expiryTime,
-      this.phoneNo,
-      this.pictureName,
-      this.address,
-      this.email,
-      this.location,
-      this.listId,
-      this.listingState,
-      this.requests,
-      this.acceptedRequest});
+  Listing({
+    this.username,
+    this.title,
+    this.description,
+    this.expiryTime,
+    this.phoneNo,
+    this.pictureName,
+    this.address,
+    this.email,
+    this.location,
+    this.listId,
+    this.listingState,
+    this.requests,
+    this.acceptedRequest,
+    this.foodReceivedByRequester,
+    this.foodGivenByDonor,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -49,6 +58,8 @@ class Listing {
       'listingState': listingState,
       'requests': this.requests,
       'acceptedRequest': this.acceptedRequest,
+      'foodReceivedByRequester': this.foodReceivedByRequester,
+      'foodGivenByDonor': this.foodGivenByDonor,
     };
   }
 
@@ -69,6 +80,8 @@ class Listing {
     final String listingState = data['listingState'];
     final Map<String, dynamic> requests = data['requests'];
     final Map<String, dynamic> acceptedRequest = data['acceptedRequest'];
+    final bool foodReceivedByRequester = data['foodReceivedByRequester'];
+    final bool foodGivenByDonor = data['foodGivenByDonor'];
     return Listing(
         username: username,
         title: title,
@@ -82,6 +95,8 @@ class Listing {
         listId: listId,
         listingState: listingState,
         requests: requests,
-        acceptedRequest: acceptedRequest);
+        acceptedRequest: acceptedRequest,
+        foodReceivedByRequester: foodReceivedByRequester,
+        foodGivenByDonor: foodGivenByDonor);
   }
 }

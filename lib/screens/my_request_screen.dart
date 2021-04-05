@@ -1,3 +1,4 @@
+import 'package:FoodForGood/components/dialog_box.dart';
 import 'package:FoodForGood/components/icon_button.dart';
 import 'package:FoodForGood/components/request_card.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +31,6 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
 
   final database = FirestoreDatabase();
 
-  final String requestStateAccepted = 'requestAccepted';
-  final String requestStatePending = 'requestPending';
-  final String requestStateTaken = 'requestTaken';
-
   Widget _getMyRequestLists(String requestState) {
     return StreamBuilder<List<Listing>>(
       stream: database.listingStream(),
@@ -47,22 +44,41 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                   if (listing.requests.containsKey(userEmail)) {
                     //User's request is accepted by the donor.
                     if (listing.acceptedRequest.containsKey(userEmail) &&
+                        (!listing.foodReceivedByRequester ||
+                            !listing.foodGivenByDonor) &&
                         requestState == requestStateAccepted) {
                       print('sending listing' + listing.toString());
                       return MyListingCard(
-                        title: listing.title,
-                        subtitle: listing.description,
+                        title: listing.username,
+                        subtitle: listing.title,
                         listing: listing,
                         requestCards: [
                           RequestCard(
-                            title: 'Food taken successfully',
-                            requestIsAccepted: true,
+                            title: 'Food taken successfully?',
+                            // requestIsAccepted: true,
+                            requestState: requestStateAccepted,
                             onAccept: () {
-                              kShowFlushBar(
-                                  content:
-                                      'Congratulations! Food exchanged successfully',
-                                  context: context,
-                                  customError: true);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return DialogBox(
+                                    title: 'Food Taken',
+                                    text:
+                                        'Is the food successfully received from the donor?',
+                                    onYes: () async {
+                                      try {
+                                        await database.editFoodHandoverState(
+                                            listing: listing,
+                                            confirmationByUser: true,
+                                            user: 'Receiver');
+                                      } catch (e) {
+                                        print(e.toString());
+                                      }
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                              );
                             },
                           )
                         ],
@@ -71,12 +87,13 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                     } else if (listing.acceptedRequest.isEmpty &&
                         requestState == requestStatePending) {
                       return MyListingCard(
-                          title: listing.title,
-                          subtitle: listing.description,
+                          title: listing.username,
+                          subtitle: listing.title,
                           listing: listing,
                           customIconButtons: [
                             CustomIconButton(
                               icon: Icons.clear,
+                              size: 40.0,
                               onPressed: () async {
                                 if (!listing.acceptedRequest
                                     .containsKey(userEmail)) {
@@ -93,14 +110,14 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                               },
                             )
                           ]);
-                      //Someone else is given the listing.
-                    } else if (!listing.acceptedRequest
-                            .containsKey(userEmail) &&
-                        listing.acceptedRequest.isNotEmpty &&
-                        requestState == requestStateTaken) {
+                      //Food is recieved.
+                    } else if (listing.acceptedRequest.containsKey(userEmail) &&
+                        listing.foodGivenByDonor &&
+                        listing.foodReceivedByRequester &&
+                        requestState == requestStateCompleted) {
                       return MyListingCard(
-                        title: listing.title,
-                        subtitle: listing.description,
+                        title: listing.username,
+                        subtitle: 'Sharing ' + listing.title,
                         listing: listing,
                       );
                     }
@@ -159,7 +176,11 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.lock_outline_rounded),
-                label: 'In Progress',
+                label: 'Requested',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.done_all_rounded),
+                label: 'Completed',
               ),
             ],
             currentIndex: _selectedIndex,
@@ -185,6 +206,7 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
           children: [
             _getMyRequestLists(requestStateAccepted),
             _getMyRequestLists(requestStatePending),
+            _getMyRequestLists(requestStateCompleted),
           ],
         ),
       ),
