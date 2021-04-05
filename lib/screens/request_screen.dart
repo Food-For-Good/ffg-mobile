@@ -127,6 +127,8 @@ class _RequestScreenState extends State<RequestScreen> {
                 (listing) {
                   if (listing.expiryTime.isAfter(currentTime) &&
                       listing.listingState == listingStateOpen) {
+                    addMarker(
+                        listing.location.latitude, listing.location.longitude);
                     return ListingCard(
                       username: listing.username,
                       title: listing.title,
