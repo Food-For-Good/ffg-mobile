@@ -1,5 +1,6 @@
 import 'package:FoodForGood/screens/my_request_screen.dart';
 import 'package:FoodForGood/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -115,6 +116,13 @@ class _RequestScreenState extends State<RequestScreen> {
     markers.add(currentLocationMarker);
   }
 
+  dartLatLng.LatLng getLatLngFromGeoPoint(GeoPoint location) {
+    dartLatLng.LatLng dartLocation = dartLatLng.LatLng(0.0, 0.0);
+    dartLocation.latitude = location.latitude;
+    dartLocation.longitude = location.longitude;
+    return dartLocation;
+  }
+
   Widget _getAllListings(BuildContext ctx) {
     final database = FirestoreDatabase();
     return StreamBuilder<List<Listing>>(
@@ -134,6 +142,8 @@ class _RequestScreenState extends State<RequestScreen> {
                       title: listing.title,
                       onPressed: () {
                         setState(() {
+                          mapController.move(
+                              getLatLngFromGeoPoint(listing.location), 13.0);
                           _myAnimatedWidget = ListingCardExpanded(
                             username: listing.username,
                             title: listing.title,
