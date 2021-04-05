@@ -1,6 +1,7 @@
 import 'package:FoodForGood/models/listing_model.dart';
 import 'package:FoodForGood/services/api_path.dart';
 import 'package:FoodForGood/services/firestore_service.dart';
+import 'package:meta/meta.dart';
 
 class FirestoreDatabase {
   final _service = FirestoreService.instance;
@@ -33,6 +34,27 @@ class FirestoreDatabase {
         docId: listing.listId,
         data: {'listingState': listingState},
       );
+
+  Future<void> editFoodHandoverState(
+      {@required Listing listing,
+      @required bool confirmationByUser,
+      String user}) async {
+    if (user == 'donor') {
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {'foodGivenByDonor': true},
+      );
+      await editListingState(listingStateCompleted, listing);
+    } else {
+      await _service.updateData(
+        path: APIPath.listing(),
+        docId: listing.listId,
+        data: {'foodReceivedByRequester': true},
+      );
+    }
+  }
+
   Future<void> createListingRequest(
           Listing listing, Map<String, dynamic> updatedRequestsList) async =>
       await _service.updateData(
@@ -49,8 +71,9 @@ class FirestoreDatabase {
   //Else If the request is in PROGRESS state, empty the accepted request,
   //and show all the requests, also change the state to OPEN state again.
   Future<void> deleteListingRequest(
-      {bool isAlreadyAccepted,
-      Listing listing,}) async {
+      {bool isAlreadyAccepted = false,
+      Listing listing,
+      String requesterEmail}) async {
     if (isAlreadyAccepted) {
       await _service.updateData(
         path: APIPath.listing(),
@@ -62,7 +85,7 @@ class FirestoreDatabase {
       );
     } else {
       Map<String, dynamic> requests = listing.requests;
-      requests.remove(listing.email);
+      requests.remove(requesterEmail);
       await _service.updateData(
         path: APIPath.listing(),
         docId: listing.listId,

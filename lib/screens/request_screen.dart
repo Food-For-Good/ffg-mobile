@@ -1,3 +1,4 @@
+import 'package:FoodForGood/screens/my_request_screen.dart';
 import 'package:FoodForGood/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -115,6 +116,17 @@ class _RequestScreenState extends State<RequestScreen> {
                                     content:
                                         'Request is already created for this listing!',
                                     customError: true);
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MyRequestScreen(
+                                        selectedIndexFromRequestPage: (listing
+                                                .acceptedRequest
+                                                .containsKey(myEmail))
+                                            ? 0
+                                            : 1,
+                                      ),
+                                    ));
                               } else {
                                 requests[myEmail] = currentTime.toString();
                                 await database.createListingRequest(
@@ -125,7 +137,15 @@ class _RequestScreenState extends State<RequestScreen> {
                                     customError: true);
                                 print(
                                     'Listing request is successfully created');
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => MyRequestScreen(
+                                        selectedIndexFromRequestPage: 1,
+                                      ),
+                                    ));
                               }
+                              // Navigator.pushNamed(context, '/myRequest');
                             },
                             onCross: () {
                               setState(() {

@@ -1,4 +1,5 @@
 import 'package:FoodForGood/components/icon_button.dart';
+import 'package:FoodForGood/models/listing_model.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
@@ -6,10 +7,9 @@ class RequestCard extends StatelessWidget {
   final String title;
   final Function onAccept;
   final Function onDecline;
-  final bool requestIsAccepted;
+  final String requestState;
 
-  RequestCard(
-      {this.title, this.onAccept, this.onDecline, this.requestIsAccepted});
+  RequestCard({this.title, this.onAccept, this.onDecline, this.requestState});
 
   @override
   Widget build(BuildContext context) {
@@ -34,19 +34,24 @@ class RequestCard extends StatelessWidget {
               Row(
                 children: [
                   SizedBox(width: 10.0),
-                  CustomIconButton(
-                    icon: Icons.clear_rounded,
-                    onPressed: this.onDecline,
-                  ),
-                  if (!requestIsAccepted)
+                  if (requestState == requestStatePending)
+                    CustomIconButton(
+                      icon: Icons.clear_rounded,
+                      onPressed: this.onDecline,
+                    ),
+                  if (requestState != requestStateAccepted)
                     SizedBox(
                       width: 10.0,
                     ),
-                  if (!requestIsAccepted)
+                  if (requestState != requestStateCompleted)
                     CustomIconButton(
                       icon: Icons.check_rounded,
                       onPressed: this.onAccept,
                     ),
+                  if (requestState == requestStateCompleted)
+                    Text('Food handed over',
+                        style: kTextStyle.copyWith(
+                            color: kPrimaryColor, fontSize: 12.0))
                 ],
               ),
             ],

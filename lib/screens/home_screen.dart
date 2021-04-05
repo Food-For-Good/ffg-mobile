@@ -88,6 +88,15 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 ListTile(
                   title: Text(
+                    'My Request',
+                    style: kTextStyle.copyWith(fontSize: 20.0),
+                  ),
+                  onTap: () {
+                    Navigator.pushNamed(context, '/myRequest');
+                  },
+                ),
+                ListTile(
+                  title: Text(
                     'About US',
                     style: kTextStyle.copyWith(fontSize: 20.0),
                   ),
