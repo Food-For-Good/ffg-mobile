@@ -223,6 +223,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                         FontAwesomeIcons.mapPin,
                       ),
                       onPressed: () async {
+                        //Remove focus from other nodes, close open keyboard if any.
+                          FocusManager.instance.primaryFocus.unfocus();
                         setState(() {
                           currentAddressWidget = spinner(context);
                         });
