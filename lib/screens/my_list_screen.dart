@@ -57,6 +57,13 @@ class _MyListState extends State<MyList> {
               )
               .whereType<MyListing>()
               .toList();
+          if (children.isEmpty) {
+            return Center(
+                child: Text(
+              'Currently, No listing is present here!',
+              style: kTextStyle,
+            ));
+          }
           return ListView(
             children: children,
           );

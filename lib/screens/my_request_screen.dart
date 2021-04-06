@@ -126,6 +126,13 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
               )
               .whereType<MyListingCard>()
               .toList();
+          if (children.isEmpty) {
+            return Center(
+                child: Text(
+              'Currently, No request is present here!',
+              style: kTextStyle,
+            ));
+          }
           return ListView(
             children: children,
           );
