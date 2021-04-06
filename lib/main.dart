@@ -2,6 +2,7 @@ import 'package:FoodForGood/screens/my_request_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:overlay_support/overlay_support.dart';
 import 'package:provider/provider.dart';
 
 import 'package:FoodForGood/constants.dart';
@@ -33,26 +34,30 @@ class MyApp extends StatelessWidget {
           //non-responsive portion of screen any where in the application.
           FocusManager.instance.primaryFocus.unfocus();
         },
-        child: MaterialApp(
-          title: 'Food For Good',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primaryColor: kPrimaryColor,
-            accentColor: kSecondaryColor,
-            scaffoldBackgroundColor: kBackgroundColor,
-            fontFamily: 'Proxima Nova',
+        child: OverlaySupport(
+          toastTheme: ToastThemeData(
+              background: kSecondaryColor, textColor: kBackgroundColor),
+          child: MaterialApp(
+            title: 'Food For Good',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: kPrimaryColor,
+              accentColor: kSecondaryColor,
+              scaffoldBackgroundColor: kBackgroundColor,
+              fontFamily: 'Proxima Nova',
+            ),
+            initialRoute: '/',
+            routes: {
+              '/': (context) => LandingScreen(),
+              '/login': (context) => LoginScreen(),
+              '/register': (context) => RegisterScreen(),
+              '/home': (context) => HomeScreen(),
+              '/giveAway': (context) => GiveAwayScreen(),
+              '/request': (context) => RequestScreen(),
+              '/myList': (context) => MyList(),
+              '/myRequest': (context) => MyRequestScreen(),
+            },
           ),
-          initialRoute: '/',
-          routes: {
-            '/': (context) => LandingScreen(),
-            '/login': (context) => LoginScreen(),
-            '/register': (context) => RegisterScreen(),
-            '/home': (context) => HomeScreen(),
-            '/giveAway': (context) => GiveAwayScreen(),
-            '/request': (context) => RequestScreen(),
-            '/myList': (context) => MyList(),
-            '/myRequest': (context) => MyRequestScreen(),
-          },
         ),
       ),
     );

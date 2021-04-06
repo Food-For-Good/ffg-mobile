@@ -6,6 +6,7 @@ import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/models/address_model.dart';
 import 'package:FoodForGood/services/location_service.dart';
+import 'package:FoodForGood/components/map_button.dart';
 
 class AddressSelector extends StatefulWidget {
   final AddressModel addressModel;
@@ -135,26 +136,4 @@ class _AddressSelectorState extends State<AddressSelector> {
   }
 }
 
-class MapButton extends StatelessWidget {
-  final IconData icon;
-  final Function onPressed;
 
-  const MapButton({@required this.icon, @required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: FloatingActionButton(
-        backgroundColor: kPrimaryColor,
-        splashColor: Colors.deepOrange,
-        child: Icon(
-          this.icon,
-          color: kBackgroundColor,
-          size: 30.0,
-        ),
-        onPressed: this.onPressed,
-      ),
-    );
-  }
-}

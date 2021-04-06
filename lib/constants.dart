@@ -1,5 +1,5 @@
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 const Color kPrimaryColor = Color(0xFFFEA848);
 const Color kSecondaryColor = Color(0xFF353535);
@@ -21,7 +21,6 @@ const kTitleStyle = TextStyle(
   fontWeight: FontWeight.bold,
   color: kBackgroundColor,
 );
-
 
 Widget kAppBar(
     {BuildContext context, Widget title, Icon icon, Function pressed}) {
@@ -70,22 +69,28 @@ void kShowFlushBar(
   } else if (content.contains('ERROR_ADDRESS_NOT_FOUND')) {
     message = 'Sorry, but we couldn\'t find the address. Please try again.';
   }
-  Flushbar(
-    borderRadius: 8.0,
-    borderWidth: 2.0,
-    borderColor: kSecondaryColor,
-    margin: EdgeInsets.all(10.0),
-    backgroundColor: kBackgroundColor,
-    dismissDirection: FlushbarDismissDirection.HORIZONTAL,
-    forwardAnimationCurve: Curves.fastLinearToSlowEaseIn,
-    messageText: Text(
-      message,
-      style: kTextStyle.copyWith(
-        color: kSecondaryColor,
-        fontWeight: FontWeight.bold,
+  // toast(message);
+  showSimpleNotification(
+    Container(
+      alignment: Alignment.centerLeft,
+      padding: EdgeInsets.all(5.0),
+      height: 50.0,
+      margin: EdgeInsets.all(10.0),
+      child: Text(
+        message,
+        style: kTextStyle.copyWith(
+          color: kSecondaryColor,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: kBackgroundColor,
+        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+        border: Border.all(color: kSecondaryColor, width: 2.0),
       ),
     ),
-    duration: Duration(seconds: 4),
-  )..show(context);
+    position: NotificationPosition.bottom,
+    background: kBackgroundColor,
+  );
 }
 //This is constant file

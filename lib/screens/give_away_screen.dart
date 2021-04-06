@@ -1,3 +1,5 @@
+import 'package:FoodForGood/components/address_selector.dart';
+import 'package:FoodForGood/models/address_model.dart';
 import 'package:FoodForGood/models/listing_model.dart';
 import 'package:FoodForGood/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/components/circular_button.dart';
@@ -18,10 +21,12 @@ import 'package:FoodForGood/services/helper_service.dart';
 class GiveAwayScreen extends StatefulWidget {
   final bool editList;
   final Listing editListing;
+  final Map<String, dynamic> userData;
 
   GiveAwayScreen({
     this.editList = false,
     this.editListing,
+    this.userData,
   });
 
   @override
@@ -36,6 +41,14 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
   getUserEmail() async {
     this.email = await AuthService().getEmail();
   }
+
+  // getUserAddress() async {
+  //   String userEmail = await AuthService().getEmail();
+  //   Map<String, dynamic> userData = await database.getUserData(userEmail);
+  //   print('-----------------------------');
+  //   this.address = userData['address']['text'];
+  //   print('address is :- ' + this.address);
+  // }
 
   String username = '',
       title = '',
@@ -134,12 +147,35 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     return defaultReturn;
   }
 
+  void _openAddressModal(AddressModel addressModel) async {
+    showModalBottomSheet(
+      clipBehavior: Clip.antiAlias,
+      enableDrag: false,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      context: context,
+      builder: (context) {
+        return AddressSelector(addressModel: addressModel);
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
     this.setUsername();
     this.getUserEmail();
-
+    try {
+      if (widget.userData != null) {
+        this.address = widget.userData['address']['text'];
+      }
+    } catch (e) {
+      print(e);
+    }
     if (widget.editList) {
       this.title = widget.editListing.title;
       this.description = widget.editListing.description;
@@ -151,300 +187,309 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        resizeToAvoidBottomInset: true,
-        appBar: kAppBar(
-          context: context,
-          title: Text('GIVE AWAY', style: kTitleStyle),
-          icon: Icon(Icons.arrow_back_ios),
-          pressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        body: Container(
-          child: NotificationListener<OverscrollIndicatorNotification>(
-            onNotification: (OverscrollIndicatorNotification overscroll) {
-              // This will stop overscroll glow effect.
-              overscroll.disallowGlow();
-              return;
+    return ChangeNotifierProvider<AddressModel>(
+      create: (context) => AddressModel(),
+      child: SafeArea(
+        child: Scaffold(
+          resizeToAvoidBottomInset: true,
+          appBar: kAppBar(
+            context: context,
+            title: Text('GIVE AWAY', style: kTitleStyle),
+            icon: Icon(Icons.arrow_back_ios),
+            pressed: () {
+              Navigator.pop(context);
             },
-            child: ListView(
-              shrinkWrap: true,
-              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
-              children: <Widget>[
-                CustomTextFeild(
-                  label: 'TITLE',
-                  prefixIcon: Icon(
-                    Icons.title,
-                    color: kSecondaryColor,
+          ),
+          body: Container(
+            child: NotificationListener<OverscrollIndicatorNotification>(
+              onNotification: (OverscrollIndicatorNotification overscroll) {
+                // This will stop overscroll glow effect.
+                overscroll.disallowGlow();
+                return;
+              },
+              child: ListView(
+                shrinkWrap: true,
+                padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 10.0),
+                children: <Widget>[
+                  CustomTextFeild(
+                    label: 'TITLE',
+                    prefixIcon: Icon(
+                      Icons.title,
+                      color: kSecondaryColor,
+                    ),
+                    changed: (value) {
+                      this.title = value;
+                    },
+                    textCap: TextCapitalization.words,
+                    editingController: TextEditingController(text: this.title),
                   ),
-                  changed: (value) {
-                    this.title = value;
-                  },
-                  textCap: TextCapitalization.words,
-                  editingController: TextEditingController(text: this.title),
-                ),
-                SizedBox(height: 15.0),
-                CustomTextFeild(
-                  label: 'DESCRIPTION',
-                  kbType: TextInputType.multiline,
-                  lines: 2,
-                  prefixIcon: Icon(
-                    Icons.description,
-                    color: kSecondaryColor,
+                  SizedBox(height: 15.0),
+                  CustomTextFeild(
+                    label: 'DESCRIPTION',
+                    kbType: TextInputType.multiline,
+                    lines: 2,
+                    prefixIcon: Icon(
+                      Icons.description,
+                      color: kSecondaryColor,
+                    ),
+                    changed: (value) {
+                      this.description = value;
+                    },
+                    textCap: TextCapitalization.sentences,
+                    editingController:
+                        TextEditingController(text: this.description),
                   ),
-                  changed: (value) {
-                    this.description = value;
-                  },
-                  textCap: TextCapitalization.sentences,
-                  editingController:
-                      TextEditingController(text: this.description),
-                ),
-                SizedBox(height: 15.0),
-                CustomTextFeild(
-                  label: 'PHONE NO.',
-                  prefixIcon: Icon(
-                    Icons.phone,
-                    color: kSecondaryColor,
+                  SizedBox(height: 15.0),
+                  CustomTextFeild(
+                    label: 'PHONE NO.',
+                    prefixIcon: Icon(
+                      Icons.phone,
+                      color: kSecondaryColor,
+                    ),
+                    changed: (value) {
+                      phoneNo = value;
+                    },
+                    kbType: TextInputType.number,
                   ),
-                  changed: (value) {
-                    phoneNo = value;
-                  },
-                  kbType: TextInputType.number,
-                ),
-                SizedBox(height: 25.0),
-                Row(
-                  children: <Widget>[
-                    IconButton(
-                      color: kPrimaryColor,
-                      splashColor: kPrimaryColor.withAlpha(150),
-                      icon: Icon(
-                        FontAwesomeIcons.mapPin,
+                  SizedBox(height: 25.0),
+                  Consumer<AddressModel>(
+                    builder: (context, addressModel, child) {
+                      return Row(
+                        children: <Widget>[
+                          IconButton(
+                            color: kPrimaryColor,
+                            splashColor: kPrimaryColor.withAlpha(150),
+                            icon: Icon(
+                              FontAwesomeIcons.mapPin,
+                            ),
+                            onPressed: () async {
+                              this._openAddressModal(addressModel);
+                            },
+                          ),
+                          SizedBox(width: 7.0),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                'ADD LOCATION',
+                                style: kTextStyle.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: kSecondaryColor,
+                                  fontSize: 15.0,
+                                ),
+                              ),
+                              SizedBox(height: 5.0),
+                              if (addressModel.text.isEmpty)
+                                addressWidget(
+                                  context: context,
+                                  address: this.address,
+                                ),
+                              if (addressModel.text.isNotEmpty)
+                                addressWidget(
+                                  context: context,
+                                  address: addressModel.text,
+                                ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  SizedBox(height: 15.0),
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        color: kPrimaryColor,
+                        splashColor: kPrimaryColor.withAlpha(150),
+                        icon: Icon(Icons.schedule_rounded),
+                        onPressed: () {
+                          setState(() {
+                            setExpiryTime = true;
+                            //Remove focus from other nodes, close open keyboard if any.
+                            FocusManager.instance.primaryFocus.unfocus();
+                          });
+                        },
                       ),
-                      onPressed: () async {
-                        setState(() {
-                          currentAddressWidget = spinner(context);
-                        });
-                        String addr = await getCurrentLocation();
-                        setState(() {
-                          address = addr;
-                          currentAddressWidget = addressWidget(
-                            context: context,
-                            address: address,
-                          );
-                        });
-                      },
-                    ),
-                    SizedBox(width: 7.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'ADD LOCATION',
-                          style: kTextStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: kSecondaryColor,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                        SizedBox(height: 5.0),
-                        currentAddressWidget,
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15.0),
-                Row(
-                  children: <Widget>[
-                    IconButton(
-                      color: kPrimaryColor,
-                      splashColor: kPrimaryColor.withAlpha(150),
-                      icon: Icon(Icons.schedule_rounded),
-                      onPressed: () {
-                        setState(() {
-                          setExpiryTime = true;
-                          //Remove focus from other nodes, close open keyboard if any.
-                          FocusManager.instance.primaryFocus.unfocus();
-                        });
-                      },
-                    ),
-                    SizedBox(width: 7.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'EXPIRY TIME',
-                          style: kTextStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: kSecondaryColor,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                        SizedBox(height: 5.0),
-                        Container(
-                          width: MediaQuery.of(context).size.width * .55,
-                          child: Text(
-                            expiryTimeSelected
-                                ? HelperService.convertDateTimeToHumanReadable(
-                                    finalExpiryTime)
-                                : (widget.editList
-                                    ? HelperService
-                                        .convertDateTimeToHumanReadable(
-                                            finalExpiryTime)
-                                    : 'NONE'),
+                      SizedBox(width: 7.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'EXPIRY TIME',
                             style: kTextStyle.copyWith(
-                              fontSize: 12.0,
-                              color: kSecondaryColor.withAlpha(150),
+                              fontWeight: FontWeight.bold,
+                              color: kSecondaryColor,
+                              fontSize: 15.0,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                SizedBox(height: 15.0),
-                if (setExpiryTime)
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          height: 200.0,
-                          width: 250.0,
-                          child: CupertinoTheme(
-                            data: CupertinoThemeData(
-                                textTheme: CupertinoTextThemeData(
-                                    dateTimePickerTextStyle: kTextStyle)),
-                            child: CupertinoDatePicker(
-                              initialDateTime:
-                                  this.expiryTime.isBefore(currentTime)
-                                      ? currentTime
-                                      : this.expiryTime,
-                              minimumDate:
-                                  currentTime.subtract(Duration(seconds: 30)),
-                              maximumYear: currentTime.year + 1,
-                              onDateTimeChanged: (dateTime) {
-                                setState(() {
-                                  this.expiryTime = dateTime;
-                                });
-                              },
+                          SizedBox(height: 5.0),
+                          Container(
+                            width: MediaQuery.of(context).size.width * .55,
+                            child: Text(
+                              expiryTimeSelected
+                                  ? HelperService
+                                      .convertDateTimeToHumanReadable(
+                                          finalExpiryTime)
+                                  : (widget.editList
+                                      ? HelperService
+                                          .convertDateTimeToHumanReadable(
+                                              finalExpiryTime)
+                                      : 'NONE'),
+                              style: kTextStyle.copyWith(
+                                fontSize: 12.0,
+                                color: kSecondaryColor.withAlpha(150),
+                              ),
                             ),
                           ),
-                        ),
-                        Column(
-                          children: [
-                            CircularButton(
-                              icon: Icons.check_rounded,
-                              fontSize: 25.0,
-                              colour: kPrimaryColor,
-                              height: 40.0,
-                              width: 40.0,
-                              pressed: () {
-                                setState(() {
-                                  expiryTimeSelected = true;
-                                  finalExpiryTime = expiryTime;
-                                  setExpiryTime = false;
-                                });
-                              },
-                            ),
-                            SizedBox(height: 20.0),
-                            CircularButton(
-                              icon: Icons.clear_rounded,
-                              fontSize: 25.0,
-                              colour: kPrimaryColor,
-                              height: 40.0,
-                              width: 40.0,
-                              pressed: () {
-                                setState(() {
-                                  setExpiryTime = false;
-                                });
-                              },
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                Row(
-                  children: <Widget>[
-                    IconButton(
-                      color: kPrimaryColor,
-                      splashColor: kPrimaryColor.withAlpha(150),
-                      icon: Icon(
-                        FontAwesomeIcons.cameraRetro,
+                        ],
                       ),
-                      onPressed: () {},
-                    ),
-                    SizedBox(width: 7.0),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          'ADD A PICTURE',
-                          style: kTextStyle.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: kSecondaryColor,
-                            fontSize: 15.0,
-                          ),
-                        ),
-                        SizedBox(height: 5.0),
-                        Container(
-                          width: MediaQuery.of(context).size.width * .55,
-                          child: Text(
-                            pictureName,
-                            style: kTextStyle.copyWith(
-                              fontSize: 12.0,
-                              color: kSecondaryColor.withAlpha(150),
+                    ],
+                  ),
+                  SizedBox(height: 15.0),
+                  if (setExpiryTime)
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            height: 200.0,
+                            width: 250.0,
+                            child: CupertinoTheme(
+                              data: CupertinoThemeData(
+                                  textTheme: CupertinoTextThemeData(
+                                      dateTimePickerTextStyle: kTextStyle)),
+                              child: CupertinoDatePicker(
+                                initialDateTime:
+                                    this.expiryTime.isBefore(currentTime)
+                                        ? currentTime
+                                        : this.expiryTime,
+                                minimumDate:
+                                    currentTime.subtract(Duration(seconds: 30)),
+                                maximumYear: currentTime.year + 1,
+                                onDateTimeChanged: (dateTime) {
+                                  setState(() {
+                                    this.expiryTime = dateTime;
+                                  });
+                                },
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          Column(
+                            children: [
+                              CircularButton(
+                                icon: Icons.check_rounded,
+                                fontSize: 25.0,
+                                colour: kPrimaryColor,
+                                height: 40.0,
+                                width: 40.0,
+                                pressed: () {
+                                  setState(() {
+                                    expiryTimeSelected = true;
+                                    finalExpiryTime = expiryTime;
+                                    setExpiryTime = false;
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 20.0),
+                              CircularButton(
+                                icon: Icons.clear_rounded,
+                                fontSize: 25.0,
+                                colour: kPrimaryColor,
+                                height: 40.0,
+                                width: 40.0,
+                                pressed: () {
+                                  setState(() {
+                                    setExpiryTime = false;
+                                  });
+                                },
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-                SizedBox(height: 50.0),
-                RoundedButton(
-                  title: widget.editList ? 'SAVE' : 'SHARE',
-                  colour: kPrimaryColor,
-                  pressed: () async {
-                    // Create new request in firebase.
-                    String errorMessage = 'NONE';
-                    if (title.length == 0) {
-                      errorMessage = 'Title field is blank.';
-                    } else if (description.length == 0) {
-                      errorMessage = 'Description field is blank.';
-                    } else if (phoneNo.length != 10) {
-                      errorMessage = 'Invalid phone number.';
-                    } else if (address == 'NONE') {
-                      errorMessage = 'Address not detected.';
-                    } else if (expiryTimeSelected == false) {
-                      errorMessage = 'Expiry time not selected.';
-                    }
-                    if (errorMessage == 'NONE') {
-                      if (widget.editList) {
-                        bool created = await _editListing(widget.editListing);
-                        errorMessage = created
-                            ? 'Listing saved!'
-                            : 'Listing not saved due to some error.';
-                        Navigator.pop(context);
-                      } else {
-                        bool created = await _createListing();
-                        errorMessage = created
-                            ? 'Listing created!'
-                            : 'Listing not created due to some error.';
-                        Navigator.pushReplacementNamed(context, '/request');
+                  Row(
+                    children: <Widget>[
+                      IconButton(
+                        color: kPrimaryColor,
+                        splashColor: kPrimaryColor.withAlpha(150),
+                        icon: Icon(
+                          FontAwesomeIcons.cameraRetro,
+                        ),
+                        onPressed: () {},
+                      ),
+                      SizedBox(width: 7.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'ADD A PICTURE',
+                            style: kTextStyle.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: kSecondaryColor,
+                              fontSize: 15.0,
+                            ),
+                          ),
+                          SizedBox(height: 5.0),
+                          Container(
+                            width: MediaQuery.of(context).size.width * .55,
+                            child: Text(
+                              pictureName,
+                              style: kTextStyle.copyWith(
+                                fontSize: 12.0,
+                                color: kSecondaryColor.withAlpha(150),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 50.0),
+                  RoundedButton(
+                    title: widget.editList ? 'SAVE' : 'SHARE',
+                    colour: kPrimaryColor,
+                    pressed: () async {
+                      //Remove focus from other nodes, close open keyboard if any.
+                      FocusManager.instance.primaryFocus.unfocus();
+                      // Create new request in firebase.
+                      String errorMessage = 'NONE';
+                      if (title.length == 0) {
+                        errorMessage = 'Title field is blank.';
+                      } else if (description.length == 0) {
+                        errorMessage = 'Description field is blank.';
+                      } else if (phoneNo.length != 10) {
+                        errorMessage = 'Invalid phone number.';
+                      } else if (address == 'NONE') {
+                        errorMessage = 'Address not detected.';
+                      } else if (expiryTimeSelected == false) {
+                        errorMessage = 'Expiry time not selected.';
                       }
-                    }
-                    kShowFlushBar(
-                      content: errorMessage,
-                      context: context,
-                      customError: true,
-                    );
-                  },
-                ),
-                SizedBox(height: 20.0)
-              ],
+                      if (errorMessage == 'NONE') {
+                        if (widget.editList) {
+                          bool created = await _editListing(widget.editListing);
+                          errorMessage = created
+                              ? 'Listing saved!'
+                              : 'Listing not saved due to some error.';
+                          Navigator.pop(context);
+                        } else {
+                          bool created = await _createListing();
+                          errorMessage = created
+                              ? 'Listing created!'
+                              : 'Listing not created due to some error.';
+                          Navigator.pushReplacementNamed(context, '/request');
+                        }
+                      }
+                      kShowFlushBar(
+                        content: errorMessage,
+                        context: context,
+                        customError: true,
+                      );
+                    },
+                  ),
+                  SizedBox(height: 20.0)
+                ],
+              ),
             ),
           ),
         ),

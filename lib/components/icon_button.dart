@@ -16,7 +16,7 @@ class CustomIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: kBackgroundColor,
+      color: Color(0x00FFFFFF),
       type: MaterialType.circle,
       child: IconButton(
         iconSize: this.size,

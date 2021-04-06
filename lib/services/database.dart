@@ -11,6 +11,11 @@ class FirestoreDatabase {
         builder: (data) => Listing.fromMap(data),
       );
 
+  Future<Map<String, dynamic>> getUserData(String userEmail) async {
+    final userData = await _service.getData(path: APIPath.user(), docId: userEmail);
+    return userData;
+  }
+
   Future<void> deleteListing({Listing listing}) async =>
       await _service.deleteData(
         path: APIPath.listing(),

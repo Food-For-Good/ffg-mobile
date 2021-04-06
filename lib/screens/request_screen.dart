@@ -1,17 +1,21 @@
-import 'package:FoodForGood/screens/my_request_screen.dart';
-import 'package:FoodForGood/services/database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong/latlong.dart' as dartLatLng;
 import 'package:mapbox_gl/mapbox_gl.dart';
 
+import 'package:geolocator/geolocator.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
+
 import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
 import 'package:FoodForGood/components/listing_card_expanded.dart';
+import 'package:FoodForGood/components/map_button.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/my_request_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
-import 'package:FoodForGood/services/location_service.dart';
+import 'package:FoodForGood/services/database.dart';
 import 'package:FoodForGood/models/listing_model.dart';
 
 class RequestScreen extends StatefulWidget {
@@ -22,12 +26,15 @@ class RequestScreen extends StatefulWidget {
 class _RequestScreenState extends State<RequestScreen> {
   String myUsername = '';
   String myEmail = '';
-  LatLng locationMapBox;
   MapboxMapController controller;
-  LatLng currentLatLng = LatLng(0.0, 0.0);
   List<Marker> markers = [];
   Widget _myAnimatedWidget;
   DateTime currentTime = DateTime.now();
+  Marker currentLocationMarker = Marker();
+  // dartLatLng.LatLng currentLatLngView;
+  dartLatLng.LatLng currentLatitudeLongitude = dartLatLng.LatLng(23.0, 23.0);
+  bool _showSpinner = false;
+  MapController mapController = MapController();
 
   String requestId = '';
 
@@ -62,16 +69,40 @@ class _RequestScreenState extends State<RequestScreen> {
     return dartLatlong;
   }
 
-  Future<LatLng> getCurrentPos() async {
-    locationMapBox = await LocationService.getCurrentLatLng();
-    return locationMapBox;
+  Future<dartLatLng.LatLng> getCurrentLatLong() async {
+    setState(() {
+      _showSpinner = true;
+    });
+    Position currentLatLong;
+
+    try {
+      currentLatLong = await Geolocator()
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+      currentLatitudeLongitude.latitude = currentLatLong.latitude;
+      currentLatitudeLongitude.longitude = currentLatLong.longitude;
+      setState(() {
+        _showSpinner = false;
+      });
+    } catch (error) {
+      print('ERROR: ' + error.toString());
+    }
+    return currentLatitudeLongitude;
   }
 
-  List<Marker> currentMarker() {
-    Marker currentMarker = Marker(
+  // Future<LatLng> getCurrentPos() async {
+  //   locationMapBox = await LocationService.getCurrentLatLng();
+  //   return locationMapBox;
+  // }
+  // getCurrentViewPoint() async {
+  //   currentLatLngView = await this.getCurrentLatLong();
+  //   print('currentLatLangView is :- ' + currentLatLngView.toString());
+  // }
+
+  void currentMarker() async {
+    currentLocationMarker = Marker(
       width: 80.0,
       height: 80.0,
-      point: convertLatLng(locationMapBox),
+      point: await getCurrentLatLong(),
       builder: (ctx) => Container(
         child: Icon(
           FontAwesomeIcons.mapMarkerAlt,
@@ -79,8 +110,14 @@ class _RequestScreenState extends State<RequestScreen> {
         ),
       ),
     );
-    markers.add(currentMarker);
-    return markers;
+    markers.add(currentLocationMarker);
+  }
+
+  dartLatLng.LatLng getLatLngFromGeoPoint(GeoPoint location) {
+    dartLatLng.LatLng dartLocation = dartLatLng.LatLng(0.0, 0.0);
+    dartLocation.latitude = location.latitude;
+    dartLocation.longitude = location.longitude;
+    return dartLocation;
   }
 
   Widget _getAllListings(BuildContext ctx) {
@@ -95,11 +132,16 @@ class _RequestScreenState extends State<RequestScreen> {
                 (listing) {
                   if (listing.expiryTime.isAfter(currentTime) &&
                       listing.listingState == listingStateOpen) {
+                    addMarker(
+                        listing.location.latitude, listing.location.longitude);
                     return ListingCard(
                       username: listing.username,
                       title: listing.title,
                       onPressed: () {
                         setState(() {
+                          //Move to the location of the listing when it is pressed.
+                          mapController.move(
+                              getLatLngFromGeoPoint(listing.location), 13.0);
                           _myAnimatedWidget = ListingCardExpanded(
                             username: listing.username,
                             title: listing.title,
@@ -145,7 +187,6 @@ class _RequestScreenState extends State<RequestScreen> {
                                       ),
                                     ));
                               }
-                              // Navigator.pushNamed(context, '/myRequest');
                             },
                             onCross: () {
                               setState(() {
@@ -183,6 +224,8 @@ class _RequestScreenState extends State<RequestScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
+    currentMarker();
+    print(markers);
   }
 
   @override
@@ -198,45 +241,61 @@ class _RequestScreenState extends State<RequestScreen> {
             Navigator.pop(context);
           },
         ),
-        body: Stack(
-          children: <Widget>[
-            FlutterMap(
-              options: MapOptions(
-                center: dartLatLng.LatLng(23.022505, 72.571365),
-                zoom: 13.0,
+        body: ModalProgressHUD(
+          inAsyncCall: _showSpinner,
+          child: Stack(
+            children: <Widget>[
+              FlutterMap(
+                mapController: mapController,
+                options: MapOptions(
+                  center: dartLatLng.LatLng(23.022505, 72.571365),
+                  zoom: 10.0,
+                ),
+                layers: [
+                  TileLayerOptions(
+                    urlTemplate:
+                        "https://api.mapbox.com/styles/v1/presi-patel/ckl9ahy1h0r3c17n0lffaoki7/tiles/256/{z}/{x}/{y}@2x?access_token=$MAPBOX_ACCESS_TOKEN",
+                    additionalOptions: {
+                      'accessToken': MAPBOX_ACCESS_TOKEN,
+                      'id': 'mapbox.streets',
+                    },
+                  ),
+                  MarkerLayerOptions(
+                    markers: markers,
+                  ),
+                ],
               ),
-              layers: [
-                TileLayerOptions(
-                  urlTemplate:
-                      "https://api.mapbox.com/styles/v1/presi-patel/ckl9ahy1h0r3c17n0lffaoki7/tiles/256/{z}/{x}/{y}@2x?access_token=$MAPBOX_ACCESS_TOKEN",
-                  additionalOptions: {
-                    'accessToken': MAPBOX_ACCESS_TOKEN,
-                    'id': 'mapbox.streets',
-                  },
-                ),
-                MarkerLayerOptions(
-                  markers: markers,
-                ),
-              ],
-            ),
-            Container(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                alignment: Alignment.bottomLeft,
-                margin: EdgeInsets.all(30.0),
-                decoration: BoxDecoration(
-                  color: kBackgroundColor,
-                  border: Border.all(width: 3),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                height: MediaQuery.of(context).size.height * .35,
-                child: AnimatedSwitcher(
-                  duration: Duration(milliseconds: 300),
-                  child: _myAnimatedWidget ?? _getAllListings(context),
+              Container(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: MapButton(
+                    icon: Icons.my_location,
+                    onPressed: () {
+                      mapController.move(currentLatitudeLongitude, 13.0);
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+              Container(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  alignment: Alignment.bottomLeft,
+                  margin: EdgeInsets.all(30.0),
+                  decoration: BoxDecoration(
+                    color: kBackgroundColor,
+                    border: Border.all(width: 3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  height: MediaQuery.of(context).size.height * .35,
+                  child: AnimatedSwitcher(
+                    duration: Duration(milliseconds: 300),
+                    child: _myAnimatedWidget ?? _getAllListings(context),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
