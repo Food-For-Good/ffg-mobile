@@ -450,6 +450,8 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                     title: widget.editList ? 'SAVE' : 'SHARE',
                     colour: kPrimaryColor,
                     pressed: () async {
+                      //Remove focus from other nodes, close open keyboard if any.
+                      FocusManager.instance.primaryFocus.unfocus();
                       // Create new request in firebase.
                       String errorMessage = 'NONE';
                       if (title.length == 0) {

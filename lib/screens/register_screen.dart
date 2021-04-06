@@ -191,6 +191,8 @@ class RegisterScreenState extends State<RegisterScreen> {
                               title: 'SIGNUP',
                               colour: kPrimaryColor,
                               pressed: () async {
+                                //Remove focus from other nodes, close open keyboard if any.
+                                FocusManager.instance.primaryFocus.unfocus();
                                 setState(() {
                                   this._showSpinner = true;
                                 });

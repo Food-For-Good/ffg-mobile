@@ -26,9 +26,7 @@ class RequestScreen extends StatefulWidget {
 class _RequestScreenState extends State<RequestScreen> {
   String myUsername = '';
   String myEmail = '';
-  // LatLng locationMapBox;
   MapboxMapController controller;
-  // LatLng currentLatLng = LatLng(0.0, 0.0);
   List<Marker> markers = [];
   Widget _myAnimatedWidget;
   DateTime currentTime = DateTime.now();
@@ -141,6 +139,7 @@ class _RequestScreenState extends State<RequestScreen> {
                       title: listing.title,
                       onPressed: () {
                         setState(() {
+                          //Move to the location of the listing when it is pressed.
                           mapController.move(
                               getLatLngFromGeoPoint(listing.location), 13.0);
                           _myAnimatedWidget = ListingCardExpanded(

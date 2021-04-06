@@ -134,6 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       title: 'LOGIN',
                       colour: kPrimaryColor,
                       pressed: () async {
+                        //Remove focus from other nodes, close open keyboard if any.
+                        FocusManager.instance.primaryFocus.unfocus();
                         setState(() {
                           this._showSpinner = true;
                         });
@@ -258,6 +260,8 @@ class _ForgotPasswordModalState extends State<ForgotPasswordModal> {
                 title: 'RESET PASSWORD',
                 colour: kPrimaryColor,
                 pressed: () async {
+                  //Remove focus from other nodes, close open keyboard if any.
+                  FocusManager.instance.primaryFocus.unfocus();
                   setState(() {
                     this._showSpinner = true;
                   });
