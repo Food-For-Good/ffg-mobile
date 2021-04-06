@@ -1,5 +1,3 @@
-import 'package:FoodForGood/screens/my_request_screen.dart';
-import 'package:FoodForGood/services/database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -13,8 +11,11 @@ import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:FoodForGood/access_tokens.dart';
 import 'package:FoodForGood/components/listing_card.dart';
 import 'package:FoodForGood/components/listing_card_expanded.dart';
+import 'package:FoodForGood/components/map_button.dart';
 import 'package:FoodForGood/constants.dart';
+import 'package:FoodForGood/screens/my_request_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
+import 'package:FoodForGood/services/database.dart';
 import 'package:FoodForGood/models/listing_model.dart';
 
 class RequestScreen extends StatefulWidget {
@@ -33,7 +34,7 @@ class _RequestScreenState extends State<RequestScreen> {
   DateTime currentTime = DateTime.now();
   Marker currentLocationMarker = Marker();
   // dartLatLng.LatLng currentLatLngView;
-  dartLatLng.LatLng latiLongi = dartLatLng.LatLng(0.0, 0.0);
+  dartLatLng.LatLng currentLatitudeLongitude = dartLatLng.LatLng(23.0, 23.0);
   bool _showSpinner = false;
   MapController mapController = MapController();
 
@@ -79,17 +80,15 @@ class _RequestScreenState extends State<RequestScreen> {
     try {
       currentLatLong = await Geolocator()
           .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-      print('currentLatLong :- ' + currentLatLong.toString());
-      latiLongi.latitude = currentLatLong.latitude;
-      latiLongi.longitude = currentLatLong.longitude;
-      print('currentLatiLongi :- ' + latiLongi.toString());
+      currentLatitudeLongitude.latitude = currentLatLong.latitude;
+      currentLatitudeLongitude.longitude = currentLatLong.longitude;
       setState(() {
         _showSpinner = false;
       });
     } catch (error) {
       print('ERROR: ' + error.toString());
     }
-    return latiLongi;
+    return currentLatitudeLongitude;
   }
 
   // Future<LatLng> getCurrentPos() async {
@@ -189,7 +188,6 @@ class _RequestScreenState extends State<RequestScreen> {
                                       ),
                                     ));
                               }
-                              // Navigator.pushNamed(context, '/myRequest');
                             },
                             onCross: () {
                               setState(() {
@@ -227,7 +225,6 @@ class _RequestScreenState extends State<RequestScreen> {
     super.initState();
     this.setUsername();
     this.getUserEmail();
-    // getCurrentViewPoint();
     currentMarker();
     print(markers);
   }
@@ -252,7 +249,7 @@ class _RequestScreenState extends State<RequestScreen> {
               FlutterMap(
                 mapController: mapController,
                 options: MapOptions(
-                  center: latiLongi,
+                  center: currentLatitudeLongitude,
                   zoom: 13.0,
                 ),
                 layers: [
@@ -268,6 +265,18 @@ class _RequestScreenState extends State<RequestScreen> {
                     markers: markers,
                   ),
                 ],
+              ),
+              Container(
+                alignment: Alignment.topRight,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: MapButton(
+                    icon: Icons.my_location,
+                    onPressed: () {
+                      mapController.move(currentLatitudeLongitude, 13.0);
+                    },
+                  ),
+                ),
               ),
               Container(
                 alignment: Alignment.bottomCenter,
