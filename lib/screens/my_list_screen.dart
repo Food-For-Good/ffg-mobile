@@ -261,7 +261,8 @@ class MyListing extends StatelessWidget {
         subtitle: listing.description,
         listing: listing,
         requestCards: requestCards,
-        customIconButtons: listing.listingState == listingStateCompleted
+        customIconButtons: (listing.listingState == listingStateCompleted ||
+                listing.listingState == listingStateProgress)
             ? []
             : [
                 CustomIconButton(
