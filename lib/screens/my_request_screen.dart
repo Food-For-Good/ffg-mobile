@@ -52,6 +52,7 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                         title: listing.username,
                         subtitle: listing.title,
                         listing: listing,
+                        requestState: requestStateAccepted,
                         requestCards: [
                           RequestCard(
                             title: 'Food taken successfully?',
@@ -85,11 +86,13 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                       );
                       //No request is accepted by the donor.
                     } else if (listing.acceptedRequest.isEmpty &&
-                        requestState == requestStatePending) {
+                        requestState == requestStatePending &&
+                        listing.listingState == listingStateOpen) {
                       return MyListingCard(
                           title: listing.username,
                           subtitle: listing.title,
                           listing: listing,
+                          requestState: requestStatePending,
                           customIconButtons: [
                             CustomIconButton(
                               icon: Icons.clear,
@@ -119,6 +122,7 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                         title: listing.username,
                         subtitle: 'Sharing ' + listing.title,
                         listing: listing,
+                        requestState: requestStateCompleted,
                       );
                     }
                   }
@@ -126,6 +130,13 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
               )
               .whereType<MyListingCard>()
               .toList();
+          if (children.isEmpty) {
+            return Center(
+                child: Text(
+              'Currently, No request is present here!',
+              style: kTextStyle,
+            ));
+          }
           return ListView(
             children: children,
           );

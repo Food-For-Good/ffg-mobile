@@ -11,15 +11,36 @@ class MyListingCard extends StatelessWidget {
   final Listing listing;
   final List<Widget> requestCards;
   final List<CustomIconButton> customIconButtons;
+  final String requestState;
 
   MyListingCard(
       {@required this.title,
       @required this.subtitle,
       @required this.listing,
       this.requestCards = const [],
-      this.customIconButtons = const []});
+      this.customIconButtons = const [],
+      this.requestState = ''});
 
   Widget build(BuildContext context) {
+    String message = 'Message for user';
+    if (listing.listingState == listingStateProgress) {
+      message = 'Food taken by requester?';
+    }
+    if (listing.listingState == listingStateCompleted) {
+      message = 'Food was succesfully given :)';
+    }
+    if (listing.listingState == listingStateDeleted) {
+      message = 'Listing was deleted or expired!';
+    }
+    if (requestState == requestStateAccepted) {
+      message = 'Food taken from donor?';
+    }
+    if (requestState == requestStatePending) {
+      message = 'Delete your request?';
+    }
+    if (requestState == requestStateCompleted) {
+      message = 'Food taken by donor succefully :)';
+    }
     return ExpansionTile(
       title: Text(this.title,
           style: kTextStyle.copyWith(fontWeight: FontWeight.bold)),
@@ -95,14 +116,29 @@ class MyListingCard extends StatelessWidget {
                 ),
               ],
             ),
+            if (requestState == requestStatePending)
+              Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Text(message,
+                    style: kTextStyle.copyWith(
+                        fontSize: 18.0, fontWeight: FontWeight.bold)),
+              ),
             if (customIconButtons != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: customIconButtons,
               ),
             SizedBox(
-              height: 10.0,
+              height: 15.0,
             ),
+            if (listing.listingState != listingStateOpen)
+              Text(message,
+                  style: kTextStyle.copyWith(
+                      fontSize: 18.0, fontWeight: FontWeight.bold)),
+            if (listing.listingState != listingStateOpen)
+              SizedBox(
+                height: 10.0,
+              ),
             if (requestCards != null) ...requestCards
           ],
         ),

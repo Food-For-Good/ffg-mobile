@@ -57,6 +57,13 @@ class _MyListState extends State<MyList> {
               )
               .whereType<MyListing>()
               .toList();
+          if (children.isEmpty) {
+            return Center(
+                child: Text(
+              'Currently, No listing is present here!',
+              style: kTextStyle,
+            ));
+          }
           return ListView(
             children: children,
           );
@@ -254,7 +261,8 @@ class MyListing extends StatelessWidget {
         subtitle: listing.description,
         listing: listing,
         requestCards: requestCards,
-        customIconButtons: listing.listingState == listingStateCompleted
+        customIconButtons: (listing.listingState == listingStateCompleted ||
+                listing.listingState == listingStateProgress)
             ? []
             : [
                 CustomIconButton(
