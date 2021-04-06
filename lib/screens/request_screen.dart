@@ -249,8 +249,8 @@ class _RequestScreenState extends State<RequestScreen> {
               FlutterMap(
                 mapController: mapController,
                 options: MapOptions(
-                  center: currentLatitudeLongitude,
-                  zoom: 13.0,
+                  center: dartLatLng.LatLng(23.022505, 72.571365),
+                  zoom: 10.0,
                 ),
                 layers: [
                   TileLayerOptions(
