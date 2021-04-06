@@ -15,6 +15,13 @@ class FirestoreService {
         .updateData({'docId': docRef.documentID});
   }
 
+  Future<Map<String, dynamic>> getData({@required String path, @required String docId}) async {
+    final reference = Firestore.instance.collection(path).document(docId);
+    final documentSnapshot = await reference.get();
+    return documentSnapshot.data;
+    
+  }
+
   Future<void> deleteData(
       {@required String path, @required String docId}) async {
     final reference = Firestore.instance.collection(path).document(docId);

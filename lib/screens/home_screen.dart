@@ -7,13 +7,16 @@ import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
 import 'package:FoodForGood/components/dialog_box.dart';
 
+import 'give_away_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   // Fetching the name after loading this page was causing a delay before the
   // name appeared which is why we fetch it first, then pass it in this widget
   // when we call it.
   final String username;
+  final Map<String, dynamic> userData;
 
-  HomeScreen({this.username});
+  HomeScreen({this.username, this.userData});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -210,7 +213,14 @@ class _HomeScreenState extends State<HomeScreen>
                             colour: kPrimaryColor,
                             title: 'GIVE AWAY',
                             pressed: () {
-                              Navigator.pushNamed(context, '/giveAway');
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => GiveAwayScreen(
+                                    userData: widget.userData,
+                                  ),
+                                ),
+                              );
                             },
                           ),
                           CircularButton(

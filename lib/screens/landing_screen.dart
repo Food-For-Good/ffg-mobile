@@ -1,3 +1,4 @@
+import 'package:FoodForGood/services/database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
@@ -15,6 +16,7 @@ class LandingScreen extends StatefulWidget {
 class _LandingScreenState extends State<LandingScreen> {
   AuthService _auth = AuthService();
   bool _showSpinner = false;
+  FirestoreDatabase database = FirestoreDatabase();
 
   _checkStatusAndRedirect() async {
     // Checking if the user is logged in or not.
@@ -26,6 +28,8 @@ class _LandingScreenState extends State<LandingScreen> {
     });
     String username = await AuthService().getUsername();
     FirebaseUser currentUser = await this._auth.getUser;
+    String userEmail = await AuthService().getEmail();
+    Map<String, dynamic> userData = await database.getUserData(userEmail);
     setState(() {
       this._showSpinner = false;
     });
@@ -37,6 +41,7 @@ class _LandingScreenState extends State<LandingScreen> {
         MaterialPageRoute(
           builder: (context) => HomeScreen(
             username: username,
+            userData: userData,
           ),
         ),
       );
