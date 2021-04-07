@@ -7,9 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:geocoder/geocoder.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
+import 'package:mapbox_gl/mapbox_gl.dart';
 
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/components/circular_button.dart';
@@ -58,14 +57,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
       pictureName = 'NONE',
       email = '';
 
-  Widget currentAddressWidget = Text(
-    'NONE',
-    style: kTextStyle.copyWith(
-      fontSize: 12.0,
-      color: kSecondaryColor.withAlpha(150),
-    ),
-  );
-  Position currentPosition;
+  GeoPoint currentPosition;
   DateTime currentTime = DateTime.now();
   DateTime expiryTime = DateTime.now();
   DateTime finalExpiryTime;
@@ -130,21 +122,10 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     return created;
   }
 
-  Future<String> getCurrentLocation() async {
-    String defaultReturn = 'DEFAULT';
-    try {
-      currentPosition = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
-      double lat, long;
-      lat = currentPosition.latitude;
-      long = currentPosition.longitude;
-      var addresses = await Geocoder.local
-          .findAddressesFromCoordinates(Coordinates(lat, long));
-      return addresses.first.addressLine;
-    } catch (error) {
-      print('ERROR: ' + error.toString());
-    }
-    return defaultReturn;
+  GeoPoint getGeoPointFromLatLng(LatLng mapBoxLocation) {
+    GeoPoint geoPointLocation =
+        GeoPoint(mapBoxLocation.latitude, mapBoxLocation.longitude);
+    return geoPointLocation;
   }
 
   void _openAddressModal(AddressModel addressModel) async {
@@ -172,6 +153,7 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
     try {
       if (widget.userData != null) {
         this.address = widget.userData['address']['text'];
+        this.currentPosition = widget.userData['address']['location'];
       }
     } catch (e) {
       print(e);
@@ -254,6 +236,11 @@ class _GiveAwayScreenState extends State<GiveAwayScreen> {
                   SizedBox(height: 25.0),
                   Consumer<AddressModel>(
                     builder: (context, addressModel, child) {
+                      if (addressModel.text.isNotEmpty) {
+                        this.address = addressModel.text;
+                        this.currentPosition =
+                            getGeoPointFromLatLng(addressModel.location);
+                      }
                       return Row(
                         children: <Widget>[
                           IconButton(
