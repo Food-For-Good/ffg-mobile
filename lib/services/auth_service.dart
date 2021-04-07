@@ -1,3 +1,4 @@
+import 'package:FoodForGood/constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -35,28 +36,40 @@ class AuthService {
   // SignUp.
   Future<String> createUserWithEmailAndPassword(
       String email, String password, String name) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-
-    // update username
-    var userUpdateInfo = UserUpdateInfo();
-    userUpdateInfo.displayName = name;
-    FirebaseUser currentUser = await _firebaseAuth.currentUser();
-    await currentUser.updateProfile(userUpdateInfo);
-    await currentUser.reload();
-    currentUser = await _firebaseAuth.currentUser();
-    return currentUser.uid;
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      await currentUser.reload();
+      await currentUser.sendEmailVerification();
+      // update username
+      var userUpdateInfo = UserUpdateInfo();
+      userUpdateInfo.displayName = name;
+      await currentUser.updateProfile(userUpdateInfo);
+    } catch (e) {
+      FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      await currentUser.reload();
+      await currentUser.sendEmailVerification();
+      kShowFlushBar(
+          content: 'Verification code sent again.', customError: true);
+    }
+    return '';
   }
 
   // SignIn.
   Future<String> signInWithEmailAndPassword(
       String email, String password) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
-    FirebaseUser currentUser = await _firebaseAuth.currentUser();
-    currentUser.reload();
-    currentUser = await _firebaseAuth.currentUser();
-    return currentUser.uid;
+    try {
+      await _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      FirebaseUser currentUser = await _firebaseAuth.currentUser();
+      currentUser.reload();
+      currentUser = await _firebaseAuth.currentUser();
+      if (currentUser.isEmailVerified) {
+        return currentUser.uid;
+      }
+      return null;
+    } catch (e) {}
   }
 
   // Reset Password.

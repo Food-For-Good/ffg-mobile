@@ -146,16 +146,24 @@ class _LoginScreenState extends State<LoginScreen> {
                             throw 'ERROR_PASSWORD_FIELD_EMPTY';
                           }
                           AuthService auth = AuthService();
-                          await auth.signInWithEmailAndPassword(
-                              this._email, this._password);
+                          String currentUserUid =
+                              await auth.signInWithEmailAndPassword(
+                                  this._email, this._password);
                           String username = await auth.getUsername();
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  HomeScreen(username: username),
-                            ),
-                          );
+                          if (currentUserUid != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HomeScreen(username: username),
+                              ),
+                            );
+                          } else {
+                            kShowFlushBar(
+                                content: 'Please verify your email.',
+                                context: context,
+                                customError: true);
+                          }
                         } catch (error) {
                           kShowFlushBar(
                               content: error.toString(), context: context);

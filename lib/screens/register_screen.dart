@@ -9,7 +9,6 @@ import 'package:FoodForGood/components/rounded_button.dart';
 import 'package:FoodForGood/components/text_feild.dart';
 import 'package:FoodForGood/constants.dart';
 import 'package:FoodForGood/models/address_model.dart';
-import 'package:FoodForGood/screens/home_screen.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/helper_service.dart';
 
@@ -157,6 +156,9 @@ class RegisterScreenState extends State<RegisterScreen> {
                                   icon: Icon(Icons.add_location_alt_rounded),
                                   color: kPrimaryColor,
                                   onPressed: () {
+                                    //Remove focus from other nodes, close open keyboard if any.
+                                    FocusManager.instance.primaryFocus
+                                        .unfocus();
                                     this._openAddressModal(addressModel);
                                   },
                                   iconSize: addressModel.text.length == 0
@@ -205,7 +207,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                                       this._confirmPassword);
 
                                   // Creating new user.
-                                  await AuthService()
+                                  String currentUserUid = await AuthService()
                                       .createUserWithEmailAndPassword(
                                           this._email,
                                           this._password,
@@ -229,14 +231,14 @@ class RegisterScreenState extends State<RegisterScreen> {
                                       'requestedFrom': 0,
                                     },
                                   );
-
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          HomeScreen(username: this._name),
-                                    ),
-                                  );
+                                  if (currentUserUid != null) {
+                                    kShowFlushBar(
+                                        content:
+                                            'Please verify your email and Sing-In to your account.',
+                                        customError: true);
+                                    Navigator.pushReplacementNamed(
+                                        context, '/login');
+                                  }
                                 } catch (error) {
                                   print(error.toString());
                                   kShowFlushBar(
