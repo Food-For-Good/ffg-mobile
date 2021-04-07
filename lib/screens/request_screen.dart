@@ -74,7 +74,6 @@ class _RequestScreenState extends State<RequestScreen> {
       _showSpinner = true;
     });
     Position currentLatLong;
-
     try {
       currentLatLong = await Geolocator()
           .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
@@ -119,6 +118,14 @@ class _RequestScreenState extends State<RequestScreen> {
     dartLocation.longitude = location.longitude;
     return dartLocation;
   }
+
+  // _getDistanceBetweenTwoLocations(dartLatLng.LatLng location1, dartLatLng.LatLng location2) {
+  //   double x1 = location1.latitude;
+  //   double x2 = location2.latitude;
+  //   double y1 = location1.longitude;
+  //   double y2 = location2.longitude;
+  //   double distance = (x2 - x2);
+  // }
 
   Widget _getAllListings(BuildContext ctx) {
     final database = FirestoreDatabase();
