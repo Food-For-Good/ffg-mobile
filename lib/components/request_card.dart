@@ -11,13 +11,14 @@ class RequestCard extends StatefulWidget {
   final String requestState;
   final String myEmail, otherPersonEmail;
 
-  RequestCard(
-      {this.title,
-      this.onAccept,
-      this.onDecline,
-      this.requestState,
-      @required this.myEmail,
-      @required this.otherPersonEmail});
+  RequestCard({
+    this.title,
+    this.onAccept,
+    this.onDecline,
+    this.requestState,
+    @required this.myEmail,
+    @required this.otherPersonEmail,
+  });
 
   @override
   _RequestCardState createState() => _RequestCardState();
@@ -51,12 +52,10 @@ class _RequestCardState extends State<RequestCard> {
                   Container(
                     // color: Colors.redAccent,
                     width: 180.0,
-                    child: FittedBox(
-                      child: Text(
-                        widget.title,
-                        style: kTextStyle,
-                        softWrap: true,
-                      ),
+                    child: Text(
+                      widget.title,
+                      style: kTextStyle,
+                      softWrap: true,
                     ),
                   ),
                   Row(
@@ -108,7 +107,7 @@ class _RequestCardState extends State<RequestCard> {
                                   ),
                                 ),
                                 Text(
-                                  'abcdef',
+                                  widget.otherPersonEmail,
                                   style: kTextStyle.copyWith(
                                     fontSize: 14.0,
                                     color: kSecondaryColor.withAlpha(950),
@@ -128,7 +127,7 @@ class _RequestCardState extends State<RequestCard> {
                                   ),
                                 ),
                                 Text(
-                                  'abcdef',
+                                  '6.5',
                                   style: kTextStyle.copyWith(
                                     fontSize: 14.0,
                                     color: kSecondaryColor.withAlpha(950),
@@ -136,23 +135,36 @@ class _RequestCardState extends State<RequestCard> {
                                 ),
                               ],
                             ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Chat with user: ',
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                CustomIconButton(
+                                  icon: Icons.chat,
+                                  size: 30.0,
+                                  onPressed: () {
+                                    // Navigator.pushNamed(context, '/chat');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatScreen(
+                                          myEmail: widget.myEmail,
+                                          otherPersonEmail:
+                                              widget.otherPersonEmail,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            )
                           ]),
-                      CustomIconButton(
-                        icon: Icons.chat,
-                        size: 30.0,
-                        onPressed: () {
-                          // Navigator.pushNamed(context, '/chat');
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatScreen(
-                                myEmail: widget.myEmail,
-                                otherPersonEmail: widget.otherPersonEmail,
-                              ),
-                            ),
-                          );
-                        },
-                      )
                     ],
                   ),
                 )
