@@ -18,6 +18,8 @@ import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/database.dart';
 import 'package:FoodForGood/models/listing_model.dart';
 
+import 'chat_screen.dart';
+
 class RequestScreen extends StatefulWidget {
   @override
   _RequestScreenState createState() => _RequestScreenState();
@@ -194,6 +196,17 @@ class _RequestScreenState extends State<RequestScreen> {
                                       ),
                                     ));
                               }
+                            },
+                            onPressedChat: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ChatScreen(
+                                    myEmail: myEmail,
+                                    otherPersonEmail: listing.email,
+                                  ),
+                                ),
+                              );
                             },
                             onCross: () {
                               setState(() {

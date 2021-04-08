@@ -25,7 +25,7 @@ class RequestCard extends StatefulWidget {
 }
 
 class _RequestCardState extends State<RequestCard> {
-  bool isExpanded = false;
+  bool isExpanded = true;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -50,7 +50,6 @@ class _RequestCardState extends State<RequestCard> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
-                    // color: Colors.redAccent,
                     width: 180.0,
                     child: Text(
                       widget.title,
@@ -66,10 +65,6 @@ class _RequestCardState extends State<RequestCard> {
                           icon: Icons.clear_rounded,
                           onPressed: this.widget.onDecline,
                         ),
-                      // if (requestState != requestStateAccepted)
-                      //   SizedBox(
-                      //     width: 10.0,
-                      //   ),
                       if (widget.requestState != requestStateCompleted)
                         CustomIconButton(
                           icon: Icons.check_rounded,

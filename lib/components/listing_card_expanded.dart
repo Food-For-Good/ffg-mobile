@@ -1,3 +1,4 @@
+import 'package:FoodForGood/components/icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,6 +14,7 @@ class ListingCardExpanded extends StatelessWidget {
   final DateTime expiryTime;
   final Function onPressedTickMark;
   final Color tickMarkColor;
+  final Function onPressedChat;
 
   ListingCardExpanded(
       {this.username,
@@ -22,7 +24,8 @@ class ListingCardExpanded extends StatelessWidget {
       this.onCross,
       this.expiryTime,
       this.onPressedTickMark,
-      this.tickMarkColor = kPrimaryColor});
+      this.tickMarkColor = kPrimaryColor,
+      this.onPressedChat});
 
   @override
   Widget build(BuildContext context) {
@@ -122,21 +125,15 @@ class ListingCardExpanded extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
-            IconButton(
+            CustomIconButton(
+              icon: FontAwesomeIcons.check,
+              size: 40.0,
               onPressed: this.onPressedTickMark,
-              icon: Icon(
-                FontAwesomeIcons.check,
-                color: this.tickMarkColor,
-                size: 40.0,
-              ),
             ),
-            IconButton(
-              onPressed: () {},
-              icon: Icon(
-                FontAwesomeIcons.phoneAlt,
-                color: kSecondaryColor.withAlpha(950),
-                size: 35.0,
-              ),
+            CustomIconButton(
+              icon: Icons.chat,
+              size: 40.0,
+              onPressed: this.onPressedChat,
             ),
             IconButton(
               onPressed: onCross,
