@@ -43,8 +43,8 @@ class _ChatScreenState extends State<ChatScreen> {
                   itemCount: documents.length,
                   itemBuilder: (ctx, index) => MsgBubble(
                     msg: documents[index]['msg'],
-                    isByMe:
-                        (documents[index]['userId'] == futureSnapshot.data.uid),
+                    isByMe: (documents[index]['msgBy'] ==
+                        futureSnapshot.data.email),
                   ),
                 );
               });
@@ -106,7 +106,15 @@ class _ChatScreenState extends State<ChatScreen> {
                                 '/users/pateldhruv0248@gmail.com/chats/dhruvpatel.ict.17@gmail.com/messages')
                             .add({
                           'msg': this.newMsg,
-                          'msgBy': user.uid,
+                          'msgBy': user.email,
+                          'createdAt': Timestamp.now(),
+                        });
+                        await Firestore.instance
+                            .collection(
+                                '/users/dhruvpatel.ict.17@gmail.com/chats/pateldhruv0248@gmail.com/messages')
+                            .add({
+                          'msg': this.newMsg,
+                          'msgBy': user.email,
                           'createdAt': Timestamp.now(),
                         });
                         _textController.clear();
