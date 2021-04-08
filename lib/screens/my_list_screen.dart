@@ -186,8 +186,14 @@ class MyListing extends StatelessWidget {
         (email, time) {
           requestCards.add(
             RequestCard(
+              //here, myEmail is listing.email, as user is in myListingScreen, 
+              //Thus, listing was created by user, and the listing data is users' data.
+              myEmail: listing.email,
+
+              //email is the email id of the person who has requested.
+              otherPersonEmail: email,
+
               title: email,
-              // requestIsAccepted: requestIsAlreadyAccepted,
               requestState: requestState,
               onAccept: () {
                 showDialog(

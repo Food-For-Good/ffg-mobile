@@ -7,6 +7,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ChatScreen extends StatefulWidget {
+  final String myEmail, otherPersonEmail;
+
+  const ChatScreen(
+      {Key key, @required this.myEmail, @required this.otherPersonEmail})
+      : super(key: key);
   @override
   _ChatScreenState createState() => _ChatScreenState();
 }
@@ -28,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
           return StreamBuilder(
               stream: Firestore.instance
                   .collection(
-                      '/users/pateldhruv0248@gmail.com/chats/dhruvpatel.ict.17@gmail.com/messages')
+                      '/users/${widget.myEmail}/chats/${widget.otherPersonEmail}/messages')
                   .orderBy('createdAt', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
@@ -103,7 +108,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       if (this.newMsg.trim().isNotEmpty) {
                         await Firestore.instance
                             .collection(
-                                '/users/pateldhruv0248@gmail.com/chats/dhruvpatel.ict.17@gmail.com/messages')
+                                '/users/${widget.myEmail}/chats/${widget.otherPersonEmail}/messages')
                             .add({
                           'msg': this.newMsg,
                           'msgBy': user.email,
@@ -111,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         });
                         await Firestore.instance
                             .collection(
-                                '/users/dhruvpatel.ict.17@gmail.com/chats/pateldhruv0248@gmail.com/messages')
+                                '/users/${widget.otherPersonEmail}/chats/${widget.myEmail}/messages')
                             .add({
                           'msg': this.newMsg,
                           'msgBy': user.email,

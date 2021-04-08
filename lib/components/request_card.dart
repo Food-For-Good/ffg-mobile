@@ -1,5 +1,6 @@
 import 'package:FoodForGood/components/icon_button.dart';
 import 'package:FoodForGood/models/listing_model.dart';
+import 'package:FoodForGood/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
@@ -8,8 +9,15 @@ class RequestCard extends StatefulWidget {
   final Function onAccept;
   final Function onDecline;
   final String requestState;
+  final String myEmail, otherPersonEmail;
 
-  RequestCard({this.title, this.onAccept, this.onDecline, this.requestState});
+  RequestCard(
+      {this.title,
+      this.onAccept,
+      this.onDecline,
+      this.requestState,
+      @required this.myEmail,
+      @required this.otherPersonEmail});
 
   @override
   _RequestCardState createState() => _RequestCardState();
@@ -133,7 +141,16 @@ class _RequestCardState extends State<RequestCard> {
                         icon: Icons.chat,
                         size: 30.0,
                         onPressed: () {
-                          Navigator.pushNamed(context, '/chat');
+                          // Navigator.pushNamed(context, '/chat');
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChatScreen(
+                                myEmail: widget.myEmail,
+                                otherPersonEmail: widget.otherPersonEmail,
+                              ),
+                            ),
+                          );
                         },
                       )
                     ],
