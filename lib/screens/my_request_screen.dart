@@ -56,7 +56,8 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                         requestCards: [
                           RequestCard(
                             title: 'Food taken successfully?',
-                            // requestIsAccepted: true,
+                            myEmail: userEmail,
+                            otherPersonEmail: listing.email,
                             requestState: requestStateAccepted,
                             onAccept: () {
                               showDialog(

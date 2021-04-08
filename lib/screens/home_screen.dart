@@ -100,12 +100,6 @@ class _HomeScreenState extends State<HomeScreen>
                 ),
                 ListTile(
                   title: Text(
-                    'About US',
-                    style: kTextStyle.copyWith(fontSize: 20.0),
-                  ),
-                ),
-                ListTile(
-                  title: Text(
                     'Sign Out',
                     style: kTextStyle.copyWith(fontSize: 20.0),
                   ),

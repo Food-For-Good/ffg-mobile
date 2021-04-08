@@ -1,61 +1,172 @@
 import 'package:FoodForGood/components/icon_button.dart';
 import 'package:FoodForGood/models/listing_model.dart';
+import 'package:FoodForGood/screens/chat_screen.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
-class RequestCard extends StatelessWidget {
+class RequestCard extends StatefulWidget {
   final String title;
   final Function onAccept;
   final Function onDecline;
   final String requestState;
+  final String myEmail, otherPersonEmail;
 
-  RequestCard({this.title, this.onAccept, this.onDecline, this.requestState});
+  RequestCard({
+    this.title,
+    this.onAccept,
+    this.onDecline,
+    this.requestState,
+    @required this.myEmail,
+    @required this.otherPersonEmail,
+  });
 
   @override
+  _RequestCardState createState() => _RequestCardState();
+}
+
+class _RequestCardState extends State<RequestCard> {
+  bool isExpanded = true;
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          isExpanded = !isExpanded;
+        });
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
           alignment: Alignment.center,
-          height: 60.0,
+          // height: 60.0,
           width: MediaQuery.of(context).size.width * 0.90,
           padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 8.0),
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(8.0)),
               border: Border.all(color: kSecondaryColor, width: 2.0)),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
             children: [
-              Text(
-                title,
-                style: kTextStyle,
-                softWrap: true,
-              ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(width: 10.0),
-                  if (requestState == requestStatePending)
-                    CustomIconButton(
-                      icon: Icons.clear_rounded,
-                      onPressed: this.onDecline,
+                  Container(
+                    width: 180.0,
+                    child: Text(
+                      widget.title,
+                      style: kTextStyle,
+                      softWrap: true,
                     ),
-                  if (requestState != requestStateAccepted)
-                    SizedBox(
-                      width: 10.0,
-                    ),
-                  if (requestState != requestStateCompleted)
-                    CustomIconButton(
-                      icon: Icons.check_rounded,
-                      onPressed: this.onAccept,
-                    ),
-                  if (requestState == requestStateCompleted)
-                    Text('Food handed over',
-                        style: kTextStyle.copyWith(
-                            color: kPrimaryColor, fontSize: 12.0))
+                  ),
+                  Row(
+                    children: [
+                      SizedBox(width: 10.0),
+                      if (widget.requestState == requestStatePending)
+                        CustomIconButton(
+                          icon: Icons.clear_rounded,
+                          onPressed: this.widget.onDecline,
+                        ),
+                      if (widget.requestState != requestStateCompleted)
+                        CustomIconButton(
+                          icon: Icons.check_rounded,
+                          onPressed: this.widget.onAccept,
+                        ),
+                      if (widget.requestState == requestStateCompleted)
+                        Text('Food handed over',
+                            style: kTextStyle.copyWith(
+                                color: kPrimaryColor, fontSize: 12.0))
+                    ],
+                  ),
                 ],
               ),
+              if (isExpanded)
+                Container(
+                  alignment: Alignment.topLeft,
+                  padding: EdgeInsets.all(8.0),
+                  margin: EdgeInsets.all(8.0),
+                  width: MediaQuery.of(context).size.width * 0.80,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  'Email: ',
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  widget.otherPersonEmail,
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 10.0),
+                            Row(
+                              children: [
+                                Text(
+                                  'Rating: ',
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  '6.5',
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text(
+                                  'Chat with user: ',
+                                  style: kTextStyle.copyWith(
+                                    fontSize: 14.0,
+                                    color: kSecondaryColor.withAlpha(950),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                CustomIconButton(
+                                  icon: Icons.chat,
+                                  size: 30.0,
+                                  onPressed: () {
+                                    // Navigator.pushNamed(context, '/chat');
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ChatScreen(
+                                          myEmail: widget.myEmail,
+                                          otherPersonEmail:
+                                              widget.otherPersonEmail,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            )
+                          ]),
+                    ],
+                  ),
+                )
             ],
-          )),
+          ),
+        ),
+      ),
     );
   }
 }

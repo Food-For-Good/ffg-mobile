@@ -23,6 +23,9 @@ class MyListingCard extends StatelessWidget {
 
   Widget build(BuildContext context) {
     String message = 'Message for user';
+    if (listing.listingState == listingStateOpen) {
+      message = 'Requests for your listing';
+    }
     if (listing.listingState == listingStateProgress) {
       message = 'Food taken by requester?';
     }
@@ -116,13 +119,13 @@ class MyListingCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (requestState == requestStatePending)
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(message,
-                    style: kTextStyle.copyWith(
-                        fontSize: 18.0, fontWeight: FontWeight.bold)),
-              ),
+            // if (requestState == requestStatePending)
+            //   Padding(
+            //     padding: const EdgeInsets.all(10.0),
+            //     child: Text(message,
+            //         style: kTextStyle.copyWith(
+            //             fontSize: 18.0, fontWeight: FontWeight.bold)),
+            //   ),
             if (customIconButtons != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -131,14 +134,12 @@ class MyListingCard extends StatelessWidget {
             SizedBox(
               height: 15.0,
             ),
-            if (listing.listingState != listingStateOpen)
-              Text(message,
-                  style: kTextStyle.copyWith(
-                      fontSize: 18.0, fontWeight: FontWeight.bold)),
-            if (listing.listingState != listingStateOpen)
-              SizedBox(
-                height: 10.0,
-              ),
+            Text(message,
+                style: kTextStyle.copyWith(
+                    fontSize: 18.0, fontWeight: FontWeight.bold)),
+            SizedBox(
+              height: 10.0,
+            ),
             if (requestCards != null) ...requestCards
           ],
         ),
