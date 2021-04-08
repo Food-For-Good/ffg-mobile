@@ -57,7 +57,6 @@ class MyApp extends StatelessWidget {
               '/request': (context) => RequestScreen(),
               '/myList': (context) => MyList(),
               '/myRequest': (context) => MyRequestScreen(),
-              // '/chat': (context) => ChatScreen(),
             },
           ),
         ),

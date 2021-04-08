@@ -119,13 +119,13 @@ class MyListingCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (requestState == requestStatePending)
-              Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(message,
-                    style: kTextStyle.copyWith(
-                        fontSize: 18.0, fontWeight: FontWeight.bold)),
-              ),
+            // if (requestState == requestStatePending)
+            //   Padding(
+            //     padding: const EdgeInsets.all(10.0),
+            //     child: Text(message,
+            //         style: kTextStyle.copyWith(
+            //             fontSize: 18.0, fontWeight: FontWeight.bold)),
+            //   ),
             if (customIconButtons != null)
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,

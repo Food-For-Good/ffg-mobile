@@ -140,7 +140,8 @@ class _RequestScreenState extends State<RequestScreen> {
               .map(
                 (listing) {
                   if (listing.expiryTime.isAfter(currentTime) &&
-                      listing.listingState == listingStateOpen) {
+                      listing.listingState == listingStateOpen &&
+                      listing.email != myEmail) {
                     addMarker(
                         listing.location.latitude, listing.location.longitude);
                     return ListingCard(
