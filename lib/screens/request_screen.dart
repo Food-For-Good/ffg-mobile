@@ -140,8 +140,7 @@ class _RequestScreenState extends State<RequestScreen> {
               .map(
                 (listing) {
                   if (listing.expiryTime.isAfter(currentTime) &&
-                      listing.listingState == listingStateOpen &&
-                      listing.email != myEmail) {
+                      listing.listingState == listingStateOpen) {
                     addMarker(
                         listing.location.latitude, listing.location.longitude);
                     return ListingCard(
@@ -160,54 +159,68 @@ class _RequestScreenState extends State<RequestScreen> {
                             expiryTime: listing.expiryTime,
                             tickMarkColor: kPrimaryColor,
                             onPressedTickMark: () async {
-                              Map<String, dynamic> requests = listing.requests;
-                              if (requests.containsKey(myEmail)) {
-                                print('Request is already created');
-                                kShowFlushBar(
-                                    context: ctx,
-                                    content:
-                                        'Request is already created for this listing!',
-                                    customError: true);
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MyRequestScreen(
-                                        selectedIndexFromRequestPage: (listing
-                                                .acceptedRequest
-                                                .containsKey(myEmail))
-                                            ? 0
-                                            : 1,
-                                      ),
-                                    ));
+                              if (listing.email != myEmail) {
+                                Map<String, dynamic> requests =
+                                    listing.requests;
+                                if (requests.containsKey(myEmail)) {
+                                  print('Request is already created');
+                                  kShowFlushBar(
+                                      context: ctx,
+                                      content:
+                                          'Request is already created for this listing!',
+                                      customError: true);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MyRequestScreen(
+                                          selectedIndexFromRequestPage: (listing
+                                                  .acceptedRequest
+                                                  .containsKey(myEmail))
+                                              ? 0
+                                              : 1,
+                                        ),
+                                      ));
+                                } else {
+                                  requests[myEmail] = currentTime.toString();
+                                  await database.createListingRequest(
+                                      listing, requests);
+                                  kShowFlushBar(
+                                      context: ctx,
+                                      content: 'Request generated successfully',
+                                      customError: true);
+                                  print(
+                                      'Listing request is successfully created');
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => MyRequestScreen(
+                                          selectedIndexFromRequestPage: 1,
+                                        ),
+                                      ));
+                                }
                               } else {
-                                requests[myEmail] = currentTime.toString();
-                                await database.createListingRequest(
-                                    listing, requests);
                                 kShowFlushBar(
-                                    context: ctx,
-                                    content: 'Request generated successfully',
+                                    content:
+                                        'You can not accept your own listing!',
                                     customError: true);
-                                print(
-                                    'Listing request is successfully created');
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MyRequestScreen(
-                                        selectedIndexFromRequestPage: 1,
-                                      ),
-                                    ));
                               }
                             },
                             onPressedChat: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ChatScreen(
-                                    myEmail: myEmail,
-                                    otherPersonEmail: listing.email,
+                              if (listing.email != myEmail) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      myEmail: myEmail,
+                                      otherPersonEmail: listing.email,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                kShowFlushBar(
+                                    content: 'You can not chat with yourself!',
+                                    customError: true);
+                              }
                             },
                             onCross: () {
                               setState(() {
