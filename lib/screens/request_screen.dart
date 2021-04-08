@@ -181,7 +181,7 @@ class _RequestScreenState extends State<RequestScreen> {
                                         ),
                                       ));
                                 } else {
-                                  requests[myEmail] = currentTime.toString();
+                                  requests[myEmail] = myUsername;
                                   await database.createListingRequest(
                                       listing, requests);
                                   kShowFlushBar(

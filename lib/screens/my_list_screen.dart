@@ -183,7 +183,7 @@ class MyListing extends StatelessWidget {
         requestIsAlreadyAccepted ? acceptedRequest : allRequests;
     if (requestsToShow.isNotEmpty) {
       requestsToShow.forEach(
-        (email, time) {
+        (email, requesterName) {
           requestCards.add(
             RequestCard(
               //here, myEmail is listing.email, as user is in myListingScreen,
@@ -192,7 +192,7 @@ class MyListing extends StatelessWidget {
 
               //email is the email id of the person who has requested.
               otherPersonEmail: email,
-              title: listing.username,
+              title: requesterName,
               requestState: requestState,
               onAccept: () {
                 showDialog(
