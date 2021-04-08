@@ -5,14 +5,25 @@ import 'package:meta/meta.dart';
 
 class FirestoreDatabase {
   final _service = FirestoreService.instance;
+  final String uid;
+  final String chatWith;
+
+  FirestoreDatabase(
+      {this.uid = 'pateldhruv0248@gmail.com',
+      this.chatWith = 'dhruvpatel.ict.17@gmail.com'});
 
   Stream<List<Listing>> listingStream() => _service.collectionStream(
         path: APIPath.listing(),
         builder: (data) => Listing.fromMap(data),
       );
 
+  Stream<List> chatStream() => _service.collectionStream(
+      path: APIPath.chat(uid: uid, chatWith: chatWith),
+      builder: (data) => data);
+
   Future<Map<String, dynamic>> getUserData(String userEmail) async {
-    final userData = await _service.getData(path: APIPath.user(), docId: userEmail);
+    final userData =
+        await _service.getData(path: APIPath.user(), docId: userEmail);
     return userData;
   }
 

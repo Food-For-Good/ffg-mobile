@@ -132,6 +132,9 @@ class _RequestCardState extends State<RequestCard> {
                       CustomIconButton(
                         icon: Icons.chat,
                         size: 30.0,
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/chat');
+                        },
                       )
                     ],
                   ),
