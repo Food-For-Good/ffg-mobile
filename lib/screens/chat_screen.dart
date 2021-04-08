@@ -74,23 +74,21 @@ class _ChatScreenState extends State<ChatScreen> {
               child: getChats(),
             ),
             Container(
-              height: 100,
+              height: 120,
               width: MediaQuery.of(context).size.width,
-              // color: kSecondaryColor,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
-                    // width: 250.0,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: CustomTextFeild(
                         editingController: _textController,
                         label: 'Message',
                         kbType: TextInputType.multiline,
-                        lines: 2,
+                        lines: 5,
                         prefixIcon: Icon(
-                          Icons.description,
+                          Icons.chat,
                           color: kSecondaryColor,
                         ),
                         changed: (value) {
