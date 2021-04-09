@@ -21,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String newMsg = '';
   final _textController = TextEditingController();
 
-  Widget getChats() {
+  Widget _getChats() {
     return FutureBuilder(
         future: FirebaseAuth.instance.currentUser(),
         builder: (ctx, futureSnapshot) {
@@ -71,26 +71,24 @@ class _ChatScreenState extends State<ChatScreen> {
         body: Column(
           children: [
             Expanded(
-              child: getChats(),
+              child: _getChats(),
             ),
             Container(
-              height: 100,
+              height: 120,
               width: MediaQuery.of(context).size.width,
-              // color: kSecondaryColor,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Expanded(
-                    // width: 250.0,
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: CustomTextFeild(
                         editingController: _textController,
                         label: 'Message',
                         kbType: TextInputType.multiline,
-                        lines: 2,
+                        lines: 5,
                         prefixIcon: Icon(
-                          Icons.description,
+                          Icons.chat,
                           color: kSecondaryColor,
                         ),
                         changed: (value) {
@@ -106,6 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () async {
                       final user = await FirebaseAuth.instance.currentUser();
                       if (this.newMsg.trim().isNotEmpty) {
+                        //Storing chat message in sender's database collection.
                         await Firestore.instance
                             .collection(
                                 '/users/${widget.myEmail}/chats/${widget.otherPersonEmail}/messages')
@@ -114,6 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           'msgBy': user.email,
                           'createdAt': Timestamp.now(),
                         });
+                        //Storing chat message in receiver's database collection.
                         await Firestore.instance
                             .collection(
                                 '/users/${widget.otherPersonEmail}/chats/${widget.myEmail}/messages')

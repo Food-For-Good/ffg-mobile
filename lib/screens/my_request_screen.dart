@@ -9,6 +9,8 @@ import 'package:FoodForGood/models/listing_model.dart';
 import 'package:FoodForGood/services/auth_service.dart';
 import 'package:FoodForGood/services/database.dart';
 
+import 'chat_screen.dart';
+
 class MyRequestScreen extends StatefulWidget {
   final int selectedIndexFromRequestPage;
   MyRequestScreen({this.selectedIndexFromRequestPage});
@@ -95,6 +97,21 @@ class _MyRequestScreenState extends State<MyRequestScreen> {
                           listing: listing,
                           requestState: requestStatePending,
                           customIconButtons: [
+                            CustomIconButton(
+                              icon: Icons.chat,
+                              size: 40.0,
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ChatScreen(
+                                      myEmail: userEmail,
+                                      otherPersonEmail: listing.email,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                             CustomIconButton(
                               icon: Icons.clear,
                               size: 40.0,
