@@ -21,7 +21,7 @@ class _ChatScreenState extends State<ChatScreen> {
   String newMsg = '';
   final _textController = TextEditingController();
 
-  Widget getChats() {
+  Widget _getChats() {
     return FutureBuilder(
         future: FirebaseAuth.instance.currentUser(),
         builder: (ctx, futureSnapshot) {
@@ -71,7 +71,7 @@ class _ChatScreenState extends State<ChatScreen> {
         body: Column(
           children: [
             Expanded(
-              child: getChats(),
+              child: _getChats(),
             ),
             Container(
               height: 120,
@@ -104,6 +104,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () async {
                       final user = await FirebaseAuth.instance.currentUser();
                       if (this.newMsg.trim().isNotEmpty) {
+                        //Storing chat message in sender's database collection.
                         await Firestore.instance
                             .collection(
                                 '/users/${widget.myEmail}/chats/${widget.otherPersonEmail}/messages')
@@ -112,6 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
                           'msgBy': user.email,
                           'createdAt': Timestamp.now(),
                         });
+                        //Storing chat message in receiver's database collection.
                         await Firestore.instance
                             .collection(
                                 '/users/${widget.otherPersonEmail}/chats/${widget.myEmail}/messages')
