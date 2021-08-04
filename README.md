@@ -2,10 +2,27 @@
 
 A food sharing platform that connects the ones in need to donors, so that the donors can donate food and spread smiles!
 
-### Screenshots
+## Screenshots
 
-<img src="https://user-images.githubusercontent.com/35144226/98117693-27852480-1ed0-11eb-8e66-46c74e8300c2.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117704-2a801500-1ed0-11eb-9c0d-c3e0bd0b1667.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117705-2bb14200-1ed0-11eb-8372-46457f6d4146.png" height="400em" />
+### Homepage
+![1628001435854-imresizer](https://user-images.githubusercontent.com/48350577/128130850-39d6a73b-23c2-4227-ad97-0c2217ec798f.jpg)
+![1628001445638-imresizer](https://user-images.githubusercontent.com/48350577/128130853-7b3a5f14-19cc-4cc9-93ca-21857119e6ec.jpg)
 
-<img src="https://user-images.githubusercontent.com/35144226/98117716-2ce26f00-1ed0-11eb-8702-9ee00be22372.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117721-2d7b0580-1ed0-11eb-949f-8f08dab24a2a.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117724-2eac3280-1ed0-11eb-8084-65341445c16b.png" height="400em" />
 
-<img src="https://user-images.githubusercontent.com/35144226/98117725-2f44c900-1ed0-11eb-88ba-1f6da30143c1.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117726-2fdd5f80-1ed0-11eb-9ad6-f81977748d20.png" height="400em" /> <img src="https://user-images.githubusercontent.com/35144226/98117729-310e8c80-1ed0-11eb-98a1-6dda2b7a3169.png" height="400em" />
+### Giveaway Page
+![1628057005854-imresizer](https://user-images.githubusercontent.com/48350577/128130889-f5580ec2-caca-493f-93cd-2c8fdce1361c.jpg)
+
+### Request Page
+![1628001500222-imresizer](https://user-images.githubusercontent.com/48350577/128130926-a4616120-8bb8-4e70-9fbd-66358fcaca43.jpg)
+![1628001507350-imresizer](https://user-images.githubusercontent.com/48350577/128130929-aee31650-1ef5-4ab4-b908-52258e3b3212.jpg)
+
+
+### My LIstings Page
+![1628001538959-imresizer](https://user-images.githubusercontent.com/48350577/128130999-18561639-88c2-4621-a825-2d73aa6a5f07.jpg)
+![1628001461457-imresizer](https://user-images.githubusercontent.com/48350577/128131015-cc3c6ed3-943f-4b63-b2b5-05f5f2a6249d.jpg)
+![1628001472468-imresizer](https://user-images.githubusercontent.com/48350577/128131028-83452a0d-3779-45bf-bc53-a8d922eff6d6.jpg)
+
+### My Requests Page
+![1628001513034-imresizer](https://user-images.githubusercontent.com/48350577/128131078-e2a3774e-a7ae-4ef6-a413-5c4be59a33d8.jpg)
+![1628001519662-imresizer](https://user-images.githubusercontent.com/48350577/128131099-52d6659f-0a71-4920-a4a2-8f4d38614ce9.jpg)
+![1628001524853-imresizer](https://user-images.githubusercontent.com/48350577/128131118-5b7354fc-9245-4bf9-a9f9-887d9529fda4.jpg)
