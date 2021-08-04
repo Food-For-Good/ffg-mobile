@@ -2,6 +2,11 @@
 
 A food sharing platform that connects the ones in need to donors, so that the donors can donate food and spread smiles!
 
+
+## Android App
+
+You can find apk [here](https://github.com/Food-For-Good/ffg-mobile/releases).
+
 ## Screenshots
 
 ### Homepage
@@ -26,8 +31,3 @@ A food sharing platform that connects the ones in need to donors, so that the do
 ![1628001513034-imresizer](https://user-images.githubusercontent.com/48350577/128131078-e2a3774e-a7ae-4ef6-a413-5c4be59a33d8.jpg)
 ![1628001519662-imresizer](https://user-images.githubusercontent.com/48350577/128131099-52d6659f-0a71-4920-a4a2-8f4d38614ce9.jpg)
 ![1628001524853-imresizer](https://user-images.githubusercontent.com/48350577/128131118-5b7354fc-9245-4bf9-a9f9-887d9529fda4.jpg)
-
-
-## Android App
-
-You can find apk [here](https://github.com/Food-For-Good/ffg-mobile/releases).
